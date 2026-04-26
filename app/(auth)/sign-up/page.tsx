@@ -1,13 +1,24 @@
 import { APP_NAME } from '@/lib/constants/app';
 import { Metadata } from 'next';
+import AuthWrapper from '../_components/auth-wrapper';
+import SignUpForm from './_components/sign-up-form';
 
 export const metadata: Metadata = {
-  title: `Sign Up`,
+  title: 'Sign Up',
   description: `Create your account on ${APP_NAME} and start sharing your thoughts, connecting with friends, and exploring a world of engaging content. `,
 };
 
 const SignUpPage = () => {
-  return <div></div>;
+  return (
+    <AuthWrapper
+      title='Create an Account'
+      subtitle='Already have an account?'
+      link={{ href: '/sign-in', text: 'Sign In' }}
+    >
+      {/* Sign Up Form */}
+      <SignUpForm />
+    </AuthWrapper>
+  );
 };
 
 export default SignUpPage;
