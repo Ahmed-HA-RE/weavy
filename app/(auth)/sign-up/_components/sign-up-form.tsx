@@ -1,25 +1,27 @@
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Field,
-  FieldGroup,
   FieldError,
+  FieldGroup,
   FieldLabel,
+  FieldSeparator,
 } from '@/components/ui/field';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { authSchema, SignUpFormData } from '@/schema/auth';
-import { FaRegEye } from 'react-icons/fa';
-import { RiEyeCloseLine } from 'react-icons/ri';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import { authSchema, type SignUpFormData } from '@/schema/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { FcGoogle } from 'react-icons/fc';
+import { FaRegEye } from 'react-icons/fa';
+import { RiEyeCloseLine } from 'react-icons/ri';
 import Link from 'next/link';
 
 const SignUpForm = () => {
@@ -32,19 +34,24 @@ const SignUpForm = () => {
       email: '',
       password: '',
     },
-    mode: 'onChange',
   });
 
-  const onSubmit = (data: SignUpFormData) => {
-    console.log(data);
-  };
+  const onSubmit = (data: SignUpFormData) => {};
 
   const { isSubmitting } = form.formState;
 
   return (
-    <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldGroup className='gap-6'>
-        {/* User Name  */}
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* OAuth Providers */}
+      <Button variant='outline' type='button' className='w-full'>
+        <FcGoogle className='size-5' />
+        Google
+      </Button>
+      <FieldSeparator className='mt-6 mb-6'>
+        Or continue with Email
+      </FieldSeparator>
+      <FieldGroup className='gap-4'>
+        {/* Username */}
         <Controller
           control={form.control}
           name='userName'
@@ -55,8 +62,8 @@ const SignUpForm = () => {
                 id={field.name}
                 type='text'
                 aria-invalid={fieldState.invalid}
-                inputSize='lg'
                 {...field}
+                placeholder='Enter your username'
               />
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -68,13 +75,13 @@ const SignUpForm = () => {
           name='email'
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Email Address</FieldLabel>
+              <FieldLabel htmlFor={field.name}>Email</FieldLabel>
               <Input
                 id={field.name}
                 type='email'
                 aria-invalid={fieldState.invalid}
-                inputSize='lg'
                 {...field}
+                placeholder='youremail@email.com'
               />
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -87,13 +94,13 @@ const SignUpForm = () => {
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-              <InputGroup size='lg'>
+              <InputGroup>
                 <InputGroupInput
                   id={field.name}
                   type={visible ? 'text' : 'password'}
                   aria-invalid={fieldState.invalid}
-                  inputSize='lg'
                   {...field}
+                  placeholder='Enter a unique password'
                 />
                 <InputGroupAddon align='inline-end'>
                   <InputGroupButton
@@ -110,29 +117,33 @@ const SignUpForm = () => {
             </Field>
           )}
         />
+        <Button type='submit' className='w-full' disabled={isSubmitting}>
+          Sign Up
+        </Button>
+        <small className='text-xs text-muted-foreground max-w-sm '>
+          By creating an account you agree to the{' '}
+          <Link
+            className='text-foreground underline font-semibold'
+            href='/terms'
+          >
+            Terms of Service
+          </Link>{' '}
+          and our{' '}
+          <Link
+            className='text-foreground underline font-semibold'
+            href='/privacy'
+          >
+            Privacy Policy
+          </Link>
+          .
+        </small>
+        <span className='text-base'>
+          Already have an account?{' '}
+          <Link className='text-blue-500 font-semibold' href='/sign-in'>
+            Sign In
+          </Link>
+        </span>
       </FieldGroup>
-      {/* @todo: Add recaptcha here */}
-
-      <Button
-        type='submit'
-        disabled={isSubmitting}
-        className='w-full max-w-[272px] h-16 text-[22px] rounded-full'
-      >
-        {isSubmitting ? 'Creating Account...' : 'Create an account'}
-      </Button>
-      <span className='text-muted-foreground max-w-lg mx-auto text-center block'>
-        By creating an account, you agree to our{' '}
-        <Link
-          href='/terms-and-conditions'
-          className='underline text-foreground'
-        >
-          Terms & Conditions
-        </Link>{' '}
-        and{' '}
-        <Link href='/privacy-policy' className='underline text-foreground'>
-          Privacy Policy
-        </Link>
-      </span>
     </form>
   );
 };

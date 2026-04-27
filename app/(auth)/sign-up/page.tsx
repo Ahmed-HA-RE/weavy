@@ -11,11 +11,9 @@ export const metadata: Metadata = {
 const SignUpPage = () => {
   return (
     <AuthWrapper
-      title='Create an Account'
-      subtitle='Already have an account?'
-      link={{ href: '/sign-in', text: 'Sign In' }}
+      title='Create your account'
+      subtitle={`Connect to ${APP_NAME} with: `}
     >
-      {/* Sign Up Form */}
       <SignUpForm />
     </AuthWrapper>
   );
