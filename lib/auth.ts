@@ -12,5 +12,11 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     requireEmailVerification: true,
   },
+
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {},
+  },
+
   plugins: [nextCookies()],
 });
