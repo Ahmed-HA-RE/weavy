@@ -2,6 +2,7 @@ import { APP_NAME } from '@/lib/constants/app';
 import { Metadata } from 'next';
 import AuthWrapper from '../_components/auth-wrapper';
 import SignUpForm from './_components/sign-up-form';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -14,7 +15,9 @@ const SignUpPage = () => {
       title='Create your account'
       subtitle={`Connect to ${APP_NAME} with: `}
     >
-      <SignUpForm />
+      <Suspense>
+        <SignUpForm />
+      </Suspense>
     </AuthWrapper>
   );
 };

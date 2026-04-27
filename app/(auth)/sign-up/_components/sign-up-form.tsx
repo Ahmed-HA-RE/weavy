@@ -23,9 +23,14 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaRegEye } from 'react-icons/fa';
 import { RiEyeCloseLine } from 'react-icons/ri';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
+import { useSearchParams } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
 
 const SignUpForm = () => {
   const [visible, setVisible] = useState(false);
+  const callbackURL = useSearchParams().get('callbackUrl') || '/';
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(authSchema),
@@ -36,7 +41,27 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (data: SignUpFormData) => {};
+  const onSubmit = async (data: SignUpFormData) => {
+    try {
+      const { error } = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.userName,
+        callbackURL,
+      });
+
+      if (!error) {
+        toast.success(
+          'Account created! Please check your email to verify your account.',
+        );
+        form.reset();
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(errorMessage);
+    }
+  };
 
   const { isSubmitting } = form.formState;
 
@@ -118,7 +143,7 @@ const SignUpForm = () => {
           )}
         />
         <Button type='submit' className='w-full' disabled={isSubmitting}>
-          Sign Up
+          {isSubmitting ? <Spinner /> : 'Create an Account'}
         </Button>
         <small className='text-xs text-muted-foreground max-w-sm '>
           By creating an account you agree to the{' '}
