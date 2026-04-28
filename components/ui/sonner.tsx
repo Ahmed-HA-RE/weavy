@@ -18,11 +18,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className='toaster group'
       position='bottom-right'
       icons={{
-        success: <LuCircleCheck className='size-4.5 text-green-600' />,
-        info: <IconInfoCircle className='size-4.5' />,
-        warning: <IconAlertTriangle className='size-4.5' />,
-        error: <LuCircleX className='size-4.5 text-red-600' />,
-        loading: <IconLoader className='size-4.5 animate-spin' />,
+        success: <LuCircleCheck className='size-4 text-green-600' />,
+        info: <IconInfoCircle className='size-4' />,
+        warning: <IconAlertTriangle className='size-4' />,
+        error: <LuCircleX className='size-4 text-red-600' />,
+        loading: <IconLoader className='size-4 animate-spin' />,
       }}
       style={
         {
@@ -34,7 +34,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: 'cn-toast !w-full !min-w-lg !gap-1.5',
+          toast: 'cn-toast !w-full !min-w-md !gap-0.5',
         },
       }}
       {...props}

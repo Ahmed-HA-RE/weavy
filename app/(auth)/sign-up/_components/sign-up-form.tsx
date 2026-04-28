@@ -27,10 +27,12 @@ import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
+import EmailVerificationNotice from './email-verification-notice';
+import { APP_NAME } from '@/lib/constants/app';
 
 const SignUpForm = () => {
   const [visible, setVisible] = useState(false);
-  const callbackURL = useSearchParams().get('callbackUrl') || '/';
+  const callbackURL = useSearchParams().get('callbackURL') || '/';
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(authSchema),
@@ -47,14 +49,11 @@ const SignUpForm = () => {
         email: data.email,
         password: data.password,
         name: data.userName,
-        callbackURL,
+        callbackURL: `/verify-email?callbackUrl=${encodeURIComponent(callbackURL)}`,
       });
 
-      if (!error) {
-        toast.success(
-          'Account created! Please check your email to verify your account.',
-        );
-        form.reset();
+      if (error) {
+        throw new Error(error.message);
       }
     } catch (error) {
       const errorMessage =
@@ -63,19 +62,35 @@ const SignUpForm = () => {
     }
   };
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, isSubmitSuccessful } = form.formState;
+
+  if (isSubmitSuccessful) {
+    const userEmail = form.getValues('email');
+    return (
+      <EmailVerificationNotice email={userEmail} callbackURL={callbackURL} />
+    );
+  }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      {/* OAuth Providers */}
-      <Button variant='outline' type='button' className='w-full'>
-        <FcGoogle className='size-5' />
-        Google
-      </Button>
-      <FieldSeparator className='mt-6 mb-6'>
-        Or continue with Email
-      </FieldSeparator>
-      <FieldGroup className='gap-4'>
+    <form
+      className='w-full max-w-sm max-lg:pt-14'
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <FieldGroup className='gap-4 w-full'>
+        <div className='text-center space-y-2 mb-2'>
+          <h1 className='text-3xl font-bold'>Create your account</h1>
+          <p className='text-sm text-muted-foreground'>
+            Connect to {APP_NAME} with:
+          </p>
+        </div>
+        {/* OAuth Provider */}
+        <Field>
+          <Button variant='outline' type='button' className=''>
+            <FcGoogle className='size-5' />
+            Google
+          </Button>
+        </Field>
+        <FieldSeparator className='my-4'>Or continue with Email</FieldSeparator>
         {/* Username */}
         <Controller
           control={form.control}

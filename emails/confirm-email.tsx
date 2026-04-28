@@ -44,7 +44,10 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
       </Head>
 
       <Body className='m-0 text-center'>
-        <Preview>Confirm your email address</Preview>
+        <Preview>
+          You’re almost there! Verify your account to start building your circle
+          without the noise.
+        </Preview>
         <Container className='mt-0 mx-auto md:mt-8 w-full max-w-[640px]'>
           <Section>
             <Section className='mobile:px-2 px-6 py-4'>
