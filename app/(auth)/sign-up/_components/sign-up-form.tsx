@@ -26,12 +26,9 @@ import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
-import { APP_NAME } from '@/lib/constants/app';
 import GoogleAuthButton from '../../_components/google-auth-button';
-import { useRouter } from 'next/navigation';
 
 const SignUpForm = () => {
-  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const callbackURL = useSearchParams().get('callbackURL') || '/';
 
@@ -46,19 +43,26 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      const { error } = await authClient.signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.userName,
-      });
+      const { error } = await authClient.signUp.email(
+        {
+          email: data.email,
+          password: data.password,
+          name: data.userName,
+        },
+        {
+          onError: (error) => {
+            console.log(error);
+          },
+        },
+      );
 
       if (error) {
         throw new Error(error.message);
       } else {
+        form.reset();
         toast.success(
-          'Account created successfully! Please check your email for verification.',
+          'Registeration successful! Please check your email for confirmation.',
         );
-        router.push(`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`);
       }
     } catch (error) {
       const errorMessage =
@@ -75,17 +79,11 @@ const SignUpForm = () => {
       onSubmit={form.handleSubmit(onSubmit)}
     >
       <FieldGroup className='gap-4 w-full'>
-        <div className='text-center space-y-2 mb-2'>
-          <h1 className='text-3xl font-bold'>Create your account</h1>
-          <p className='text-sm text-muted-foreground'>
-            Connect to {APP_NAME} with:
-          </p>
-        </div>
         {/* OAuth Provider */}
         <Field>
           <GoogleAuthButton callbackURL={callbackURL} />
         </Field>
-        <FieldSeparator className='my-4'>Or continue with Email</FieldSeparator>
+        <FieldSeparator className='my-2'>Or continue with Email</FieldSeparator>
         {/* Username */}
         <Controller
           control={form.control}

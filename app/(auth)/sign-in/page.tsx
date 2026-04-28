@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import SignInForm from './_components/sign-in-form';
+import AuthWrapper from '../_components/auth-wrapper';
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -25,9 +26,14 @@ const SignInContent = async () => {
 
 const SignInPage = () => {
   return (
-    <Suspense>
-      <SignInContent />
-    </Suspense>
+    <AuthWrapper
+      title='Sign in to your account'
+      subtitle={`Connect to ${APP_NAME} with:`}
+    >
+      <Suspense>
+        <SignInContent />
+      </Suspense>
+    </AuthWrapper>
   );
 };
 

@@ -26,10 +26,12 @@ import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
-import { APP_NAME } from '@/lib/constants/app';
 import GoogleAuthButton from '../../_components/google-auth-button';
 import { useRouter } from 'next/navigation';
-import AlertMessage from '@/components/alert-message';
+import { motion } from 'motion/react';
+
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { MdOutlineErrorOutline } from 'react-icons/md';
 
 const SignInForm = () => {
   const router = useRouter();
@@ -61,7 +63,30 @@ const SignInForm = () => {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
-      form.setError('root', { message: errorMessage });
+      form.setError('root', {
+        message:
+          errorMessage === 'Email not verified'
+            ? 'Please verify your email before signing in.'
+            : errorMessage,
+      });
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      const { error } = await authClient.sendVerificationEmail({
+        email: form.getValues('email'),
+        callbackURL: `/verify-email?callbackURL=${encodeURIComponent(callbackURL)}`,
+      });
+      if (error) {
+        throw new Error(error.message);
+      } else {
+        toast.success('Verification email resent! Please check your inbox.');
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(errorMessage);
     }
   };
 
@@ -73,20 +98,38 @@ const SignInForm = () => {
       onSubmit={form.handleSubmit(onSubmit)}
     >
       <FieldGroup className='gap-4 w-full'>
-        <div className='text-center space-y-2 mb-2'>
-          <h1 className='text-3xl font-bold'>Sign in to your account</h1>
-          <p className='text-sm text-muted-foreground'>
-            Connect to {APP_NAME} with:
-          </p>
-        </div>
         {errors.root && errors.root.message && (
-          <AlertMessage type='error' title={errors.root.message} />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className='my-1.5'
+          >
+            <Alert variant='error'>
+              <MdOutlineErrorOutline />
+              <AlertTitle>
+                {errors.root.message}{' '}
+                {errors.root.message ===
+                  'Please verify your email before signing in.' && (
+                  <Button
+                    type='button'
+                    className='underline p-0 text-xs hover:bg-transparent hover:text-red-700'
+                    variant={'ghost'}
+                    size='sm'
+                    onClick={handleResendVerification}
+                  >
+                    Resend Email
+                  </Button>
+                )}
+              </AlertTitle>
+            </Alert>
+          </motion.div>
         )}
         {/* OAuth Provider */}
         <Field>
           <GoogleAuthButton callbackURL={callbackURL} />
         </Field>
-        <FieldSeparator className='my-4'>Or continue with Email</FieldSeparator>
+        <FieldSeparator className='my-2'>Or continue with Email</FieldSeparator>
         {/* Email  */}
         <Controller
           control={form.control}
@@ -115,7 +158,7 @@ const SignInForm = () => {
                 <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                 <Link
                   href={'/forgot-password'}
-                  className='text-sm text-blue-500 hover:underline'
+                  className='text-xs text-blue-500 hover:underline'
                 >
                   Forgot password?
                 </Link>

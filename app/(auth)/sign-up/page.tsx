@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import AuthWrapper from '../_components/auth-wrapper';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -25,9 +26,14 @@ const SignUpContent = async () => {
 
 const SignUpPage = () => {
   return (
-    <Suspense>
-      <SignUpContent />
-    </Suspense>
+    <AuthWrapper
+      title='Create your account'
+      subtitle={`Connect to ${APP_NAME} with:`}
+    >
+      <Suspense>
+        <SignUpContent />
+      </Suspense>
+    </AuthWrapper>
   );
 };
 

@@ -29,20 +29,14 @@ export const auth = betterAuth({
 
   emailVerification: {
     autoSignInAfterVerification: true,
-    sendOnSignIn: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      try {
-        const { data, error } = await resend.emails.send({
-          from: `${APP_NAME} <hello@${resendDomain}>`,
-          to: user.email,
-          subject: 'Confirm your email address',
-          react: ConfirmEmail({ url }),
-        });
-        console.log(data, error);
-      } catch (error) {
-        console.error('Error: ', error);
-      }
+      void resend.emails.send({
+        from: `${APP_NAME} <hello@${resendDomain}>`,
+        to: user.email,
+        subject: 'Confirm your email address',
+        react: ConfirmEmail({ url }),
+      });
     },
 
     expiresIn: 7200, // 2 hours in seconds

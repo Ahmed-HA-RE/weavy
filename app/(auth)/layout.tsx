@@ -32,7 +32,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
       {/* Right Column */}
-      <div className='relative flex flex-col items-center justify-center p-6'>
+      <div className='relative flex flex-col items-center justify-center w-full p-6'>
         <Button variant='ghost' asChild className='group absolute top-4 left-4'>
           <Link href='/'>
             <MdKeyboardArrowLeft className='group-hover:-translate-x-1 transition-transform duration-300' />
