@@ -21,3 +21,10 @@ export const authSchema = z.object({
 });
 
 export type SignUpFormData = z.infer<typeof authSchema>;
+
+export const signInSchema = authSchema.pick({
+  email: true,
+  password: true,
+});
+
+export type SignInFormData = z.infer<typeof signInSchema>;

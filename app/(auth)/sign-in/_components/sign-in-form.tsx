@@ -15,7 +15,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import { authSchema, type SignUpFormData } from '@/schema/auth';
+import { type SignInFormData, signInSchema } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -29,45 +29,43 @@ import { Spinner } from '@/components/ui/spinner';
 import { APP_NAME } from '@/lib/constants/app';
 import GoogleAuthButton from '../../_components/google-auth-button';
 import { useRouter } from 'next/navigation';
+import AlertMessage from '@/components/alert-message';
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const callbackURL = useSearchParams().get('callbackURL') || '/';
 
-  const form = useForm<SignUpFormData>({
-    resolver: zodResolver(authSchema),
+  const form = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
-      userName: '',
       email: '',
       password: '',
     },
   });
 
-  const onSubmit = async (data: SignUpFormData) => {
+  const onSubmit = async (data: SignInFormData) => {
     try {
-      const { error } = await authClient.signUp.email({
+      const { error } = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        name: data.userName,
+        callbackURL,
       });
 
       if (error) {
         throw new Error(error.message);
       } else {
-        toast.success(
-          'Account created successfully! Please check your email for verification.',
-        );
-        router.push(`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`);
+        toast.success('Signed in successfully! Redirecting...');
+        router.push(callbackURL);
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      form.setError('root', { message: errorMessage });
     }
   };
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   return (
     <form
@@ -76,34 +74,19 @@ const SignUpForm = () => {
     >
       <FieldGroup className='gap-4 w-full'>
         <div className='text-center space-y-2 mb-2'>
-          <h1 className='text-3xl font-bold'>Create your account</h1>
+          <h1 className='text-3xl font-bold'>Sign in to your account</h1>
           <p className='text-sm text-muted-foreground'>
             Connect to {APP_NAME} with:
           </p>
         </div>
+        {errors.root && errors.root.message && (
+          <AlertMessage type='error' title={errors.root.message} />
+        )}
         {/* OAuth Provider */}
         <Field>
           <GoogleAuthButton callbackURL={callbackURL} />
         </Field>
         <FieldSeparator className='my-4'>Or continue with Email</FieldSeparator>
-        {/* Username */}
-        <Controller
-          control={form.control}
-          name='userName'
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>Username</FieldLabel>
-              <Input
-                id={field.name}
-                type='text'
-                aria-invalid={fieldState.invalid}
-                {...field}
-                placeholder='Enter your username'
-              />
-              {fieldState.error && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
         {/* Email  */}
         <Controller
           control={form.control}
@@ -128,7 +111,15 @@ const SignUpForm = () => {
           name='password'
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+              <div className='flex items-center justify-between'>
+                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                <Link
+                  href={'/forgot-password'}
+                  className='text-sm text-blue-500 hover:underline'
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <InputGroup>
                 <InputGroupInput
                   id={field.name}
@@ -153,32 +144,15 @@ const SignUpForm = () => {
           )}
         />
         <Button type='submit' className='w-full' disabled={isSubmitting}>
-          {isSubmitting ? <Spinner /> : 'Create an Account'}
+          {isSubmitting ? <Spinner /> : 'Sign In'}
         </Button>
-        <small className='text-xs text-muted-foreground max-w-sm '>
-          By creating an account you agree to the{' '}
-          <Link
-            className='text-foreground underline font-semibold'
-            href='/terms'
-          >
-            Terms of Service
-          </Link>{' '}
-          and our{' '}
-          <Link
-            className='text-foreground underline font-semibold'
-            href='/privacy'
-          >
-            Privacy Policy
-          </Link>
-          .
-        </small>
         <span className='text-base'>
-          Already have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link
             className='text-blue-500 font-semibold'
-            href={`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`}
+            href={`/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`}
           >
-            Sign In
+            Sign Up
           </Link>
         </span>
       </FieldGroup>
@@ -186,4 +160,4 @@ const SignUpForm = () => {
   );
 };
 
-export default SignUpForm;
+export default SignInForm;
