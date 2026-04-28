@@ -28,3 +28,7 @@ export const signInSchema = authSchema.pick({
 });
 
 export type SignInFormData = z.infer<typeof signInSchema>;
+
+export const forgotPasswordSchema = authSchema.pick({ email: true });
+
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

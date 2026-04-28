@@ -2,11 +2,8 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import db from './db';
-import ConfirmEmail from '@/emails/confirm-email';
-import resend from './resend';
-import { APP_NAME } from './constants/app';
-
-const resendDomain = process.env.RESEND_DOMAIN;
+import { sendConfirmEmail } from '@/mail/send-confirm-email';
+import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -17,6 +14,10 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendResetPasswordEmail({ email: user.email, url });
+    },
+    resetPasswordTokenExpiresIn: 1, // 2 hours
   },
 
   socialProviders: {
@@ -31,12 +32,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      void resend.emails.send({
-        from: `${APP_NAME} <hello@${resendDomain}>`,
-        to: user.email,
-        subject: 'Confirm your email address',
-        react: ConfirmEmail({ url }),
-      });
+      void sendConfirmEmail({ email: user.email, url });
     },
 
     expiresIn: 7200, // 2 hours in seconds

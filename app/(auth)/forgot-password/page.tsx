@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import AuthWrapper from '../_components/auth-wrapper';
+import ForgotPasswordForm from './_components/forgot-password-form';
 
 export const metadata: Metadata = {
   title: 'Forgot Password',
@@ -18,13 +20,19 @@ const ForgotPasswordContent = async () => {
   if (session) {
     return redirect('/');
   }
+  return <ForgotPasswordForm />;
 };
 
 const ForgotPasswordPage = () => {
   return (
-    <Suspense>
-      <ForgotPasswordContent />
-    </Suspense>
+    <AuthWrapper
+      title='Forgot Password?'
+      subtitle='Enter your email address to reset your password.'
+    >
+      <Suspense>
+        <ForgotPasswordContent />
+      </Suspense>
+    </AuthWrapper>
   );
 };
 

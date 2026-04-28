@@ -23,11 +23,11 @@ const baseUrl = process.env.NEXT_PROD_SERVER_URL
   ? process.env.NEXT_PROD_SERVER_URL
   : '';
 
-interface ConfirmEmailProps {
+interface ResetPasswordProps {
   url: string;
 }
 
-export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
+export const ResetPassword = ({ url }: ResetPasswordProps) => (
   <Tailwind config={{ presets: [pixelBasedPreset] }}>
     <Html>
       <Head>
@@ -45,8 +45,8 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
 
       <Body className='m-0 text-center'>
         <Preview>
-          You’re almost there! Verify your account to start building your circle
-          without the noise.
+          You requested a password reset. Click the button below to reset your
+          password.
         </Preview>
         <Container className='mt-0 mx-auto md:mt-8 w-full max-w-[640px]'>
           <Section>
@@ -59,16 +59,14 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
                     width={40}
                     className='mx-auto mb-5 block'
                   />
-                  <Heading as='h1' className='m-0 text-[28px]'>
-                    We&apos;re almost there!
+                  <Heading as='h1' className='m-0 text-[28px] '>
+                    Reset your password
                   </Heading>
                 </Section>
 
-                <Text className='mx-auto mt-0 mb-8 max-w-[380px] text-center '>
-                  Thank you for signing up for {APP_NAME}.
-                  <br />
-                  To verify your account, we just need to confirm your email
-                  address.
+                <Text className='text-base mx-auto mt-0 mb-8 max-w-[380px] text-center font-sans'>
+                  Someone has requested a link to change your password, and you
+                  can do this through the link below.
                 </Text>
 
                 <Section className='mb-6 text-center'>
@@ -76,17 +74,17 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
                     href={url}
                     className='bg-[#6d7ecf] inlin-block py-4 px-7 rounded-lg text-white text-base'
                   >
-                    Confirm email
+                    Change your password
                   </Button>
                 </Section>
 
-                <Text className='text-sm mx-auto mt-8 mb-0 max-w-[400px] text-center '>
-                  If you didn&apos;t sign up for {APP_NAME},
-                  <br />
-                  please ignore this email.
+                <Text className='text-[13px] mx-auto mt-8 mb-0 max-w-[400px] text-gray-500 text-center leading-5'>
+                  If you didn&apos;t request this, please ignore this email.
+                  Your password won&apos;t change until you access the link
+                  above and create a new one.
                 </Text>
                 <Text className='text-xs mx-auto mt-8 mb-0 max-w-[400px] text-center font-bold '>
-                  Note that the confirmation link will expire in 2 hours.
+                  Note that the confirmation link will expire in 1 hour.
                 </Text>
               </Section>
 
@@ -145,8 +143,8 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
   </Tailwind>
 );
 
-ConfirmEmail.PreviewProps = {
+ResetPassword.PreviewProps = {
   url: 'https://example.com/',
-} satisfies ConfirmEmailProps;
+} satisfies ResetPasswordProps;
 
-export default ConfirmEmail;
+export default ResetPassword;
