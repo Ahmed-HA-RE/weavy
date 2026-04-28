@@ -20,6 +20,7 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
+    autoSignInAfterVerification: true,
     sendOnSignIn: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
@@ -36,7 +37,7 @@ export const auth = betterAuth({
       }
     },
 
-    expiresIn: 1,
+    expiresIn: 7200, // 2 hours in seconds
   },
 
   plugins: [nextCookies()],

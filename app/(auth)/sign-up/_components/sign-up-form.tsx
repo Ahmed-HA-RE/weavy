@@ -49,7 +49,7 @@ const SignUpForm = () => {
         email: data.email,
         password: data.password,
         name: data.userName,
-        callbackURL: `/verify-email?callbackUrl=${encodeURIComponent(callbackURL)}`,
+        callbackURL: `/verify-email?callbackURL=${encodeURIComponent(callbackURL)}`,
       });
 
       if (error) {

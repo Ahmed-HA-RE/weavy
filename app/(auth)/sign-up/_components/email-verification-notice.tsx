@@ -20,7 +20,7 @@ const EmailVerificationNotice = ({
       try {
         const { error } = await authClient.sendVerificationEmail({
           email,
-          callbackURL: `/verify-email?callbackUrl=${encodeURIComponent(callbackURL)}`,
+          callbackURL: `/verify-email?callbackURL=${encodeURIComponent(callbackURL)}`,
         });
 
         if (error) {
