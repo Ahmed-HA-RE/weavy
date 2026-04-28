@@ -19,7 +19,6 @@ import { authSchema, type SignUpFormData } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { FcGoogle } from 'react-icons/fc';
 import { FaRegEye } from 'react-icons/fa';
 import { RiEyeCloseLine } from 'react-icons/ri';
 import Link from 'next/link';
@@ -29,6 +28,7 @@ import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import EmailVerificationNotice from './email-verification-notice';
 import { APP_NAME } from '@/lib/constants/app';
+import GoogleAuthButton from '../../_components/google-auth-button';
 
 const SignUpForm = () => {
   const [visible, setVisible] = useState(false);
@@ -85,10 +85,7 @@ const SignUpForm = () => {
         </div>
         {/* OAuth Provider */}
         <Field>
-          <Button variant='outline' type='button' className=''>
-            <FcGoogle className='size-5' />
-            Google
-          </Button>
+          <GoogleAuthButton callbackURL={callbackURL} />
         </Field>
         <FieldSeparator className='my-4'>Or continue with Email</FieldSeparator>
         {/* Username */}

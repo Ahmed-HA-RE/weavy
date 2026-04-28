@@ -22,6 +22,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           alt={`${APP_NAME} Logo`}
           width={40}
           height={40}
+          loading='eager'
           className='absolute top-10 left-10 z-20'
         />
         <div className='absolute inset-0 flex items-end p-20 z-20'>
