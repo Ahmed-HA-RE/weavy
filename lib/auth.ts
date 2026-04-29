@@ -17,7 +17,7 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       void sendResetPasswordEmail({ email: user.email, url });
     },
-    resetPasswordTokenExpiresIn: 1, // 2 hours
+    resetPasswordTokenExpiresIn: 7200, // 2 hours
   },
 
   socialProviders: {

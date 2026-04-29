@@ -4,7 +4,7 @@ const robots = (): MetadataRoute.Robots => {
   return {
     rules: {
       userAgent: '*',
-      disallow: '/verify-email',
+      disallow: ['/verify-email', '/reset-password'],
     },
     sitemap: 'https://weavy.ahmedrehandev.net/sitemap.xml',
   };

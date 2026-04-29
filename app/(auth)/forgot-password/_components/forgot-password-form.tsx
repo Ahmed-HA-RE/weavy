@@ -53,7 +53,7 @@ const ForgotPasswordForm = () => {
   const { isSubmitting } = form.formState;
 
   return (
-    <form className='w-full max-w-sm' onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
         <Controller
           control={form.control}

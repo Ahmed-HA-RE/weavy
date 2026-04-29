@@ -74,10 +74,7 @@ const SignUpForm = () => {
   const { isSubmitting } = form.formState;
 
   return (
-    <form
-      className='w-full max-w-sm max-lg:pt-14'
-      onSubmit={form.handleSubmit(onSubmit)}
-    >
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className='gap-4 w-full'>
         {/* OAuth Provider */}
         <Field>
