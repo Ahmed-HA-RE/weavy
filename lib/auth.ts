@@ -4,6 +4,7 @@ import { nextCookies } from 'better-auth/next-js';
 import db from './db';
 import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
+import { lastLoginMethod } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -18,6 +19,7 @@ export const auth = betterAuth({
       void sendResetPasswordEmail({ email: user.email, url });
     },
     resetPasswordTokenExpiresIn: 7200, // 2 hours
+    revokeSessionsOnPasswordReset: true,
   },
 
   socialProviders: {
@@ -38,5 +40,5 @@ export const auth = betterAuth({
     expiresIn: 7200, // 2 hours in seconds
   },
 
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), lastLoginMethod()],
 });
