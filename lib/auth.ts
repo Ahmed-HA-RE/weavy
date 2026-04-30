@@ -4,7 +4,8 @@ import { nextCookies } from 'better-auth/next-js';
 import db from './db';
 import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
-import { lastLoginMethod } from 'better-auth/plugins';
+import { lastLoginMethod, customSession } from 'better-auth/plugins';
+import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -40,5 +41,21 @@ export const auth = betterAuth({
     expiresIn: 7200, // 2 hours in seconds
   },
 
-  plugins: [nextCookies(), lastLoginMethod()],
+  plugins: [
+    nextCookies(),
+    lastLoginMethod(),
+    customSession(async ({ user, session }) => {
+      const fetchedUser = await db.user.findUnique({
+        where: { id: user.id },
+      });
+      return {
+        user: {
+          ...user,
+          role: fetchedUser?.role as USER_ROLE,
+          status: fetchedUser?.status as USER_STATUS,
+        },
+        session,
+      };
+    }),
+  ],
 });

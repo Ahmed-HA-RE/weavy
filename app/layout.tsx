@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { APP_NAME, APP_URL } from '@/lib/constants/app';
 import { Toaster } from '@/components/ui/sonner';
+import Providers from '@/components/providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,10 +31,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
-        <Toaster />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

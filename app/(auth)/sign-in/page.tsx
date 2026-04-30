@@ -1,6 +1,5 @@
 import { APP_NAME } from '@/lib/constants/app';
 import { Metadata } from 'next';
-import { Suspense } from 'react';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
   description: `Sign in to your account on ${APP_NAME} and start sharing your thoughts, connecting with friends, and exploring a world of engaging content. `,
 };
 
-const SignInContent = async () => {
+const SignInPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -20,19 +19,12 @@ const SignInContent = async () => {
   if (session) {
     redirect('/');
   }
-
-  return <SignInForm />;
-};
-
-const SignInPage = () => {
   return (
     <AuthWrapper
       title='Sign in to your account'
       subtitle={`Connect to ${APP_NAME} with:`}
     >
-      <Suspense>
-        <SignInContent />
-      </Suspense>
+      <SignInForm />
     </AuthWrapper>
   );
 };
