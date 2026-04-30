@@ -38,9 +38,7 @@ const Header = async () => {
   });
 
   return (
-    <header
-      className={'fixed top-0 w-full z-50 transition-all duration-300 border-b'}
-    >
+    <header className='border-b'>
       <div className='container flex items-center justify-between h-16'>
         {/* Logo */}
         <Link href='/'>

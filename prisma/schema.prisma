@@ -24,9 +24,16 @@ enum USER_STATUS {
   AWAY
 }
 
+enum NOTIFICATION_TYPE {
+  COMMENT
+  FOLLOW
+  LIKE
+}
+
 model User {
   id            String      @id
   name          String
+  displayName   String?
   email         String
   emailVerified Boolean     @default(false)
   image         String      @default("https://1w85zodha1.ufs.sh/f/LwYUMMK3CkYnzuxYKWBIFNTmVE9s1iwlXgCAxJOHLMoetUu6")
@@ -34,8 +41,22 @@ model User {
   updatedAt     DateTime    @updatedAt
   role          USER_ROLE   @default(USER)
   status        USER_STATUS @default(ONLINE)
-  sessions      Session[]
-  accounts      Account[]
+  bio           String?
+  location      String?
+  website       String?
+
+  // Relations
+  sessions Session[]
+  accounts Account[]
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  followers Follow[] @relation("followers") // A user who follows this user
+  following Follow[] @relation("following") // A user who is followed by this user
+
+  notificationSender   Notification[] @relation("notificationSender") // Notifications sent by this user
+  notificationReceiver Notification[] @relation("notificationReceiver") // Notifications received by this user
 
   @@unique([email])
   @@map("user")
@@ -87,4 +108,94 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  content   String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  comments      Comment[]
+  likes         Like[]
+  notifications Notification[]
+
+  @@index([userId, createdAt])
+}
+
+model Comment {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId        String
+  post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  content       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
+
+  @@index([userId, postId, createdAt])
+}
+
+model Follow {
+  id String @id @default(uuid())
+
+  followerId String
+  follower   User   @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
+
+  @@unique([followerId, followingId])
+  @@index([followerId, followingId])
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, postId])
+  @@index([userId, postId])
+}
+
+model Notification {
+  id   String            @id @default(uuid())
+  type NOTIFICATION_TYPE
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  followId String?
+  follow   Follow? @relation(fields: [followId], references: [id], onDelete: Cascade)
+
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation("notificationSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId String
+  receiver   User   @relation("notificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([receiverId, createdAt])
 }

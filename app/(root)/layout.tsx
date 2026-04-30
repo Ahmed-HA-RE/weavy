@@ -6,9 +6,12 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Header */}
       <Header />
       {/* Main content */}
-      <main className='flex-grow'>{children}</main>
-
-      {/* Footer */}
+      <main className='flex-grow container grid grid-cols-1 lg:grid-cols-12 gap-6 spacing-top'>
+        {/* SideBar */}
+        <div className='hidden lg:block lg:col-span-3'>sidebar</div>
+        {/* Main content */}
+        <div className='lg:col-span-9'>{children}</div>
+      </main>
     </div>
   );
 };
