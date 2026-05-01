@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/input-group';
 import { type SignInFormData, signInSchema } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { FaRegEye } from 'react-icons/fa';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -29,20 +29,23 @@ import { Spinner } from '@/components/ui/spinner';
 import GoogleAuthButton from '../../_components/google-auth-button';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { MdOutlineErrorOutline } from 'react-icons/md';
+import GoogleRecaptcha from '../../_components/google-recaptcha';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const SignInForm = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const callbackURL = useSearchParams().get('callbackURL') || '/';
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
+      recaptchaToken: null,
     },
   });
 
@@ -52,9 +55,19 @@ const SignInForm = () => {
         email: data.email,
         password: data.password,
         callbackURL,
+        fetchOptions: {
+          headers: {
+            'x-captcha-response': data.recaptchaToken || '',
+          },
+        },
       });
 
       if (error) {
+        form.setValue('recaptchaToken', null); // Reset reCAPTCHA token on error to force user to complete it again
+        if (recaptchaRef.current) {
+          recaptchaRef.current.reset();
+        }
+
         throw new Error(error.message);
       } else {
         toast.success('Signed in successfully! Redirecting...');
@@ -93,6 +106,7 @@ const SignInForm = () => {
   const { isSubmitting, errors } = form.formState;
 
   return (
+    // eslint-disable-next-line
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className='gap-4 w-full'>
         {errors.root && errors.root.message && (
@@ -183,6 +197,19 @@ const SignInForm = () => {
             </Field>
           )}
         />
+
+        {/* Google reCAPTCHA */}
+        <Controller
+          control={form.control}
+          name='recaptchaToken'
+          render={({ field, fieldState }) => (
+            <Field>
+              <GoogleRecaptcha onChange={field.onChange} ref={recaptchaRef} />
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+
         <Button type='submit' className='w-full' disabled={isSubmitting}>
           {isSubmitting ? <Spinner /> : 'Sign In'}
         </Button>

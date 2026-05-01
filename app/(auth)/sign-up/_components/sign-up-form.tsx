@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/input-group';
 import { authSchema, type SignUpFormData } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { FaRegEye } from 'react-icons/fa';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -27,10 +27,13 @@ import { authClient } from '@/lib/auth-client';
 import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import GoogleAuthButton from '../../_components/google-auth-button';
+import GoogleRecaptcha from '../../_components/google-recaptcha';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const SignUpForm = () => {
   const [visible, setVisible] = useState(false);
   const callbackURL = useSearchParams().get('callbackURL') || '/';
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(authSchema),
@@ -38,23 +41,27 @@ const SignUpForm = () => {
       userName: '',
       email: '',
       password: '',
+      recaptchaToken: null,
     },
   });
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      const { error } = await authClient.signUp.email(
-        {
-          email: data.email,
-          password: data.password,
-          name: data.userName,
-        },
-        {
+      const { error } = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.userName,
+        fetchOptions: {
+          headers: {
+            'x-captcha-response': data.recaptchaToken || '',
+          },
           onError: (error) => {
             console.log(error);
+            form.setValue('recaptchaToken', null); // Reset reCAPTCHA token on error to force user to complete it again
+            recaptchaRef.current?.reset();
           },
         },
-      );
+      });
 
       if (error) {
         throw new Error(error.message);
@@ -63,6 +70,7 @@ const SignUpForm = () => {
         toast.success(
           'Registeration successful! Please check your email for confirmation.',
         );
+        recaptchaRef.current?.reset();
       }
     } catch (error) {
       const errorMessage =
@@ -74,6 +82,7 @@ const SignUpForm = () => {
   const { isSubmitting } = form.formState;
 
   return (
+    // eslint-disable-next-line
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className='gap-4 w-full'>
         {/* OAuth Provider */}
@@ -147,6 +156,19 @@ const SignUpForm = () => {
             </Field>
           )}
         />
+
+        {/* Google reCAPTCHA */}
+        <Controller
+          control={form.control}
+          name='recaptchaToken'
+          render={({ field, fieldState }) => (
+            <Field>
+              <GoogleRecaptcha onChange={field.onChange} ref={recaptchaRef} />
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+
         <Button type='submit' className='w-full' disabled={isSubmitting}>
           {isSubmitting ? <Spinner /> : 'Create an Account'}
         </Button>

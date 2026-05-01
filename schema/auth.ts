@@ -23,6 +23,9 @@ export const authSchema = z.object({
       /^(?=.*[a-z]).*$/,
       'Password must contain at least one lowercase letter',
     ),
+  recaptchaToken: z
+    .string({ error: 'Please complete the reCAPTCHA' })
+    .nullable(),
 });
 
 export type SignUpFormData = z.infer<typeof authSchema>;
@@ -30,6 +33,7 @@ export type SignUpFormData = z.infer<typeof authSchema>;
 export const signInSchema = authSchema.pick({
   email: true,
   password: true,
+  recaptchaToken: true,
 });
 
 export type SignInFormData = z.infer<typeof signInSchema>;

@@ -11,9 +11,11 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
       {/* Main content */}
       <main className='flex-grow container grid grid-cols-1 lg:grid-cols-12 gap-6 spacing-top'>
         {/* SideBar */}
-        <Suspense fallback={<SideBarSkeleton />}>
-          <SideBar />
-        </Suspense>
+        <div className='hidden lg:block lg:col-span-3'>
+          <Suspense fallback={<SideBarSkeleton />}>
+            <SideBar />
+          </Suspense>
+        </div>
         {/* Main content */}
         <div className='lg:col-span-9'>{children}</div>
       </main>

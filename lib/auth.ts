@@ -4,7 +4,7 @@ import { nextCookies } from 'better-auth/next-js';
 import db from './db';
 import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
-import { lastLoginMethod, customSession } from 'better-auth/plugins';
+import { lastLoginMethod, customSession, captcha } from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 
 export const auth = betterAuth({
@@ -78,6 +78,12 @@ export const auth = betterAuth({
         },
         session,
       };
+    }),
+
+    captcha({
+      provider: 'google-recaptcha',
+      secretKey: process.env.GOOGLE_RECAPTCHA_SECRET!,
+      endpoints: ['/sign-up/email', '/sign-in/email'],
     }),
   ],
 });
