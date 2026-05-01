@@ -73,8 +73,8 @@ export const auth = betterAuth({
       return {
         user: {
           ...user,
-          role: fetchedUser?.role as USER_ROLE,
-          status: fetchedUser?.status as USER_STATUS,
+          role: fetchedUser?.role || USER_ROLE.USER,
+          status: fetchedUser?.status || USER_STATUS.ONLINE,
         },
         session,
       };
