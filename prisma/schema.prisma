@@ -32,7 +32,7 @@ enum NOTIFICATION_TYPE {
 
 model User {
   id            String      @id
-  name          String
+  name          String      @unique
   displayName   String?
   email         String
   emailVerified Boolean     @default(false)

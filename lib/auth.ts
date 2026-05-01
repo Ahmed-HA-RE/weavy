@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth';
+import { APIError, betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import db from './db';
@@ -11,6 +11,28 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
+
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          // Format the username to be lowercase and trimmed
+          user.name = user.name.trim().toLowerCase().replace(/\s+/g, '_');
+
+          // Check if the username already exists before creating the user
+          const existingUsername = await db.user.findUnique({
+            where: { name: user.name },
+          });
+          if (existingUsername) {
+            throw new APIError('BAD_REQUEST', {
+              message:
+                'Username already exists. Please choose a different one.',
+            });
+          }
+        },
+      },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,

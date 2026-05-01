@@ -3,8 +3,13 @@ import z from 'zod';
 export const authSchema = z.object({
   userName: z
     .string({ error: 'Username is required' })
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be at most 20 characters'),
+    .min(5, 'Username must be at least 5 characters')
+    .max(20, 'Username must be at most 20 characters')
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      'Username can only contain letters, numbers, and underscores',
+    )
+    .transform((name) => name.trim().toLowerCase()),
   email: z.email({ error: 'Invalid email address' }),
   password: z
     .string({ error: 'Password is required' })
