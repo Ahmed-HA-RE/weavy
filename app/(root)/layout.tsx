@@ -1,7 +1,7 @@
 import Header from '@/components/header/header';
-import SideBar from '@/app/(root)/(home)/_components/side-bar';
+import SideBar from '@/components/side-bar';
 import { Suspense } from 'react';
-import SideBarSkeleton from './(home)/_components/side-bar-skeleton';
+import SideBarSkeleton from '../../components/side-bar-skeleton';
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
@@ -9,9 +9,9 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
       {/* Header */}
       <Header />
       {/* Main content */}
-      <main className='flex-grow container grid grid-cols-1 lg:grid-cols-12 gap-6 spacing-top'>
+      <main className='flex-grow container grid grid-cols-1 lg:grid-cols-12 gap-7 spacing-top'>
         {/* SideBar */}
-        <div className='hidden lg:block lg:col-span-3'>
+        <div className='hidden lg:block lg:col-span-3 sticky top-4 self-start'>
           <Suspense fallback={<SideBarSkeleton />}>
             <SideBar />
           </Suspense>

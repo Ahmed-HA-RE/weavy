@@ -7,15 +7,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../../../components/ui/card';
-import { Avatar, AvatarFallback } from '../../../../components/ui/avatar';
+} from './ui/card';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { Suspense } from 'react';
 import Image from 'next/image';
-import { Separator } from '../../../../components/ui/separator';
+import { Separator } from './ui/separator';
 import db from '@/lib/db';
 import { TbLocation } from 'react-icons/tb';
 import { FiLink } from 'react-icons/fi';
-import { Button } from '../../../../components/ui/button';
+import { Button } from './ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
