@@ -1,8 +1,8 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { auth } from '../auth';
-import db from '../db';
+import { auth } from '../../auth';
+import db from '../../db';
 import { revalidatePath } from 'next/cache';
 
 export const createPostAction = async ({

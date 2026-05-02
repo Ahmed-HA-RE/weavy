@@ -70,8 +70,8 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
                   </Suspense>
                 </Avatar>
                 {/* User info */}
-                <div className='flex flex-col gap-1 leading-tight text-xs max-w-[120px]'>
-                  <span className='font-medium group-hover:text-accent group-hover:underline transition-colors truncate'>
+                <div className='flex flex-col gap-0.5 leading-tight text-xs max-w-[120px]'>
+                  <span className='font-medium group-hover:underline truncate'>
                     {suggestedUser.displayName || suggestedUser.name}
                   </span>
                   <span className='text-muted-foreground truncate'>

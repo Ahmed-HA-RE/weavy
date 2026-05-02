@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { followUserToggleAction } from '@/lib/actions/users/follow-user-toggle-action';
+import { followUserToggleAction } from '@/lib/actions/user/follow-user-toggle-action';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 

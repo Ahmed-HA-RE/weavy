@@ -102,30 +102,24 @@ const SideBar = async () => {
               <p className='text-sm text-muted-foreground'>Followers</p>
             </span>
           </div>
-          {(user.location || user.website) && (
-            <>
-              <Separator />
-              <div className='flex flex-col gap-3 w-full'>
-                {user.location && (
-                  <span className='flex items-center gap-2.5 text-muted-foreground text-xs max-w-[200px] truncate'>
-                    <TbLocation className='size-3.5 shrink-0' />
-                    {user.location}
-                  </span>
-                )}
-                {user.website && (
-                  <a
-                    href={user.website as string}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2.5 text-muted-foreground text-xs hover:underline cursor-pointer max-w-[250px]'
-                  >
-                    <FiLink className='size-3.5 shrink-0' />
-                    <span className='truncate'>{user.website}</span>
-                  </a>
-                )}
-              </div>
-            </>
-          )}
+          <Separator />
+          <div className='flex flex-col gap-3 w-full'>
+            <span className='flex items-center gap-2.5 text-muted-foreground text-xs max-w-[200px] truncate'>
+              <TbLocation className='size-3.5 shrink-0' />
+              {user.location ? user.location : 'No location provided'}
+            </span>
+            <a
+              href={user.website as string}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center gap-2.5 text-muted-foreground text-xs hover:underline cursor-pointer max-w-[250px]'
+            >
+              <FiLink className='size-3.5 shrink-0' />
+              <span className='truncate'>
+                {user.website ? user.website : 'No website provided'}
+              </span>
+            </a>
+          </div>
         </CardContent>
       )}
       {!user && (

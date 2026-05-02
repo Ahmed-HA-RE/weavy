@@ -10,7 +10,7 @@ import { Suspense, useState, useTransition } from 'react';
 import { HiOutlinePhotograph } from 'react-icons/hi';
 import { LuSend } from 'react-icons/lu';
 import { Spinner } from '@/components/ui/spinner';
-import { createPostAction } from '@/lib/actions/create-post-action';
+import { createPostAction } from '@/lib/actions/post/create-post-action';
 import { toast } from 'sonner';
 
 const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
