@@ -1,7 +1,9 @@
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import CreatePost from './_components/create-post';
-import { Card } from '@/components/ui/card';
+import { Suspense } from 'react';
+import SuggestedUsers from './_components/suggested-users';
+import SuggestedUsersSkeleton from './_components/suggested-users-skeleton';
 
 const HomePage = async () => {
   const session = await auth.api.getSession({
@@ -12,12 +14,14 @@ const HomePage = async () => {
     <div className='grid grid-cols-1 lg:grid-cols-11 gap-6'>
       {!session ? null : (
         <>
-          <section className='lg:col-span-7 '>
+          <section className='lg:col-span-7 order-2 lg:order-1'>
             <CreatePost user={session.user} />
           </section>
 
-          <aside className='lg:col-span-4 lg:sticky lg:top-4 lg:self-start'>
-            <Card></Card>
+          <aside className='lg:col-span-4 lg:sticky lg:top-4 lg:self-start order-1 lg:order-2'>
+            <Suspense fallback={<SuggestedUsersSkeleton />}>
+              <SuggestedUsers userId={session.user.id} />
+            </Suspense>
           </aside>
         </>
       )}
