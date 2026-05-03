@@ -1,29 +1,25 @@
 'use client';
-
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { cn } from '@/lib/utils';
-import { Suspense, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaEllipsisVertical, FaHeart } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
-import { HiBadgeCheck } from 'react-icons/hi';
-import { MdAdminPanelSettings } from 'react-icons/md';
 import { TbMessageReport } from 'react-icons/tb';
-import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 import { togglePostLikeAction } from '@/lib/actions/post/toggle-post-like-action';
+import Comment from './comment';
+import UserInfo from '@/components/user-info';
+import AddComment from './add-comment';
+import { AnimatePresence } from 'motion/react';
 
 type PostCardProps = {
   post: Prisma.PostGetPayload<{
@@ -78,6 +74,7 @@ type PostCardProps = {
 };
 
 const PostCard = ({ post, loggedUser }: PostCardProps) => {
+  const [isPending, startTransition] = useTransition();
   const [optimisticLike, setOptimisticLike] = useState(
     post.likes.some(
       (like) => like.userId === loggedUser && like.postId === post.id,
@@ -86,7 +83,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
   const [optimisticLikesCount, setOptimisticLikesCount] = useState(
     post._count.likes,
   );
-  const [isPending, startTransition] = useTransition();
+  const [isCommenting, setIsCommenting] = useState(false);
 
   const handleLike = () => {
     setOptimisticLikesCount((prev) => (optimisticLike ? prev - 1 : prev + 1)); // Optimistically update likes count so UI is updated fast while the backend request is being processed
@@ -107,42 +104,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
   return (
     <Card className='gap-6 pt-6'>
       <CardHeader className='flex items-center justify-between gap-3'>
-        <div className='flex items-center gap-3'>
-          <Link href={`/${post.user.name}`}>
-            <Avatar size='lg'>
-              <Suspense
-                fallback={
-                  <AvatarFallback>{post.user.name.slice(0, 2)}</AvatarFallback>
-                }
-              >
-                <Image
-                  src={post.user.image}
-                  alt={post.user.name}
-                  width={40}
-                  height={40}
-                  className='rounded-full object-cover'
-                />
-              </Suspense>
-            </Avatar>
-          </Link>
-          <div className='flex flex-col leading-tight'>
-            <CardTitle className='flex items-center gap-1 text-sm'>
-              {post.user.displayName || post.user.name}{' '}
-              {post.user.role === 'ADMIN' ? (
-                <MdAdminPanelSettings className='size-4 text-amber-600' />
-              ) : (
-                <HiBadgeCheck className='size-4 text-accent ' />
-              )}
-            </CardTitle>
-            <CardDescription>
-              @{post.user.name} ·{' '}
-              {formatDistanceToNow(new Date(post.createdAt), {
-                addSuffix: true,
-                includeSeconds: true,
-              })}
-            </CardDescription>
-          </div>
-        </div>
+        <UserInfo createdAt={post.createdAt} user={post.user} />
         {/* Later will dropdown menu for actions like delete post and toggle follow  */}
         {loggedUser && (
           <CardAction>
@@ -152,68 +114,97 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
           </CardAction>
         )}
       </CardHeader>
-      <CardContent className='space-y-6 text-sm'>
+      <CardContent className='flex flex-col gap-4 text-sm items-start'>
         <p>{post.content}</p>
 
-        {post.image && (
-          <Image
-            src={post.image}
-            alt={`Post image by ${post.user.name}`}
-            className='aspect-video w-full rounded-md object-cover'
-          />
+        {!post.image && (
+          <div className='relative aspect-video w-full rounded-md'>
+            <Image
+              src={'/authentication.jpg'}
+              alt={`Post image by ${post.user.name}`}
+              fill
+              className='rounded-md object-cover'
+            />
+          </div>
         )}
-      </CardContent>
-      <CardFooter className='flex items-center gap-1 px-2'>
-        {!loggedUser ? (
-          <>
-            <Button asChild variant='ghost' size='sm'>
-              <Link href='/sign-in'>
-                <FaRegHeart />
+        <div className='flex items-center gap-1'>
+          {!loggedUser ? (
+            <>
+              <Button asChild variant='ghost' size='sm'>
+                <Link href='/sign-in'>
+                  <FaRegHeart />
+                  {optimisticLikesCount > 0 && (
+                    <span>{optimisticLikesCount}</span>
+                  )}
+                </Link>
+              </Button>
+              <Button variant='ghost' size='sm' asChild>
+                <Link href='/sign-in'>
+                  <FiMessageCircle />
+                  {post._count.comments > 0 && (
+                    <span>{post._count.comments}</span>
+                  )}
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={handleLike}
+                disabled={isPending}
+              >
+                {optimisticLike ? (
+                  <FaHeart
+                    className={cn(
+                      'text-red-500',
+                      optimisticLike && 'fill-red-500',
+                    )}
+                  />
+                ) : (
+                  <FaRegHeart />
+                )}
                 {optimisticLikesCount > 0 && (
                   <span>{optimisticLikesCount}</span>
                 )}
-              </Link>
-            </Button>
-            <Button variant='ghost' size='sm' asChild>
-              <Link href='/sign-in'>
+              </Button>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => setIsCommenting((prev) => !prev)}
+              >
                 <FiMessageCircle />
                 {post._count.comments > 0 && (
                   <span>{post._count.comments}</span>
                 )}
-              </Link>
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={handleLike}
-              disabled={isPending}
-            >
-              {optimisticLike ? (
-                <FaHeart
-                  className={cn(
-                    'text-red-500',
-                    optimisticLike && 'fill-red-500',
-                  )}
-                />
-              ) : (
-                <FaRegHeart />
-              )}
-              {optimisticLikesCount > 0 && <span>{optimisticLikesCount}</span>}
-            </Button>
-            <Button variant='ghost' size='sm'>
-              <FiMessageCircle />
-              {post._count.comments > 0 && <span>{post._count.comments}</span>}
-            </Button>
-            <Button variant='ghost' size='sm' className=''>
-              <TbMessageReport />
-              Report
-            </Button>
-          </>
+              </Button>
+              <Button variant='ghost' size='sm' className=''>
+                <TbMessageReport />
+                Report
+              </Button>
+            </>
+          )}
+        </div>
+      </CardContent>
+      {/* All Comments*/}
+      {post.comments.length > 0 &&
+        post.comments.map((comment) => (
+          <Comment key={comment.id} comment={comment} />
+        ))}
+
+      {/* Add Comment */}
+      <AnimatePresence>
+        {isCommenting && loggedUser && (
+          <AddComment
+            postId={post.id}
+            loggedUser={loggedUser}
+            user={post.user}
+            isPending={isPending}
+            startTransition={startTransition}
+          />
         )}
-      </CardFooter>
+      </AnimatePresence>
     </Card>
   );
 };
