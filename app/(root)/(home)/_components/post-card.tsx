@@ -10,7 +10,7 @@ import { Prisma } from '@/lib/generated/prisma/client';
 import { cn } from '@/lib/utils';
 import { useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
-import { FaEllipsisVertical, FaHeart } from 'react-icons/fa6';
+import { FaEllipsis, FaHeart } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
 import { TbMessageReport } from 'react-icons/tb';
 import Image from 'next/image';
@@ -110,7 +110,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         {loggedUser && (
           <CardAction>
             <Button variant='ghost' size='sm' aria-label='Post options'>
-              <FaEllipsisVertical />
+              <FaEllipsis />
             </Button>
           </CardAction>
         )}
@@ -192,7 +192,12 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       {post.comments.length > 0 && (
         <div className='border-t px-4 pt-4 space-y-6'>
           {post.comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
+            <Comment
+              key={comment.id}
+              comment={comment}
+              loggedUser={loggedUser}
+              postId={post.id}
+            />
           ))}
         </div>
       )}

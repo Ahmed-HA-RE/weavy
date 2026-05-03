@@ -1,9 +1,19 @@
+'use client';
+
 import UserInfo from '@/components/user-info';
 import { Prisma } from '@/lib/generated/prisma/client';
+import { auth } from '@/lib/auth';
+import DeleteDialog from '@/components/delete-dialog';
+import { Button } from '@/components/ui/button';
+import { FaTrash } from 'react-icons/fa6';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { deleteMyCommentAction } from '@/lib/actions/user/delete-my-comment-action';
 
 type CommentProps = {
   comment: Prisma.CommentGetPayload<{
     select: {
+      id: true;
       content: true;
       createdAt: true;
       user: {
@@ -17,13 +27,58 @@ type CommentProps = {
       };
     };
   }>;
+  loggedUser?: typeof auth.$Infer.Session.user;
+  postId: string;
 };
 
-const Comment = ({ comment }: CommentProps) => {
+const Comment = ({ comment, loggedUser, postId }: CommentProps) => {
+  const [isPending, setIsPending] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDelete = async () => {
+    setIsPending(true);
+    const res = await deleteMyCommentAction({ commentId: comment.id, postId });
+
+    if (res.success) {
+      setOpenDialog(false);
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+      return;
+    }
+
+    setIsPending(false);
+  };
+
+  const isOwner = loggedUser?.id === comment.user.id;
+
   return (
-    <div className='flex flex-col items-start gap-6'>
-      <UserInfo createdAt={comment.createdAt} user={comment.user} />
-      <p className='text-sm'>{comment.content}</p>
+    <div className='flex items-start gap-3 group'>
+      <div className='flex-1 flex flex-col items-start gap-6'>
+        <UserInfo createdAt={comment.createdAt} user={comment.user} />
+        <p className='text-sm pl-2'>{comment.content}</p>
+      </div>
+
+      {isOwner && (
+        <DeleteDialog
+          title='Delete my comment'
+          subtitle='Are you sure you want to delete this comment?'
+          trigger={
+            <Button
+              variant='ghost'
+              size='sm'
+              className='opacity-0 group-hover:opacity-100 transition-opacity'
+              aria-label='Delete comment'
+            >
+              <FaTrash className='text-muted-foreground hover:text-destructive' />
+            </Button>
+          }
+          action={handleDelete}
+          isPending={isPending}
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+        />
+      )}
     </div>
   );
 };
