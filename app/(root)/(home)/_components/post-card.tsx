@@ -20,6 +20,7 @@ import Comment from './comment';
 import UserInfo from '@/components/user-info';
 import AddComment from './add-comment';
 import { AnimatePresence } from 'motion/react';
+import { auth } from '@/lib/auth';
 
 type PostCardProps = {
   post: Prisma.PostGetPayload<{
@@ -70,14 +71,14 @@ type PostCardProps = {
       };
     };
   }>;
-  loggedUser?: string;
+  loggedUser?: typeof auth.$Infer.Session.user;
 };
 
 const PostCard = ({ post, loggedUser }: PostCardProps) => {
   const [isPending, startTransition] = useTransition();
   const [optimisticLike, setOptimisticLike] = useState(
     post.likes.some(
-      (like) => like.userId === loggedUser && like.postId === post.id,
+      (like) => like.userId === loggedUser?.id && like.postId === post.id,
     ),
   );
   const [optimisticLikesCount, setOptimisticLikesCount] = useState(
@@ -117,10 +118,10 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       <CardContent className='flex flex-col gap-4 text-sm items-start'>
         <p>{post.content}</p>
 
-        {!post.image && (
+        {post.image && (
           <div className='relative aspect-video w-full rounded-md'>
             <Image
-              src={'/authentication.jpg'}
+              src={post.image}
               alt={`Post image by ${post.user.name}`}
               fill
               className='rounded-md object-cover'
@@ -188,20 +189,23 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         </div>
       </CardContent>
       {/* All Comments*/}
-      {post.comments.length > 0 &&
-        post.comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
+      {post.comments.length > 0 && (
+        <div className='border-t px-4 pt-4 space-y-6'>
+          {post.comments.map((comment) => (
+            <Comment key={comment.id} comment={comment} />
+          ))}
+        </div>
+      )}
 
       {/* Add Comment */}
       <AnimatePresence>
         {isCommenting && loggedUser && (
           <AddComment
             postId={post.id}
-            loggedUser={loggedUser}
-            user={post.user}
+            user={loggedUser}
             isPending={isPending}
             startTransition={startTransition}
+            setIsCommenting={setIsCommenting}
           />
         )}
       </AnimatePresence>

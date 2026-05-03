@@ -21,7 +21,7 @@ type CommentProps = {
 
 const Comment = ({ comment }: CommentProps) => {
   return (
-    <div className='flex items-start gap-4 border-t px-4 py-4'>
+    <div className='flex flex-col items-start gap-6'>
       <UserInfo createdAt={comment.createdAt} user={comment.user} />
       <p className='text-sm'>{comment.content}</p>
     </div>

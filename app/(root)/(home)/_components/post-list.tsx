@@ -1,7 +1,12 @@
 import db from '@/lib/db';
 import PostCard from './post-card';
+import { auth } from '@/lib/auth';
 
-const PostList = async ({ loggedUser }: { loggedUser?: string }) => {
+const PostList = async ({
+  loggedUser,
+}: {
+  loggedUser?: typeof auth.$Infer.Session.user;
+}) => {
   const posts = await db.post.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -44,7 +49,7 @@ const PostList = async ({ loggedUser }: { loggedUser?: string }) => {
       },
       likes: {
         where: {
-          userId: loggedUser,
+          userId: loggedUser?.id,
         },
         select: {
           postId: true,

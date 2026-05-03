@@ -7,29 +7,38 @@ import Image from 'next/image';
 import { Suspense, TransitionStartFunction, useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { addComment } from '@/lib/actions/post/add-comment';
+import { auth } from '@/lib/auth';
 
 type AddCommentProps = {
   postId: string;
-  loggedUser: string;
-  user: {
-    image: string;
-    name: string;
-  };
+  user: typeof auth.$Infer.Session.user;
   startTransition: TransitionStartFunction;
   isPending: boolean;
+  setIsCommenting: (value: boolean) => void;
 };
 
 const AddComment = ({
   user,
   postId,
-  loggedUser,
   startTransition,
   isPending,
+  setIsCommenting,
 }: AddCommentProps) => {
   const [comment, setComment] = useState('');
 
   const handleAddComment = () => {
-    startTransition(async () => {});
+    startTransition(async () => {
+      const res = await addComment({ postId, comment });
+      if (res.success) {
+        setComment('');
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+        return;
+      }
+    });
   };
 
   return (
@@ -38,7 +47,7 @@ const AddComment = ({
       initial={{ opacity: 0, y: -10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.25, ease: 'easeInOut' }}
     >
       <div className='flex gap-4'>
         <Avatar className='size-9'>
@@ -46,7 +55,7 @@ const AddComment = ({
             fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}
           >
             <Image
-              src={user.image}
+              src={user.image ?? '/images/avatar.png'}
               alt={user.name}
               width={35}
               height={35}
@@ -62,7 +71,10 @@ const AddComment = ({
           onChange={(e) => setComment(e.target.value)}
         />
       </div>
-      <div className='flex justify-end mt-2.5'>
+      <div className='flex justify-end mt-2.5 gap-2'>
+        <Button onClick={() => setIsCommenting(false)} variant='outline'>
+          Dismiss
+        </Button>
         <Button
           onClick={handleAddComment}
           disabled={isPending || !comment.trim()}

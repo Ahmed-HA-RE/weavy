@@ -21,7 +21,7 @@ const HomePage = async () => {
         )}
         <section>
           <Suspense>
-            <PostList loggedUser={session?.user?.id} />
+            <PostList loggedUser={session?.user} />
           </Suspense>
         </section>
       </div>
