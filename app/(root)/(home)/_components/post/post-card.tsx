@@ -113,7 +113,11 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         <UserInfo createdAt={post.createdAt} user={post.user} />
         {loggedUser && (
           <CardAction>
-            <PostActions setIsEdit={setIsEdit} isOwner={isOwner} />
+            <PostActions
+              setIsEdit={setIsEdit}
+              isOwner={isOwner}
+              postId={post.id}
+            />
           </CardAction>
         )}
       </CardHeader>
