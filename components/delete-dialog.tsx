@@ -12,47 +12,70 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Spinner } from './ui/spinner';
 import { Button } from './ui/button';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const title = 'Simple Delete Confirmation';
+
+type ActionResponse = {
+  success: boolean;
+  message: string;
+};
 
 type DeleteDialogProps = {
   title: string;
   subtitle?: string;
   trigger: React.ReactNode;
-  deleteContent?: string;
-  action?: () => void;
-  isPending?: boolean;
-  openDialog?: boolean;
-  setOpenDialog?: (open: boolean) => void;
+  confirmText?: string;
+  action: () => Promise<ActionResponse>;
 };
 
 const DeleteDialog = ({
   title,
   subtitle,
   trigger,
-  deleteContent = 'Delete',
+  confirmText = 'Delete',
   action,
-  isPending,
-  openDialog,
-  setOpenDialog,
-}: DeleteDialogProps) => (
-  <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
-    <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>{title}</AlertDialogTitle>
-        {subtitle && (
-          <AlertDialogDescription>{subtitle}</AlertDialogDescription>
-        )}
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <Button variant='destructive' onClick={action} disabled={isPending}>
-          {isPending ? <Spinner /> : deleteContent}
-        </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-);
+}: DeleteDialogProps) => {
+  const [isPending, setIsPending] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDelete = async () => {
+    setIsPending(true);
+    const res = await action();
+
+    if (res.success) {
+      setOpenDialog(false);
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+      return;
+    }
+  };
+
+  return (
+    <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          {subtitle && (
+            <AlertDialogDescription>{subtitle}</AlertDialogDescription>
+          )}
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <Button
+            variant='destructive'
+            onClick={handleDelete}
+            disabled={isPending}
+          >
+            {isPending ? <Spinner /> : confirmText}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 export default DeleteDialog;

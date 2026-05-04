@@ -6,8 +6,6 @@ import { auth } from '@/lib/auth';
 import DeleteDialog from '@/components/delete-dialog';
 import { Button } from '@/components/ui/button';
 import { FaTrash } from 'react-icons/fa6';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { deleteMyCommentAction } from '@/lib/actions/user/delete-my-comment-action';
 
 type CommentProps = {
@@ -32,24 +30,6 @@ type CommentProps = {
 };
 
 const Comment = ({ comment, loggedUser, postId }: CommentProps) => {
-  const [isPending, setIsPending] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleDelete = async () => {
-    setIsPending(true);
-    const res = await deleteMyCommentAction({ commentId: comment.id, postId });
-
-    if (res.success) {
-      setOpenDialog(false);
-      toast.success(res.message);
-    } else {
-      toast.error(res.message);
-      return;
-    }
-
-    setIsPending(false);
-  };
-
   const isOwner = loggedUser?.id === comment.user.id;
 
   return (
@@ -73,10 +53,9 @@ const Comment = ({ comment, loggedUser, postId }: CommentProps) => {
               <FaTrash className='text-muted-foreground hover:text-destructive' />
             </Button>
           }
-          action={handleDelete}
-          isPending={isPending}
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
+          action={() =>
+            deleteMyCommentAction({ commentId: comment.id, postId })
+          }
         />
       )}
     </div>
