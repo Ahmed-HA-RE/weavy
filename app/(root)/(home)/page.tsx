@@ -1,10 +1,10 @@
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import CreatePost from './_components/create-post';
+import CreatePost from './_components/post/create-post';
 import { Suspense } from 'react';
 import SuggestedUsers from './_components/suggested-users';
 import SuggestedUsersSkeleton from './_components/suggested-users-skeleton';
-import PostList from './_components/post-list';
+import PostList from './_components/post/post-list';
 
 const HomePage = async () => {
   const session = await auth.api.getSession({

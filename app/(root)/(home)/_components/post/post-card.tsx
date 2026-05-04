@@ -10,7 +10,7 @@ import { Prisma } from '@/lib/generated/prisma/client';
 import { cn } from '@/lib/utils';
 import { useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
-import { FaEllipsis, FaHeart } from 'react-icons/fa6';
+import { FaHeart } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
 import { TbMessageReport } from 'react-icons/tb';
 import Image from 'next/image';
@@ -21,6 +21,8 @@ import UserInfo from '@/components/user-info';
 import AddComment from './add-comment';
 import { AnimatePresence } from 'motion/react';
 import { auth } from '@/lib/auth';
+import PostActions from './post-actions';
+import UpdatePostForm from './update-post-form';
 
 type PostCardProps = {
   post: Prisma.PostGetPayload<{
@@ -85,6 +87,9 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
     post._count.likes,
   );
   const [isCommenting, setIsCommenting] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const isOwner = loggedUser?.id === post.user.id;
 
   const handleLike = () => {
     setOptimisticLikesCount((prev) => (optimisticLike ? prev - 1 : prev + 1)); // Optimistically update likes count so UI is updated fast while the backend request is being processed
@@ -106,87 +111,95 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
     <Card className='gap-6 pt-6'>
       <CardHeader className='flex items-center justify-between gap-3'>
         <UserInfo createdAt={post.createdAt} user={post.user} />
-        {/* Later will dropdown menu for actions like delete post and toggle follow  */}
         {loggedUser && (
           <CardAction>
-            <Button variant='ghost' size='sm' aria-label='Post options'>
-              <FaEllipsis />
-            </Button>
+            <PostActions setIsEdit={setIsEdit} isOwner={isOwner} />
           </CardAction>
         )}
       </CardHeader>
       <CardContent className='flex flex-col gap-4 text-sm items-start'>
-        <p>{post.content}</p>
+        {isEdit ? (
+          <UpdatePostForm
+            post={{ id: post.id, content: post.content, image: post.image }}
+            setIsEdit={setIsEdit}
+          />
+        ) : (
+          <>
+            <p>{post.content}</p>
 
-        {post.image && (
-          <div className='relative aspect-video w-full rounded-md'>
-            <Image
-              src={post.image}
-              alt={`Post image by ${post.user.name}`}
-              fill
-              className='rounded-md object-cover'
-            />
-          </div>
-        )}
-        <div className='flex items-center gap-1'>
-          {!loggedUser ? (
-            <>
-              <Button asChild variant='ghost' size='sm'>
-                <Link href='/sign-in'>
-                  <FaRegHeart />
-                  {optimisticLikesCount > 0 && (
-                    <span>{optimisticLikesCount}</span>
-                  )}
-                </Link>
-              </Button>
-              <Button variant='ghost' size='sm' asChild>
-                <Link href='/sign-in'>
-                  <FiMessageCircle />
-                  {post._count.comments > 0 && (
-                    <span>{post._count.comments}</span>
-                  )}
-                </Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={handleLike}
-                disabled={isPending}
-              >
-                {optimisticLike ? (
-                  <FaHeart
-                    className={cn(
-                      'text-red-500',
-                      optimisticLike && 'fill-red-500',
+            {post.image && (
+              <div className='relative aspect-video w-full rounded-md'>
+                <Image
+                  src={post.image}
+                  alt={`Post image by ${post.user.name}`}
+                  fill
+                  className='rounded-md object-cover'
+                />
+              </div>
+            )}
+            <div className='flex items-center gap-1'>
+              {!loggedUser ? (
+                <>
+                  <Button asChild variant='ghost' size='sm'>
+                    <Link href='/sign-in'>
+                      <FaRegHeart />
+                      {optimisticLikesCount > 0 && (
+                        <span>{optimisticLikesCount}</span>
+                      )}
+                    </Link>
+                  </Button>
+                  <Button variant='ghost' size='sm' asChild>
+                    <Link href='/sign-in'>
+                      <FiMessageCircle />
+                      {post._count.comments > 0 && (
+                        <span>{post._count.comments}</span>
+                      )}
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={handleLike}
+                    disabled={isPending}
+                  >
+                    {optimisticLike ? (
+                      <FaHeart
+                        className={cn(
+                          'text-red-500',
+                          optimisticLike && 'fill-red-500',
+                        )}
+                      />
+                    ) : (
+                      <FaRegHeart />
                     )}
-                  />
-                ) : (
-                  <FaRegHeart />
-                )}
-                {optimisticLikesCount > 0 && (
-                  <span>{optimisticLikesCount}</span>
-                )}
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setIsCommenting((prev) => !prev)}
-              >
-                <FiMessageCircle />
-                {post._count.comments > 0 && (
-                  <span>{post._count.comments}</span>
-                )}
-              </Button>
-              <Button variant='ghost' size='sm' className=''>
-                <TbMessageReport />
-                Report
-              </Button>
-            </>
-          )}
-        </div>
+                    {optimisticLikesCount > 0 && (
+                      <span>{optimisticLikesCount}</span>
+                    )}
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={() => setIsCommenting((prev) => !prev)}
+                  >
+                    <FiMessageCircle />
+                    {post._count.comments > 0 && (
+                      <span>{post._count.comments}</span>
+                    )}
+                  </Button>
+                  {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
+                    <Button variant='ghost' size='sm' className=''>
+                      <TbMessageReport />
+                      Report
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          </>
+        )}
       </CardContent>
       {/* All Comments*/}
       {post.comments.length > 0 && (

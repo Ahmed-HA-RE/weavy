@@ -33,6 +33,7 @@ const AddComment = ({
       const res = await addComment({ postId, comment });
       if (res.success) {
         setComment('');
+        setIsCommenting(false);
         toast.success(res.message);
       } else {
         toast.error(res.message);
