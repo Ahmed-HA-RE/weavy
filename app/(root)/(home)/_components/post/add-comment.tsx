@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Suspense, TransitionStartFunction, useState } from 'react';
-import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { addComment } from '@/lib/actions/post/add-comment';
@@ -42,7 +41,6 @@ const AddComment = ({
   user,
   postId,
   startTransition,
-  isPending,
   setIsCommenting,
   addOptimisticComment,
 }: AddCommentProps) => {
@@ -50,6 +48,7 @@ const AddComment = ({
 
   const handleAddComment = () => {
     setIsCommenting(false);
+
     startTransition(async () => {
       addOptimisticComment({
         id: crypto.randomUUID(),
@@ -108,19 +107,7 @@ const AddComment = ({
         <Button onClick={() => setIsCommenting(false)} variant='outline'>
           Dismiss
         </Button>
-        <Button
-          onClick={handleAddComment}
-          disabled={isPending || !content.trim()}
-        >
-          {isPending ? (
-            <>
-              <Spinner className='size-4' />
-              Adding...
-            </>
-          ) : (
-            'Comment'
-          )}
-        </Button>
+        <Button onClick={handleAddComment}>Comment</Button>
       </div>
     </motion.div>
   );

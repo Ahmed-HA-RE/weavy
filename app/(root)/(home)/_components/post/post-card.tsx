@@ -6,8 +6,6 @@ import {
   CardContent,
   CardHeader,
 } from '@/components/ui/card';
-import { Prisma } from '@/lib/generated/prisma/client';
-import { cn } from '@/lib/utils';
 import { useOptimistic, useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaHeart } from 'react-icons/fa6';
@@ -57,11 +55,16 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
     (prev, newState: boolean) => likeReducer(prev, newState),
   );
   const [optimisticComments, addOptimisticComment] = useOptimistic(
-    post.comments,
-    (prev, newComment: PostCardProps['post']['comments'][number]) => [
-      ...prev,
-      newComment,
-    ],
+    {
+      comments: post.comments,
+      commentsCount: post._count.comments,
+    },
+    (state, newState: PostWithRelations['comments'][number]) => {
+      return {
+        commentsCount: state.commentsCount + 1,
+        comments: [...state.comments, newState],
+      };
+    },
   );
   const [isCommenting, setIsCommenting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -76,8 +79,6 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       await togglePostLikeAction(post.id);
     });
   };
-
-  console.log(optimisticLikes);
 
   return (
     <Card className='gap-6 pt-6'>
@@ -160,8 +161,8 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                     onClick={() => setIsCommenting((prev) => !prev)}
                   >
                     <FiMessageCircle />
-                    {post._count.comments > 0 && (
-                      <span>{post._count.comments}</span>
+                    {optimisticComments.commentsCount > 0 && (
+                      <span>{optimisticComments.commentsCount}</span>
                     )}
                   </Button>
                   {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
@@ -177,9 +178,9 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         )}
       </CardContent>
       {/* All Comments*/}
-      {optimisticComments.length > 0 && (
+      {optimisticComments.commentsCount > 0 && (
         <div className='border-t px-4 pt-4 space-y-6'>
-          {optimisticComments.map((comment) => (
+          {optimisticComments.comments.map((comment) => (
             <PostComment
               key={comment.id}
               comment={comment}
