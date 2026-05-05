@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import db from '@/lib/db';
 import Image from 'next/image';
 import { Suspense } from 'react';
-import FollowButton from './follow-button';
+import FollowButton from '../../../../components/follow-button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import React from 'react';
@@ -16,7 +16,7 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
       },
       followers: {
         none: {
-          followingId: userId,
+          followerId: userId,
         },
       },
     },
@@ -81,7 +81,7 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
                 </div>
               </Link>
               {/* Right Side */}
-              <FollowButton userId={suggestedUser.id} />
+              <FollowButton userId={suggestedUser.id} isToggle={false} />
             </div>
             {suggestedUsers.length - 1 !== index && (
               <Separator className='my-4' />

@@ -38,6 +38,11 @@ type PostCardProps = {
           displayName: true;
           image: true;
           role: true;
+          followers: {
+            where: {
+              followerId: string | undefined;
+            };
+          };
         };
       };
       comments: {
@@ -90,6 +95,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
   const [isEdit, setIsEdit] = useState(false);
 
   const isOwner = loggedUser?.id === post.user.id;
+  const isFollowing = post.user.followers.length > 0;
 
   const handleLike = () => {
     setOptimisticLikesCount((prev) => (optimisticLike ? prev - 1 : prev + 1)); // Optimistically update likes count so UI is updated fast while the backend request is being processed
@@ -116,7 +122,8 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
             <PostActions
               setIsEdit={setIsEdit}
               isOwner={isOwner}
-              postId={post.id}
+              post={{ id: post.id, userId: post.user.id }}
+              isFollowing={isFollowing}
             />
           </CardAction>
         )}

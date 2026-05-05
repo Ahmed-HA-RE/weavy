@@ -68,8 +68,6 @@ const PostList = async ({
     return null;
   }
 
-  console.log(posts);
-
   return (
     <div className='space-y-6'>
       {posts.map((post) => (

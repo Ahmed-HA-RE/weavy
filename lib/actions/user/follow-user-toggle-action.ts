@@ -37,6 +37,7 @@ export const followUserToggleAction = async (userId: string) => {
           id: existingFollow.id,
         },
       });
+      revalidatePath('/'); // Purge the cache
 
       return { success: true, message: 'User unfollowed successfully' };
     } else {

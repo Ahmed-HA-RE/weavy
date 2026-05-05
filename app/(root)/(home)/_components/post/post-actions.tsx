@@ -11,16 +11,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { deleteMyPostAction } from '@/lib/actions/post/delete-my-post-action';
 import { FaEllipsis } from 'react-icons/fa6';
+import FollowButton from '../../../../../components/follow-button';
+import { cn } from '@/lib/utils';
 
 const PostActions = ({
   setIsEdit,
-  postId,
+  post,
   isOwner,
+  isFollowing,
 }: {
   setIsEdit: (value: boolean) => void;
-  postId: string;
+  post: {
+    id: string;
+    userId: string;
+  };
   isOwner: boolean;
+  isFollowing: boolean;
 }) => {
+  const dropdownClass = 'w-full justify-start h-8 bg-transparent px-2';
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,11 +50,26 @@ const PostActions = ({
                 title='Delete my post'
                 subtitle='Are you sure you want to delete this post? It cannot be undone.'
                 trigger={
-                  <Button className='w-full justify-start h-8 hover:bg-destructive/20 text-destructive bg-transparent px-2'>
+                  <Button
+                    className={cn(
+                      dropdownClass,
+                      'hover:bg-destructive/20 text-destructive',
+                    )}
+                  >
                     Delete
                   </Button>
                 }
-                action={() => deleteMyPostAction(postId)}
+                action={() => deleteMyPostAction(post.id)}
+              />
+            </DropdownMenuItem>
+          )}
+          {!isOwner && (
+            <DropdownMenuItem asChild>
+              <FollowButton
+                className={dropdownClass}
+                userId={post.userId}
+                isToggle
+                isFollowing={isFollowing}
               />
             </DropdownMenuItem>
           )}
