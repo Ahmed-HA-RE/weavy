@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { cn } from '@/lib/utils';
-import { useState, useTransition } from 'react';
+import { useOptimistic, useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaHeart } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
@@ -16,80 +16,52 @@ import { TbMessageReport } from 'react-icons/tb';
 import Image from 'next/image';
 import Link from 'next/link';
 import { togglePostLikeAction } from '@/lib/actions/post/toggle-post-like-action';
-import Comment from './comment';
+import PostComment from './post-comment';
 import UserInfo from '@/components/user-info';
 import AddComment from './add-comment';
 import { AnimatePresence } from 'motion/react';
 import { auth } from '@/lib/auth';
 import PostActions from './post-actions';
 import UpdatePostForm from './update-post-form';
+import { PostWithRelations } from '@/types/post';
 
 type PostCardProps = {
-  post: Prisma.PostGetPayload<{
-    select: {
-      id: true;
-      content: true;
-      image: true;
-      createdAt: true;
-      user: {
-        select: {
-          id: true;
-          name: true;
-          displayName: true;
-          image: true;
-          role: true;
-          followers: {
-            where: {
-              followerId: string | undefined;
-            };
-          };
-        };
-      };
-      comments: {
-        select: {
-          id: true;
-          content: true;
-          createdAt: true;
-          user: {
-            select: {
-              id: true;
-              name: true;
-              displayName: true;
-              image: true;
-              role: true;
-            };
-          };
-        };
-      };
-      _count: {
-        select: {
-          likes: true;
-          comments: true;
-        };
-      };
-      likes: {
-        where: {
-          userId: string | undefined;
-        };
-        select: {
-          postId: true;
-          userId: true;
-        };
-      };
-    };
-  }>;
+  post: PostWithRelations;
   loggedUser?: typeof auth.$Infer.Session.user;
+};
+
+const likeReducer = (
+  state: { isLiked: boolean; count: number },
+  newState: boolean,
+) => {
+  const isLiked = newState;
+  switch (isLiked) {
+    case true:
+      return { isLiked, count: state.count + 1 };
+    case false:
+      return { isLiked, count: state.count - 1 };
+    default:
+      return state;
+  }
 };
 
 const PostCard = ({ post, loggedUser }: PostCardProps) => {
   const [isPending, startTransition] = useTransition();
-  const [optimisticLike, setOptimisticLike] = useState(
-    post.likes.some(
-      (like) => like.userId === loggedUser?.id && like.postId === post.id,
-    ),
+  const [optimisticLikes, setOptimisticLikes] = useOptimistic(
+    {
+      isLiked: post.likes.some(
+        (like) => like.userId === loggedUser?.id && post.id === like.postId,
+      ),
+      count: post._count.likes,
+    },
+    (prev, newState: boolean) => likeReducer(prev, newState),
   );
-  const [optimisticLikesCount, setOptimisticLikesCount] = useState(
-    post._count.likes,
+  const [optimisticComments, addOptimisticComment] = useOptimistic(
+    post.comments,
+    (prev, newComment: PostCardProps['post']['comments'][number]) => [
+      ...prev,
+      newComment,
+    ],
   );
   const [isCommenting, setIsCommenting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -98,20 +70,14 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
   const isFollowing = post.user.followers.length > 0;
 
   const handleLike = () => {
-    setOptimisticLikesCount((prev) => (optimisticLike ? prev - 1 : prev + 1)); // Optimistically update likes count so UI is updated fast while the backend request is being processed
-    setOptimisticLike((prev) => !prev); // Optimistically toggle like state so UI is toggled fast while the backend request is being processed
+    const newLikeState = !optimisticLikes.isLiked;
     startTransition(async () => {
-      const result = await togglePostLikeAction(post.id);
-
-      if (!result.success) {
-        // If the action failed, revert the optimistic update
-        setOptimisticLikesCount((prev) =>
-          optimisticLike ? prev - 1 : prev + 1,
-        );
-        setOptimisticLike((prev) => !prev);
-      }
+      setOptimisticLikes(newLikeState);
+      await togglePostLikeAction(post.id);
     });
   };
+
+  console.log(optimisticLikes);
 
   return (
     <Card className='gap-6 pt-6'>
@@ -154,8 +120,8 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                   <Button asChild variant='ghost' size='sm'>
                     <Link href='/sign-in'>
                       <FaRegHeart />
-                      {optimisticLikesCount > 0 && (
-                        <span>{optimisticLikesCount}</span>
+                      {optimisticLikes.count > 0 && (
+                        <span>{optimisticLikes.count}</span>
                       )}
                     </Link>
                   </Button>
@@ -170,26 +136,24 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                 </>
               ) : (
                 <>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={handleLike}
-                    disabled={isPending}
-                  >
-                    {optimisticLike ? (
-                      <FaHeart
-                        className={cn(
-                          'text-red-500',
-                          optimisticLike && 'fill-red-500',
+                  <Button variant='ghost' size='sm' onClick={handleLike}>
+                    {optimisticLikes.isLiked ? (
+                      <>
+                        <FaHeart className='fill-destructive' />
+                        {optimisticLikes.count > 0 && (
+                          <span>{optimisticLikes.count}</span>
                         )}
-                      />
+                      </>
                     ) : (
-                      <FaRegHeart />
-                    )}
-                    {optimisticLikesCount > 0 && (
-                      <span>{optimisticLikesCount}</span>
+                      <>
+                        <FaRegHeart />
+                        {optimisticLikes.count > 0 && (
+                          <span>{optimisticLikes.count}</span>
+                        )}
+                      </>
                     )}
                   </Button>
+
                   <Button
                     variant='ghost'
                     size='sm'
@@ -213,10 +177,10 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         )}
       </CardContent>
       {/* All Comments*/}
-      {post.comments.length > 0 && (
+      {optimisticComments.length > 0 && (
         <div className='border-t px-4 pt-4 space-y-6'>
-          {post.comments.map((comment) => (
-            <Comment
+          {optimisticComments.map((comment) => (
+            <PostComment
               key={comment.id}
               comment={comment}
               loggedUser={loggedUser}
@@ -235,6 +199,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
             isPending={isPending}
             startTransition={startTransition}
             setIsCommenting={setIsCommenting}
+            addOptimisticComment={addOptimisticComment}
           />
         )}
       </AnimatePresence>

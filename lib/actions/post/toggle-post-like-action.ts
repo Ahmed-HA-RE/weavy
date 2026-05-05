@@ -2,6 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
+import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
 export const togglePostLikeAction = async (postId: string) => {
@@ -35,6 +36,7 @@ export const togglePostLikeAction = async (postId: string) => {
       await db.like.delete({
         where: { id: existingLike.id },
       });
+      revalidatePath('/'); // Purge the cache
       return { success: true };
     } else {
       // add transaction to like the post and create a notification for the post owner.
@@ -57,6 +59,7 @@ export const togglePostLikeAction = async (postId: string) => {
         });
       });
     }
+    revalidatePath('/'); // Purge the cache
     return { success: true };
   } catch (error) {
     const errorMessage =

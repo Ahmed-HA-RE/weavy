@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { addComment } from '@/lib/actions/post/add-comment';
 import { auth } from '@/lib/auth';
+import { Prisma } from '@/lib/generated/prisma/client';
 
 type AddCommentProps = {
   postId: string;
@@ -17,6 +18,24 @@ type AddCommentProps = {
   startTransition: TransitionStartFunction;
   isPending: boolean;
   setIsCommenting: (value: boolean) => void;
+  addOptimisticComment: (
+    action: Prisma.CommentGetPayload<{
+      select: {
+        content: true;
+        createdAt: true;
+        id: true;
+        user: {
+          select: {
+            id: true;
+            name: true;
+            displayName: true;
+            image: true;
+            role: true;
+          };
+        };
+      };
+    }>,
+  ) => void;
 };
 
 const AddComment = ({
@@ -25,18 +44,31 @@ const AddComment = ({
   startTransition,
   isPending,
   setIsCommenting,
+  addOptimisticComment,
 }: AddCommentProps) => {
-  const [comment, setComment] = useState('');
+  const [content, setContent] = useState('');
 
   const handleAddComment = () => {
+    setIsCommenting(false);
     startTransition(async () => {
-      const res = await addComment({ postId, comment });
-      if (res.success) {
-        setComment('');
-        setIsCommenting(false);
-        toast.success(res.message);
-      } else {
+      addOptimisticComment({
+        id: crypto.randomUUID(),
+        content,
+        user: {
+          id: user.id,
+          name: user.name,
+          displayName: user.displayName || user.name,
+          image: user.image || '/images/avatar.png',
+          role: user.role,
+        },
+        createdAt: new Date(),
+      });
+
+      const res = await addComment({ postId, content });
+      if (!res.success) {
         toast.error(res.message);
+        setContent(content);
+        setIsCommenting(true);
         return;
       }
     });
@@ -68,8 +100,8 @@ const AddComment = ({
           placeholder='Add a comment...'
           className='min-h-[70px] text-xs'
           autoFocus
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
       </div>
       <div className='flex justify-end mt-2.5 gap-2'>
@@ -78,7 +110,7 @@ const AddComment = ({
         </Button>
         <Button
           onClick={handleAddComment}
-          disabled={isPending || !comment.trim()}
+          disabled={isPending || !content.trim()}
         >
           {isPending ? (
             <>

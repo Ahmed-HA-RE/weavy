@@ -29,7 +29,7 @@ type CommentProps = {
   postId: string;
 };
 
-const Comment = ({ comment, loggedUser, postId }: CommentProps) => {
+const PostComment = ({ comment, loggedUser, postId }: CommentProps) => {
   const isOwner = loggedUser?.id === comment.user.id;
 
   return (
@@ -62,4 +62,4 @@ const Comment = ({ comment, loggedUser, postId }: CommentProps) => {
   );
 };
 
-export default Comment;
+export default PostComment;
