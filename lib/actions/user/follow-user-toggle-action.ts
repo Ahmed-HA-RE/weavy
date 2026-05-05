@@ -43,8 +43,8 @@ export const followUserToggleAction = async (userId: string) => {
       await db.$transaction(async (tx) => {
         await tx.follow.create({
           data: {
-            followerId: userId,
-            followingId: session.user.id,
+            followerId: session.user.id,
+            followingId: userId,
           },
         });
         await tx.notification.create({

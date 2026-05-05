@@ -145,10 +145,10 @@ model Follow {
   id String @id @default(uuid())
 
   followerId String
-  follower   User   @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  follower   User   @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
 
   followingId String
-  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  following   User   @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

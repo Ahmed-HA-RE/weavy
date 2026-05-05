@@ -23,6 +23,11 @@ const PostList = async ({
           displayName: true,
           image: true,
           role: true,
+          followers: {
+            where: {
+              followerId: loggedUser?.id,
+            },
+          },
         },
       },
       comments: {
@@ -62,6 +67,8 @@ const PostList = async ({
   if (posts.length === 0) {
     return null;
   }
+
+  console.log(posts);
 
   return (
     <div className='space-y-6'>
