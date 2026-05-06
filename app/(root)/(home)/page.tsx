@@ -20,9 +20,7 @@ const HomePage = async () => {
           </section>
         )}
         <section>
-          <Suspense>
-            <PostList loggedUser={session?.user} />
-          </Suspense>
+          <PostList loggedUser={session?.user} />
         </section>
       </div>
 
