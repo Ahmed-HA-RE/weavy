@@ -19,6 +19,7 @@ const PostList = () => {
     queryFn: async ({ pageParam }) => getPostsAction({ pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastpage) => lastpage.nextPage,
+    refetchOnWindowFocus: false,
   });
 
   const { ref, inView } = useInView();

@@ -15,8 +15,6 @@ import { Button } from './ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export const title = 'Simple Delete Confirmation';
-
 type ActionResponse = {
   success: boolean;
   message: string;
