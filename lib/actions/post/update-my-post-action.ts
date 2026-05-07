@@ -3,7 +3,6 @@
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
 import { type PostFormData, postSchema } from '@/schema/post';
-import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { UTApi } from 'uploadthing/server';
 
@@ -57,7 +56,6 @@ export const updateMyPostAction = async ({
     if (!updatedPost)
       throw new Error('Update failed: Post not found or unauthorized');
 
-    revalidatePath('/'); // purge the cache for the home page to show the updated post
     return { success: true, message: 'Post updated successfully' };
   } catch (error) {
     const errorMessage =

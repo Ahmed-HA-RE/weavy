@@ -20,6 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FieldGroup, Field } from '@/components/ui/field';
 import { IoClose } from 'react-icons/io5';
 import { updateMyPostAction } from '@/lib/actions/post/update-my-post-action';
+import { useQueryClient } from '@tanstack/react-query';
 
 type PostFormProps = {
   user?: typeof auth.$Infer.Session.user;
@@ -34,6 +35,7 @@ type PostFormProps = {
 };
 
 const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
+  const queryClient = useQueryClient();
   const [isUploadImage, setIsUploadImage] = useState(false);
 
   const form = useForm<PostFormData>({
@@ -58,6 +60,7 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
       setIsUploadImage(false);
       if (setIsEdit) setIsEdit(false);
       toast.success(result.message);
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
     } else {
       toast.error(result.message);
     }

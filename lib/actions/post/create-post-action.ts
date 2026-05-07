@@ -3,7 +3,6 @@
 import { headers } from 'next/headers';
 import { auth } from '../../auth';
 import db from '../../db';
-import { revalidatePath } from 'next/cache';
 import { PostFormData, postSchema } from '@/schema/post';
 
 export const createPostAction = async (data: PostFormData) => {
@@ -32,8 +31,6 @@ export const createPostAction = async (data: PostFormData) => {
         userId: session.user.id,
       },
     });
-
-    revalidatePath('/'); // Revalidate the home page to show the new post
     return { success: true, message: 'Post created successfully' };
   } catch (error) {
     const errorMessage =

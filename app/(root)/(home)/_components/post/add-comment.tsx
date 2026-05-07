@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { addComment } from '@/lib/actions/post/add-comment';
 import { auth } from '@/lib/auth';
 import { Prisma } from '@/lib/generated/prisma/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 type AddCommentProps = {
   postId: string;
@@ -44,10 +45,12 @@ const AddComment = ({
   setIsCommenting,
   addOptimisticComment,
 }: AddCommentProps) => {
+  const queryClient = useQueryClient();
   const [content, setContent] = useState('');
 
   const handleAddComment = () => {
     setIsCommenting(false);
+    setContent('');
 
     startTransition(async () => {
       addOptimisticComment({
@@ -69,6 +72,8 @@ const AddComment = ({
         setContent(content);
         setIsCommenting(true);
         return;
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['posts'] });
       }
     });
   };

@@ -2,7 +2,6 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
-import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
 export const addComment = async ({
@@ -54,7 +53,6 @@ export const addComment = async ({
       return newComment;
     });
 
-    revalidatePath('/'); // Revalidate the home page to show the new comment
     return { success: true, message: 'Comment added successfully', comment };
   } catch (error) {
     const errorMessage =

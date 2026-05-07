@@ -47,8 +47,10 @@ const DeleteDialog = ({
       toast.success(res.message);
     } else {
       toast.error(res.message);
+      setIsPending(false);
       return;
     }
+    setIsPending(false);
   };
 
   return (
