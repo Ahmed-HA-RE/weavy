@@ -10,7 +10,6 @@ import { useOptimistic, useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaHeart } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
-import { TbMessageReport } from 'react-icons/tb';
 import Image from 'next/image';
 import Link from 'next/link';
 import { togglePostLikeAction } from '@/lib/actions/post/toggle-post-like-action';
@@ -22,6 +21,7 @@ import { auth } from '@/lib/auth';
 import PostActions from './post-actions';
 import { PostWithRelations } from '@/types/post';
 import PostForm from './post-form';
+import ReportPostDialog from './report-post-dialog';
 
 type PostCardProps = {
   post: PostWithRelations;
@@ -172,10 +172,10 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                     )}
                   </Button>
                   {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
-                    <Button variant='ghost' size='sm' className=''>
-                      <TbMessageReport />
-                      Report
-                    </Button>
+                    <ReportPostDialog
+                      reporterId={loggedUser.id}
+                      postId={post.id}
+                    />
                   )}
                 </>
               )}

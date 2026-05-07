@@ -30,6 +30,23 @@ enum NOTIFICATION_TYPE {
   LIKE
 }
 
+enum REPORT_REASON {
+  SPAM
+  INAPPROPRIATE
+  HARASSMENT
+  HATE_SPEECH
+  SCAM
+  SEXUAL_CONTENT
+  RACISM
+  OTHER
+}
+
+enum REPORT_STATUS {
+  PENDING
+  REVIEWED
+  REJECTED
+}
+
 model User {
   id            String      @id
   name          String      @unique
@@ -57,6 +74,9 @@ model User {
 
   notificationSender   Notification[] @relation("notificationSender") // Notifications sent by this user
   notificationReceiver Notification[] @relation("notificationReceiver") // Notifications received by this user
+  reports              Report[]
+  blocker              Block[]        @relation("blocker") // Users who have blocked this user
+  blocked              Block[]        @relation("blocked") // Users this user has blocked
 
   @@unique([email])
   @@map("user")
@@ -124,6 +144,7 @@ model Post {
   comments      Comment[]
   likes         Like[]
   notifications Notification[]
+  reports       Report[]
 
   @@index([userId, createdAt])
 }
@@ -198,4 +219,40 @@ model Notification {
   updatedAt DateTime @updatedAt
 
   @@index([receiverId, createdAt])
+}
+
+model Report {
+  id String @id @default(uuid())
+
+  reason    REPORT_REASON
+  status    REPORT_STATUS @default(PENDING)
+  message   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  reporterId String
+  reporter   User   @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, postId])
+  @@index([reporterId, postId])
+}
+
+model Block {
+  id String @id @default(uuid())
+
+  blockerId String
+  blocker   User   @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+
+  blockedId String
+  blocked   User   @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId, blockedId])
 }
