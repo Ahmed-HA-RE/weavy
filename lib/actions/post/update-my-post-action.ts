@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
-import { type UpdatePostFormData, updatePostSchema } from '@/schema/post';
+import { type PostFormData, postSchema } from '@/schema/post';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
@@ -11,7 +11,7 @@ export const updateMyPostAction = async ({
   data,
 }: {
   postId: string;
-  data: UpdatePostFormData;
+  data: PostFormData;
 }) => {
   try {
     const session = await auth.api.getSession({
@@ -21,7 +21,7 @@ export const updateMyPostAction = async ({
     if (!session) throw new Error('Unauthorized to update the post');
 
     // Validate the input data
-    const validatedData = updatePostSchema.safeParse(data);
+    const validatedData = postSchema.safeParse(data);
 
     if (!validatedData.success) {
       const errorMessages = validatedData.error.issues

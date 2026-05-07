@@ -20,8 +20,8 @@ import AddComment from './add-comment';
 import { AnimatePresence } from 'motion/react';
 import { auth } from '@/lib/auth';
 import PostActions from './post-actions';
-import UpdatePostForm from './update-post-form';
 import { PostWithRelations } from '@/types/post';
+import PostForm from './post-form';
 
 type PostCardProps = {
   post: PostWithRelations;
@@ -97,8 +97,14 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       </CardHeader>
       <CardContent className='flex flex-col gap-4 text-sm items-start'>
         {isEdit ? (
-          <UpdatePostForm
-            post={{ id: post.id, content: post.content, image: post.image }}
+          <PostForm
+            post={{
+              id: post.id,
+              content: post.content,
+              image: post.image,
+              imageKey: post.imageKey,
+            }}
+            isEdit={isEdit}
             setIsEdit={setIsEdit}
           />
         ) : (

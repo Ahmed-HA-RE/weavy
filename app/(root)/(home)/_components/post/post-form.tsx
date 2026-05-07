@@ -15,27 +15,39 @@ import { toast } from 'sonner';
 import Dropzone from '@/components/dropzone';
 import { AnimatePresence, motion } from 'motion/react';
 import { useForm, Controller } from 'react-hook-form';
-import { CreatePostFormData, postSchema } from '@/schema/post';
+import { PostFormData, postSchema } from '@/schema/post';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FieldGroup, Field } from '@/components/ui/field';
 import { IoClose } from 'react-icons/io5';
 
-const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
+type PostFormProps = {
+  user?: typeof auth.$Infer.Session.user;
+  post?: {
+    id: string;
+    content: string | null;
+    image: string | null;
+    imageKey: string | null;
+  };
+  isEdit?: boolean;
+  setIsEdit?: (value: boolean) => void;
+};
+
+const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
   const [isUploadImage, setIsUploadImage] = useState(false);
 
-  const form = useForm<CreatePostFormData>({
+  const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      content: '',
-      image: null,
-      imageKey: null,
+      content: post?.content ?? '',
+      image: post?.image ?? null,
+      imageKey: post?.imageKey ?? null,
     },
   });
 
   const { control, handleSubmit, reset } = form;
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (data: CreatePostFormData) => {
+  const onSubmit = async (data: PostFormData) => {
     const result = await createPostAction(data);
 
     if (result.success) {
@@ -47,28 +59,30 @@ const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
       <FieldGroup>
         <Card>
           <CardContent className='flex flex-col gap-6 min-h-[110px]'>
             <div className='flex gap-4'>
-              <Avatar size='lg'>
-                <Suspense
-                  fallback={
-                    <AvatarFallback className='uppercase'>
-                      {user.name.slice(0, 2)}
-                    </AvatarFallback>
-                  }
-                >
-                  <Image
-                    src={user.image ?? '/images/avatar.png'}
-                    alt={user.name}
-                    width={40}
-                    height={40}
-                    className='rounded-full object-cover'
-                  />
-                </Suspense>
-              </Avatar>
+              {!isEdit && user && (
+                <Avatar size='lg'>
+                  <Suspense
+                    fallback={
+                      <AvatarFallback className='uppercase'>
+                        {user.name.slice(0, 2)}
+                      </AvatarFallback>
+                    }
+                  >
+                    <Image
+                      src={user.image ?? '/images/avatar.png'}
+                      alt={user.name}
+                      width={40}
+                      height={40}
+                      className='rounded-full object-cover'
+                    />
+                  </Suspense>
+                </Avatar>
+              )}
               {/* TextArea */}
               <Controller
                 name='content'
@@ -78,7 +92,8 @@ const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
                     <Textarea
                       placeholder="What's on your mind?"
                       className='border-0 bg-transparent dark:bg-transparent p-0 focus:ring-0 focus-visible:ring-0 focus-visible:border-0 aria-invalid:ring-0 pt-2'
-                      {...field}
+                      value={field.value || ''}
+                      onChange={field.onChange}
                     />
                   </Field>
                 )}
@@ -150,23 +165,38 @@ const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
               ) : (
                 <>
                   <HiOutlinePhotograph className='size-4.5' />
-                  Photo
+                  {isEdit ? 'Replace' : 'Photo'}
                 </>
               )}
             </Button>
-            <Button
-              disabled={isSubmitting || !isValid}
-              type='submit'
-              className='min-w-[90px]'
-            >
-              {isSubmitting ? (
-                <Spinner />
-              ) : (
-                <>
-                  <LuSend /> Post
-                </>
+            <div className='flex items-center gap-2'>
+              {isEdit && setIsEdit && (
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={() => setIsEdit(false)}
+                  disabled={isSubmitting}
+                >
+                  Dismiss
+                </Button>
               )}
-            </Button>
+              <Button
+                disabled={isSubmitting || !isValid}
+                type='submit'
+                className='min-w-[90px]'
+              >
+                {isSubmitting ? (
+                  <Spinner />
+                ) : isEdit ? (
+                  'Update'
+                ) : (
+                  <>
+                    {' '}
+                    <LuSend /> Post
+                  </>
+                )}
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       </FieldGroup>
@@ -174,4 +204,4 @@ const CreatePost = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
   );
 };
 
-export default CreatePost;
+export default PostForm;

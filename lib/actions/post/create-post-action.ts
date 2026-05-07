@@ -4,9 +4,9 @@ import { headers } from 'next/headers';
 import { auth } from '../../auth';
 import db from '../../db';
 import { revalidatePath } from 'next/cache';
-import { CreatePostFormData, postSchema } from '@/schema/post';
+import { PostFormData, postSchema } from '@/schema/post';
 
-export const createPostAction = async (data: CreatePostFormData) => {
+export const createPostAction = async (data: PostFormData) => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

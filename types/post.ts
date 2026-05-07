@@ -5,6 +5,7 @@ export type PostWithRelations = Prisma.PostGetPayload<{
     id: true;
     content: true;
     image: true;
+    imageKey: true;
     createdAt: true;
     user: {
       select: {

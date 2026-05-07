@@ -25,6 +25,7 @@ export const getPostsAction = async ({
       id: true,
       content: true,
       image: true,
+      imageKey: true,
       createdAt: true,
       user: {
         select: {

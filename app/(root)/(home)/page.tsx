@@ -1,11 +1,11 @@
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import CreatePost from './_components/post/create-post';
 import { Suspense } from 'react';
 import SuggestedUsers from './_components/suggested-users';
 import SuggestedUsersSkeleton from './_components/suggested-users-skeleton';
 import PostSkeletonCard from './_components/post/post-skeleton-card';
 import FetchPostsWrapper from './_components/post/fetch-posts-wrapper';
+import PostForm from './_components/post/post-form';
 
 const HomePage = async () => {
   const session = await auth.api.getSession({
@@ -17,7 +17,7 @@ const HomePage = async () => {
       <div className='lg:col-span-7 order-2 lg:order-1 space-y-6'>
         {session && (
           <section>
-            <CreatePost user={session.user} />
+            <PostForm user={session.user} />
           </section>
         )}
         <section>

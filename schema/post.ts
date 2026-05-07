@@ -2,7 +2,12 @@ import z from 'zod';
 
 export const postSchema = z
   .object({
-    content: z.string().max(500, 'Exceeded 500 characters').trim().optional(),
+    content: z
+      .string()
+      .max(500, 'Exceeded 500 characters')
+      .trim()
+      .optional()
+      .nullable(),
     image: z.url('Image must be a valid URL').optional().nullable(),
     imageKey: z.string().optional().nullable(),
   })
@@ -18,8 +23,4 @@ export const postSchema = z
     },
   );
 
-export type CreatePostFormData = z.infer<typeof postSchema>;
-
-export const updatePostSchema = postSchema;
-
-export type UpdatePostFormData = z.infer<typeof updatePostSchema>;
+export type PostFormData = z.infer<typeof postSchema>;
