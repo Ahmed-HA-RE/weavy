@@ -5,6 +5,7 @@ import db from '@/lib/db';
 import { type PostFormData, postSchema } from '@/schema/post';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
+import { UTApi } from 'uploadthing/server';
 
 export const updateMyPostAction = async ({
   postId,
@@ -30,14 +31,26 @@ export const updateMyPostAction = async ({
       throw new Error(`Validation failed: ${errorMessages}`);
     }
 
-    const { content, image } = validatedData.data;
+    // Fetch the existing post to get the old image key if exists
+    const existingPost = await db.post.findFirst({
+      where: { id: postId, userId: session.user.id },
+      select: { imageKey: true },
+    });
 
-    // Later will add image upload functionality, for now we will just update the content of the post
+    const { content, image, imageKey } = validatedData.data;
+
+    // Check if there is an image key then delete the old image from the storage if the user is updating the image
+    if (existingPost?.imageKey) {
+      const utapi = new UTApi();
+      await utapi.deleteFiles(existingPost.imageKey);
+    }
+
     const updatedPost = await db.post.update({
       where: { id: postId, userId: session.user.id },
       data: {
-        content,
+        content: content || null,
         image,
+        imageKey,
       },
     });
 

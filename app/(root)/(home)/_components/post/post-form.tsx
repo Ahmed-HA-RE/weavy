@@ -19,6 +19,7 @@ import { PostFormData, postSchema } from '@/schema/post';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FieldGroup, Field } from '@/components/ui/field';
 import { IoClose } from 'react-icons/io5';
+import { updateMyPostAction } from '@/lib/actions/post/update-my-post-action';
 
 type PostFormProps = {
   user?: typeof auth.$Infer.Session.user;
@@ -48,10 +49,14 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (data: PostFormData) => {
-    const result = await createPostAction(data);
+    const result = isEdit
+      ? await updateMyPostAction({ data, postId: post?.id as string })
+      : await createPostAction(data);
 
     if (result.success) {
       reset();
+      setIsUploadImage(false);
+      if (setIsEdit) setIsEdit(false);
       toast.success(result.message);
     } else {
       toast.error(result.message);
