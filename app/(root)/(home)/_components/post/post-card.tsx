@@ -71,6 +71,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
 
   const isOwner = loggedUser?.id === post.user.id;
   const isFollowing = post.user.followers.length > 0;
+  const isPostReported = post.reports.length > 0;
 
   const handleLike = () => {
     const newLikeState = !optimisticLikes.isLiked;
@@ -171,12 +172,13 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                       <span>{optimisticComments.commentsCount}</span>
                     )}
                   </Button>
-                  {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
-                    <ReportPostDialog
-                      reporterId={loggedUser.id}
-                      postId={post.id}
-                    />
-                  )}
+                  {!isOwner &&
+                    !isPostReported && ( // Only show report button if the logged in user is not the owner of the post
+                      <ReportPostDialog
+                        reporterId={loggedUser.id}
+                        postId={post.id}
+                      />
+                    )}
                 </>
               )}
             </div>

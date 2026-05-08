@@ -43,6 +43,12 @@ export type PostWithRelations = Prisma.PostGetPayload<{
         postId: true;
       };
     };
+    reports: {
+      select: {
+        postId: true;
+        reporterId: true;
+      };
+    };
     _count: {
       select: {
         likes: true;

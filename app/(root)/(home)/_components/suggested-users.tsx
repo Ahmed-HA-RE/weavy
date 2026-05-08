@@ -19,6 +19,11 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
           followerId: userId,
         },
       },
+      blocked: {
+        none: {
+          blockerId: userId,
+        },
+      },
     },
     select: {
       id: true,

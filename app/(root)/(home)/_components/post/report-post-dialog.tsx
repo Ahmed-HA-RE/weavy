@@ -31,6 +31,7 @@ import { REPORT_REASON } from '@/lib/generated/prisma/enums';
 import { formatReportReason } from '@/lib/utils';
 import { type ReportPostFormData, reportPostSchema } from '@/schema/post';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { TbMessageReport } from 'react-icons/tb';
@@ -43,6 +44,7 @@ const ReportPostDialog = ({
   reporterId: string;
   postId: string;
 }) => {
+  const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = useState(false);
 
   const form = useForm<ReportPostFormData>({
@@ -62,6 +64,7 @@ const ReportPostDialog = ({
       form.reset();
       setOpenDialog(false);
       toast.success(res.message);
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
     } else {
       toast.error(res.message);
       return;

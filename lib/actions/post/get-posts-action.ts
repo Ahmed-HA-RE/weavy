@@ -18,6 +18,19 @@ export const getPostsAction = async ({
   const loggedUser = session?.user;
 
   const posts = await db.post.findMany({
+    where: {
+      OR: [
+        {
+          user: {
+            blocked: {
+              none: {
+                blockerId: loggedUser?.id,
+              },
+            },
+          },
+        },
+      ],
+    },
     orderBy: {
       createdAt: 'desc',
     },
@@ -70,6 +83,15 @@ export const getPostsAction = async ({
         select: {
           postId: true,
           userId: true,
+        },
+      },
+      reports: {
+        where: {
+          reporterId: loggedUser?.id,
+        },
+        select: {
+          postId: true,
+          reporterId: true,
         },
       },
     },
