@@ -39,7 +39,7 @@ const Header = async () => {
 
   return (
     <header className='border-b'>
-      <div className='container flex items-center justify-between h-16'>
+      <div className='container flex items-center justify-between h-18'>
         {/* Logo */}
         <Link href='/'>
           <Image

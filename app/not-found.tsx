@@ -13,6 +13,7 @@ const NotFoundPage = () => {
         width={0}
         height={0}
         priority
+        loading='eager'
         sizes='100vw'
         className='h-[clamp(300px,50vh,600px)] w-full'
       />
