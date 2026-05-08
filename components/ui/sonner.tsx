@@ -35,6 +35,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: 'cn-toast !gap-0.5',
+          icon: '!translate-y-0.5',
         },
       }}
       {...props}

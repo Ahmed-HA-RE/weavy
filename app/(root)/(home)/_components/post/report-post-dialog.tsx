@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { reportPostAction } from '@/lib/actions/post/report-post-action';
 import { REPORT_REASON } from '@/lib/generated/prisma/enums';
 import { formatReportReason } from '@/lib/utils';
 import { type ReportPostFormData, reportPostSchema } from '@/schema/post';
@@ -33,6 +34,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { TbMessageReport } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 const ReportPostDialog = ({
   reporterId,
@@ -54,9 +56,16 @@ const ReportPostDialog = ({
     },
   });
 
-  const onSubmit = (data: ReportPostFormData) => {
-    // @todo: implement report post action
-    console.log(data);
+  const onSubmit = async (data: ReportPostFormData) => {
+    const res = await reportPostAction(data);
+    if (res.success) {
+      form.reset();
+      setOpenDialog(false);
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+      return;
+    }
   };
 
   const { control, handleSubmit } = form;
@@ -70,7 +79,6 @@ const ReportPostDialog = ({
       <DialogTrigger asChild>
         <Button variant='ghost' size='sm'>
           <TbMessageReport />
-          Report
         </Button>
       </DialogTrigger>
       <form id='report-post-form' onSubmit={handleSubmit(onSubmit)}>

@@ -1,5 +1,5 @@
 import { APP_NAME } from '@/lib/constants/app';
-import resend, { resendDomain } from '@/lib/resend';
+import { resend, resendDomain } from '@/lib/resend';
 import ConfirmEmail from '@/emails/confirm-email';
 
 export const sendConfirmEmail = async ({

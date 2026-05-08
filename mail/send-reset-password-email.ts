@@ -1,5 +1,5 @@
 import { APP_NAME } from '@/lib/constants/app';
-import resend, { resendDomain } from '@/lib/resend';
+import { resend, resendDomain } from '@/lib/resend';
 import ResetPassword from '@/emails/reset-password';
 
 export const sendResetPasswordEmail = async ({
