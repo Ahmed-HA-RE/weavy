@@ -28,7 +28,7 @@ export type PostFormData = z.infer<typeof postSchema>;
 
 export const reportPostSchema = z.object({
   reason: z.enum(
-    REPORT_REASON,
+    Object.values(REPORT_REASON),
     'Please select a valid reason for reporting this post',
   ),
   reporterId: z.string({ error: 'Invalid reporter ID' }),

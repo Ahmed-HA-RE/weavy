@@ -84,8 +84,8 @@ const ReportPostDialog = ({
           <TbMessageReport />
         </Button>
       </DialogTrigger>
-      <form id='report-post-form' onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent className='sm:max-w-lg ring-0 dark:ring-1 gap-6'>
+      <DialogContent className='sm:max-w-lg ring-0 dark:ring-1'>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Report Post</DialogTitle>
             <DialogDescription>
@@ -93,7 +93,7 @@ const ReportPostDialog = ({
               content.
             </DialogDescription>
           </DialogHeader>
-          <FieldGroup>
+          <FieldGroup className='my-6'>
             {/* Reason Field */}
             <Controller
               name='reason'
@@ -104,7 +104,12 @@ const ReportPostDialog = ({
                     Reason
                     <span className='text-foreground'>*</span>
                   </FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
                     <SelectTrigger
                       id={field.name}
                       className='dark:!bg-background w-full'
@@ -120,7 +125,10 @@ const ReportPostDialog = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FieldError errors={[fieldState.error]} />
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -179,17 +187,12 @@ const ReportPostDialog = ({
             >
               Cancel
             </DialogClose>
-            <Button
-              type='submit'
-              size={'sm'}
-              form='report-post-form'
-              disabled={isSubmitting}
-            >
+            <Button type='submit' size={'sm'} disabled={isSubmitting}>
               {isSubmitting ? 'Reporting...' : 'Report Post'}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };
