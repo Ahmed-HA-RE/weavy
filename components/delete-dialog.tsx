@@ -14,6 +14,7 @@ import { Spinner } from './ui/spinner';
 import { Button } from './ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 type ActionResponse = {
   success: boolean;
@@ -26,6 +27,8 @@ type DeleteDialogProps = {
   trigger: React.ReactNode;
   confirmText?: string;
   action: () => Promise<ActionResponse>;
+  isClientPurgeCache?: boolean; // Optional prop to indicate if client cache should be purged after deletion
+  queryKey?: string | string[];
 };
 
 const DeleteDialog = ({
@@ -34,9 +37,12 @@ const DeleteDialog = ({
   trigger,
   confirmText = 'Delete',
   action,
+  isClientPurgeCache = false,
+  queryKey,
 }: DeleteDialogProps) => {
   const [isPending, setIsPending] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     setIsPending(true);
@@ -45,6 +51,9 @@ const DeleteDialog = ({
     if (res.success) {
       setOpenDialog(false);
       toast.success(res.message);
+      if (isClientPurgeCache && queryKey) {
+        queryClient.invalidateQueries({ queryKey: [queryKey] });
+      }
     } else {
       toast.error(res.message);
       setIsPending(false);
