@@ -110,7 +110,13 @@ const ProfileDropdown = ({
             return (
               <DropdownMenuItem
                 key={index}
-                onClick={() => router.push(item.href)}
+                onClick={() =>
+                  router.push(
+                    item.href.includes('/:username')
+                      ? `/profile/${user.name}`
+                      : item.href,
+                  )
+                }
               >
                 <Icon />
                 {item.title}

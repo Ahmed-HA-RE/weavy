@@ -24,18 +24,22 @@ const Header = async () => {
     if (!isDesktop) return false;
     if (!navItem.roles) return true;
     if (isLoggedIn && navItem.roles.includes(session.user.role)) return true;
-    if (isLoggedIn && navItem.roles.includes(session.user.role)) return true;
     return false;
   });
 
-  const mobileNavigationData = navigationData.filter((navItem) => {
-    const isMobile = navItem.device === 'mobile' || navItem.device === 'both';
-    if (!isMobile) return false;
-    if (!navItem.roles) return true;
-    if (isLoggedIn && navItem.roles.includes(session.user.role)) return true;
-    if (isLoggedIn && navItem.roles.includes(session.user.role)) return true;
-    return false;
-  });
+  const mobileNavigationData = navigationData
+    .filter((navItem) => {
+      const isMobile = navItem.device === 'mobile' || navItem.device === 'both';
+      if (!isMobile) return false;
+      if (!navItem.roles) return true;
+      if (isLoggedIn && navItem.roles.includes(session.user.role)) return true;
+      return false;
+    })
+    .map((navItem) =>
+      navItem.href.includes('/:username')
+        ? { ...navItem, href: `/profile/${session?.user.name}` }
+        : navItem,
+    );
 
   return (
     <header className='border-b'>

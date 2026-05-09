@@ -36,3 +36,9 @@ export const formatReportReason = (reason: REPORT_REASON) => {
       return reason;
   }
 };
+
+export const formatUploadThingError = (errorMessage: string) => {
+  if (errorMessage.includes('FileSizeMismatch')) {
+    return 'File size does not match the expected size.';
+  }
+};

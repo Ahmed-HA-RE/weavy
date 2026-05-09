@@ -15,7 +15,7 @@ import { APP_NAME } from '@/lib/constants/app';
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { FiHome, FiUser } from 'react-icons/fi';
+import { FiHome, FiSettings, FiUser } from 'react-icons/fi';
 import { RiShieldUserLine } from 'react-icons/ri';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { LuLogOut, LuLogIn } from 'react-icons/lu';
@@ -43,6 +43,7 @@ const MobileNavigation = ({
     home: FiHome,
     profile: FiUser,
     notifications: IoNotificationsOutline,
+    settings: FiSettings,
     dashboard: RiShieldUserLine,
   };
 
@@ -97,6 +98,7 @@ const MobileNavigation = ({
           {navigationData.map((navItem) => {
             const Icon = Icons[navItem.icon as keyof typeof Icons];
             const isActive = pathname === navItem.href;
+            
             return (
               <li
                 key={navItem.title}

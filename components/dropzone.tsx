@@ -4,6 +4,7 @@ import { Endpoints } from '@/types/endpoints';
 import { UploadDropzone } from '@/lib/uploadthing';
 import { toast } from 'sonner';
 import { Spinner } from './ui/spinner';
+import { formatUploadThingError } from '@/lib/utils';
 
 type DropzoneProps = {
   onChange: ({ url, key }: { url: string; key: string }) => void;
@@ -20,8 +21,9 @@ const Dropzone = ({ onChange, endpoint }: DropzoneProps) => {
       }}
       onUploadError={(error: Error) => {
         console.log(`ERROR! ${error.message}`);
+        toast.error(`Upload failed: ${formatUploadThingError(error.message)}`);
       }}
-      className='border-0 !px-0 !py-4 ut-button:bg-primary ut-button:h-10 ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:w-30 ut-label:font-medium ut-label:w-full ut-label:text-foreground ut-allowed-content:text-muted-foreground ut-allowed-content:hidden ut-button:ut-uploading:opacity-50 ut-button:ut-uploading:pointer-events-none ut-uploading:pointer-events-none'
+      className='border-0 !px-0 !py-4 ut-button:bg-primary ut-button:h-10 ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:w-30 ut-label:font-medium ut-label:w-full ut-label:text-foreground ut-allowed-content:text-muted-foreground ut-button:ut-uploading:opacity-50 ut-button:ut-uploading:pointer-events-none ut-uploading:pointer-events-none max-sm:ut-button:!mt-6'
       content={{
         label: () => {
           return 'Click or drag and drop to upload an image';
@@ -30,8 +32,10 @@ const Dropzone = ({ onChange, endpoint }: DropzoneProps) => {
           if (isUploading) {
             return <Spinner />;
           }
-
           return 'Upload Image';
+        },
+        allowedContent: () => {
+          return 'Only .jpeg, .png, and .avif files are allowed. Max size: 4MB';
         },
       }}
     />

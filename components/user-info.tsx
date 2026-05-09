@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import Image from 'next/image';
 import { Suspense } from 'react';
-import { MdAdminPanelSettings } from 'react-icons/md';
+import { RiShieldUserFill } from 'react-icons/ri';
 import { HiBadgeCheck } from 'react-icons/hi';
 import { formatTimeToDistance } from '@/lib/utils';
 import { User } from '@/lib/generated/prisma/client';
@@ -15,7 +15,7 @@ type UserInfoProps = {
 const UserInfo = ({ user, createdAt }: UserInfoProps) => {
   return (
     <div className='flex items-center gap-3'>
-      <Link href={`/${user.name}`}>
+      <Link href={`/profile/${user.name}`}>
         <Avatar size='lg'>
           <Suspense
             fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}
@@ -34,7 +34,7 @@ const UserInfo = ({ user, createdAt }: UserInfoProps) => {
         <span className='flex items-center gap-1 text-sm'>
           {user.displayName || user.name}{' '}
           {user.role === 'ADMIN' ? (
-            <MdAdminPanelSettings className='size-4 text-amber-600' />
+            <RiShieldUserFill className='size-4 text-amber-600' />
           ) : (
             <HiBadgeCheck className='size-4 text-accent ' />
           )}

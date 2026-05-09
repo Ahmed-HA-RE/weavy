@@ -118,6 +118,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                   src={post.image}
                   alt={`Post image by ${post.user.name}`}
                   fill
+                  loading='eager'
                   className='rounded-md object-cover'
                 />
               </div>

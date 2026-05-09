@@ -12,14 +12,21 @@ export const navigationData: Navigation[] = [
   },
   {
     title: 'Profile',
-    href: '/profile',
+    href: '/profile/:username',
     roles: [USER_ROLE.USER],
     device: 'mobile',
     icon: 'profile',
   },
   {
+    title: 'Settings',
+    href: '/settings',
+    icon: 'settings',
+    roles: [USER_ROLE.USER],
+    device: 'mobile',
+  },
+  {
     title: 'Dashboard',
-    href: '/dashboard',
+    href: '/admin/dashboard',
     roles: [USER_ROLE.ADMIN],
     device: 'mobile',
     icon: 'dashboard',
@@ -28,8 +35,8 @@ export const navigationData: Navigation[] = [
 
 export const profileMenuNavigationData = [
   {
-    title: 'My Profile',
-    href: '/profile',
+    title: 'Profile',
+    href: '/profile/:username',
     icon: 'profile',
     roles: [USER_ROLE.USER],
   },
