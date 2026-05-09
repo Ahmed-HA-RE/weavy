@@ -6,7 +6,7 @@ import { headers } from 'next/headers';
 
 export const getMyNotificationsAction = async ({
   limit = 10,
-  pageParam = 1,
+  pageParam,
 }: {
   limit?: number;
   pageParam: number;

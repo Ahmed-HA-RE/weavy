@@ -18,7 +18,9 @@ const NotificationsList = () => {
       refetchOnWindowFocus: false,
     });
 
-  if (data?.pages.length === 0) {
+  const isEmpty = data?.pages.some((page) => page?.notifications?.length === 0);
+
+  if (isEmpty) {
     return (
       <Alert variant='info'>
         <FaInfoCircle />
@@ -29,7 +31,7 @@ const NotificationsList = () => {
 
   return (
     <>
-      <div className='space-y-2'>
+      <div className='space-y-4'>
         {data?.pages.map((page) =>
           page?.notifications?.map((notification) => (
             <Notification key={notification.id} notification={notification} />

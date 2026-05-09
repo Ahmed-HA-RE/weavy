@@ -30,7 +30,9 @@ const PostList = () => {
     }
   }, [fetchNextPage, inView]);
 
-  if (data?.pages.length === 0) {
+  const isEmpty = data?.pages.some((page) => page.posts.length === 0);
+
+  if (isEmpty) {
     return (
       <Alert variant='info'>
         <FaInfoCircle />
