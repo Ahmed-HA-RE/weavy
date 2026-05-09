@@ -29,7 +29,7 @@ const NotificationsList = () => {
 
   return (
     <>
-      <div className='space-y-4 divide-y'>
+      <div className='space-y-2'>
         {data?.pages.map((page) =>
           page?.notifications?.map((notification) => (
             <Notification key={notification.id} notification={notification} />

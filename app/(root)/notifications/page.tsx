@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import FetchNotificationsWrapper from './_components/fetch-notifications-wrapper';
+import NotificationSkeleton from './_components/notification-skeleton';
 
 export const metadata: Metadata = {
   title: 'Notifications',
@@ -15,7 +16,11 @@ const NotificationsPage = async () => {
         <h1 className='text-2xl md:text-3xl font-semibold pb-[30px]'>
           Notifications
         </h1>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={Array.from({ length: 10 }).map((_, index) => (
+            <NotificationSkeleton key={index} />
+          ))}
+        >
           <FetchNotificationsWrapper />
         </Suspense>
       </div>
