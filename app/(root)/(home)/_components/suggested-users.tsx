@@ -21,12 +21,12 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
       },
       blocked: {
         none: {
-          blockerId: userId,
+          blockedId: userId,
         },
       },
       blocker: {
         none: {
-          blockedId: userId,
+          blockerId: userId,
         },
       },
     },

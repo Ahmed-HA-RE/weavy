@@ -23,6 +23,11 @@ export const getPostsAction = async ({
       user: {
         blocked: {
           none: {
+            blockedId: loggedUser?.id || Prisma.skip,
+          },
+        },
+        blocker: {
+          none: {
             blockerId: loggedUser?.id || Prisma.skip,
           },
         },

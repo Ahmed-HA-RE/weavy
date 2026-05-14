@@ -13,31 +13,19 @@ export const blockUserAction = async (blockedUser: string) => {
     if (!session)
       throw new Error('User must be authenticated to block another user.');
 
-    // Block the user and remove any existing follow relationships
+    const loggedUser = session.user;
+
+    // Block the user and remove any existing data that is relevant between the blocker and the blocked user, such as follows, likes, comments, etc...
     await db.$transaction(async (tx) => {
+      // 1. Block the user
       const newBlock = await tx.block.create({
         data: {
-          blockerId: session.user.id,
           blockedId: blockedUser,
+          blockerId: loggedUser.id,
         },
       });
 
-      // Fetch the follow and check if the blocker is following the blocked user
-      const follow = await tx.follow.findUnique({
-        where: {
-          followerId_followingId: {
-            followerId: newBlock.blockerId,
-            followingId: newBlock.blockedId,
-          },
-        },
-        select: {
-          followerId: true,
-          followingId: true,
-        },
-      });
-
-      if (!follow) return;
-
+      // 2. Remove follow relationships
       await tx.follow.deleteMany({
         where: {
           OR: [
@@ -51,6 +39,34 @@ export const blockUserAction = async (blockedUser: string) => {
             },
           ],
         },
+      });
+
+      const swapCleanup = {
+        OR: [
+          {
+            userId: newBlock.blockerId,
+            post: { userId: newBlock.blockedId },
+          },
+          {
+            userId: newBlock.blockedId,
+            post: { userId: newBlock.blockerId },
+          },
+        ],
+      };
+
+      // 3. Remove likes
+      await tx.like.deleteMany({
+        where: swapCleanup,
+      });
+
+      // 4. Remove comments
+      await tx.comment.deleteMany({
+        where: swapCleanup,
+      });
+
+      // 5. Remove bookmarks
+      await tx.bookmark.deleteMany({
+        where: swapCleanup,
       });
     });
 

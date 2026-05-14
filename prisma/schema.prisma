@@ -79,8 +79,8 @@ model User {
   reporter             ReportUser[]   @relation("reporter") // User who reported other users
   reported             ReportUser[]   @relation("reported") // User who was reported by this user
   reporter_post        ReportPost[]   @relation("reporter_post") // User who reported posts
-  blocker              Block[]        @relation("blocker") // Users who have blocked this user
-  blocked              Block[]        @relation("blocked") // Users this user has blocked
+  blocker              Block[]        @relation("blocked") // Users who have blocked this user
+  blocked              Block[]        @relation("blocker") // Users this user has blocked
 
   @@unique([email])
   @@map("user")

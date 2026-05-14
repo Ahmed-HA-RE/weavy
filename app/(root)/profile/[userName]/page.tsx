@@ -57,8 +57,8 @@ const ProfilePage = async ({ params }: Props) => {
     where: {
       name: userName,
       ...(loggedUser && {
-        blocked: { none: { blockerId: loggedUser?.user?.id } },
-        blocker: { none: { blockedId: loggedUser?.user?.id } },
+        blocked: { none: { blockedId: loggedUser?.user?.id } },
+        blocker: { none: { blockerId: loggedUser?.user?.id } },
       }),
     },
     include: {
