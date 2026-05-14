@@ -11,5 +11,13 @@ export type ProfileType = Prisma.UserGetPayload<{
         post: true;
       };
     };
+    reported: {
+      where: {
+        reporterId: string | undefined;
+      };
+      select: {
+        id: true;
+      };
+    };
   };
 }>;
