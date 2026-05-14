@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
 import db from '@/lib/db';
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { FaArrowLeft } from 'react-icons/fa6';
+import ProfileHeaderSection from './_components/header/profille-header-section';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 type Props = {
   params: Promise<{ userName: string }>;
@@ -49,8 +49,18 @@ const ProfilePage = async ({ params }: Props) => {
     return redirect('/');
   }
 
+  const loggedUser = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const user = await db.user.findUnique({
-    where: { name: userName },
+    where: {
+      name: userName,
+      ...(loggedUser && {
+        blocked: { none: { blockerId: loggedUser?.user?.id } },
+        blocker: { none: { blockedId: loggedUser?.user?.id } },
+      }),
+    },
     include: {
       comments: true,
       posts: true,
@@ -61,9 +71,14 @@ const ProfilePage = async ({ params }: Props) => {
           post: true,
         },
       },
+      reported: {
+        where: {
+          reporterId: loggedUser?.user?.id,
+        },
+        select: { id: true },
+      },
     },
   });
-
   if (!user) {
     return redirect('/');
   }
@@ -72,13 +87,11 @@ const ProfilePage = async ({ params }: Props) => {
     <>
       {/* Header Section */}
       <section className='spacing-top'>
-        <div className='container'>
-          <Button asChild variant='ghost' className='group mb-8'>
-            <Link href='/'>
-              <FaArrowLeft className='group-hover:-translate-x-1 transition-transform duration-400' />
-              Back to Home
-            </Link>
-          </Button>
+        <div className='container !max-w-3xl'>
+          <ProfileHeaderSection
+            user={user}
+            loggedUser={loggedUser?.user || null}
+          />
         </div>
       </section>
     </>

@@ -2,6 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
+import { Prisma } from '@/lib/generated/prisma/client';
 import { headers } from 'next/headers';
 
 export const getPostsAction = async ({
@@ -19,17 +20,13 @@ export const getPostsAction = async ({
 
   const posts = await db.post.findMany({
     where: {
-      OR: [
-        {
-          user: {
-            blocked: {
-              none: {
-                blockerId: loggedUser?.id,
-              },
-            },
+      user: {
+        blocked: {
+          none: {
+            blockerId: loggedUser?.id || Prisma.skip,
           },
         },
-      ],
+      },
     },
     orderBy: {
       createdAt: 'desc',
@@ -49,12 +46,23 @@ export const getPostsAction = async ({
           role: true,
           followers: {
             where: {
-              followerId: loggedUser?.id,
+              followerId: loggedUser?.id || Prisma.skip,
             },
           },
         },
       },
       comments: {
+        ...(loggedUser && {
+          where: {
+            user: {
+              blocked: {
+                none: {
+                  blockerId: loggedUser?.id || Prisma.skip,
+                },
+              },
+            },
+          },
+        }),
         select: {
           id: true,
           content: true,
@@ -69,16 +77,31 @@ export const getPostsAction = async ({
             },
           },
         },
+        orderBy: {
+          createdAt: 'asc',
+        },
       },
       _count: {
         select: {
-          likes: true,
-          comments: true,
+          likes: {
+            where: {
+              user: {
+                blocked: { none: { blockerId: loggedUser?.id || Prisma.skip } },
+              },
+            },
+          },
+          comments: {
+            where: {
+              user: {
+                blocked: { none: { blockerId: loggedUser?.id || Prisma.skip } },
+              },
+            },
+          },
         },
       },
       likes: {
         where: {
-          userId: loggedUser?.id,
+          userId: loggedUser?.id || Prisma.skip,
         },
         select: {
           postId: true,
@@ -87,7 +110,7 @@ export const getPostsAction = async ({
       },
       reports: {
         where: {
-          reporterId: loggedUser?.id,
+          reporterId: loggedUser?.id || Prisma.skip,
         },
         select: {
           postId: true,
