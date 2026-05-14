@@ -4,8 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../lib/generated/prisma"
+  previewFeatures = ["strictUndefinedChecks"]
 }
 
 datasource db {
@@ -74,7 +75,9 @@ model User {
 
   notificationSender   Notification[] @relation("notificationSender") // Notifications sent by this user
   notificationReceiver Notification[] @relation("notificationReceiver") // Notifications received by this user
-  reports              Report[]
+  reporter             ReportUser[]   @relation("reporter") // User who reported other users
+  reported             ReportUser[]   @relation("reported") // User who was reported by this user
+  reporter_post        ReportPost[]   @relation("reporter_post") // User who reported posts
   blocker              Block[]        @relation("blocker") // Users who have blocked this user
   blocked              Block[]        @relation("blocked") // Users this user has blocked
 
@@ -144,7 +147,7 @@ model Post {
   comments      Comment[]
   likes         Like[]
   notifications Notification[]
-  reports       Report[]
+  reports       ReportPost[]
 
   @@index([userId, createdAt])
 }
@@ -223,7 +226,7 @@ model Notification {
   @@index([receiverId, createdAt])
 }
 
-model Report {
+model ReportUser {
   id String @id @default(uuid())
 
   reason    REPORT_REASON
@@ -234,13 +237,33 @@ model Report {
 
   // Relations
   reporterId String
-  reporter   User   @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter   User   @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  reportedId String
+  reported   User   @relation("reported", fields: [reportedId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, reportedId])
+  @@index([reportedId])
+}
+
+model ReportPost {
+  id String @id @default(uuid())
+
+  reason    REPORT_REASON
+  status    REPORT_STATUS @default(PENDING)
+  message   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  reporterId String
+  reporter   User   @relation("reporter_post", fields: [reporterId], references: [id], onDelete: Cascade)
 
   postId String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([reporterId, postId])
-  @@index([reporterId, postId])
+  @@index([postId])
 }
 
 model Block {
@@ -256,5 +279,4 @@ model Block {
   updatedAt DateTime @updatedAt
 
   @@unique([blockerId, blockedId])
-  @@index([blockerId, blockedId])
 }

@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
-import { sendReportPostEmail } from '@/mail/send-report-post-email';
+import { sendReportEmail } from '@/mail/send-report-email';
 import { ReportPostFormData, reportPostSchema } from '@/schema/post';
 import { headers } from 'next/headers';
 
@@ -23,14 +23,10 @@ export const reportPostAction = async (data: ReportPostFormData) => {
       throw new Error(`Validation failed: ${errorMessages}`);
     }
 
-    const { message, blockUser, postId, reason, reporterId } =
-      validatedData.data;
-
-    if (reporterId !== session.user.id)
-      throw new Error('Unauthorized to report this post');
+    const { message, blockUser, postId, reason } = validatedData.data;
 
     // Check if the user has already reported this post
-    const existingReport = await db.report.findUnique({
+    const existingReport = await db.reportPost.findUnique({
       where: {
         reporterId_postId: {
           reporterId: session.user.id,
@@ -47,14 +43,14 @@ export const reportPostAction = async (data: ReportPostFormData) => {
     // Create the report in the database and check if the user wanted to block the post author
 
     await db.$transaction(async (tx) => {
-      const newReport = await tx.report.create({
+      const newReport = await tx.reportPost.create({
         data: {
           reason,
           message,
           postId,
-          reporterId,
+          reporterId: session.user.id,
         },
-        select: {
+        include: {
           post: {
             select: {
               userId: true,
@@ -62,7 +58,7 @@ export const reportPostAction = async (data: ReportPostFormData) => {
           },
         },
       });
-      if (blockUser) {
+      if (blockUser && newReport?.post?.userId) {
         await tx.block.create({
           data: {
             blockerId: session.user.id,
@@ -73,9 +69,10 @@ export const reportPostAction = async (data: ReportPostFormData) => {
     });
 
     // Send an email to the reporter for confirmation
-    void sendReportPostEmail({
+    void sendReportEmail({
       reporterEmail: session.user.email,
       reporterName: session.user.name,
+      type: 'POST',
     });
 
     return { success: true, message: 'Thank you for reporting the post.' };

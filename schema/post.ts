@@ -1,6 +1,11 @@
 import z from 'zod';
 import { REPORT_REASON } from '@/lib/generated/prisma/enums';
 
+export const reportReason = z.enum(
+  Object.values(REPORT_REASON),
+  'Please select a valid reason for reporting',
+);
+
 export const postSchema = z
   .object({
     content: z
@@ -27,10 +32,7 @@ export const postSchema = z
 export type PostFormData = z.infer<typeof postSchema>;
 
 export const reportPostSchema = z.object({
-  reason: z.enum(
-    Object.values(REPORT_REASON),
-    'Please select a valid reason for reporting this post',
-  ),
+  reason: reportReason,
   reporterId: z.string({ error: 'Invalid reporter ID' }),
   blockUser: z.boolean().default(false),
   postId: z.uuid({ error: 'Invalid post ID' }),
