@@ -25,7 +25,7 @@ import ReportPostDialog from './report-post-dialog';
 
 type PostCardProps = {
   post: PostWithRelations;
-  loggedUser?: typeof auth.$Infer.Session.user;
+  loggedUser: typeof auth.$Infer.Session.user | null;
 };
 
 const likeReducer = (
@@ -66,6 +66,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       };
     },
   );
+
   const [isCommenting, setIsCommenting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
@@ -119,6 +120,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                   alt={`Post image by ${post.user.name}`}
                   fill
                   loading='eager'
+                  sizes='auto'
                   className='rounded-md object-cover'
                 />
               </div>

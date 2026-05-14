@@ -5,8 +5,13 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import PostList from './post-list';
+import { auth } from '@/lib/auth';
 
-const FetchPostsWrapper = async () => {
+const FetchPostsWrapper = async ({
+  loggedInUser,
+}: {
+  loggedInUser: typeof auth.$Infer.Session.user | null;
+}) => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchInfiniteQuery({
@@ -17,7 +22,7 @@ const FetchPostsWrapper = async () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PostList />
+      <PostList loggedInUser={loggedInUser} />
     </HydrationBoundary>
   );
 };

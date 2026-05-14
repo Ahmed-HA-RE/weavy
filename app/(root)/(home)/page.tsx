@@ -40,7 +40,7 @@ const HomePage = async () => {
                 </div>
               }
             >
-              <FetchPostsWrapper />
+              <FetchPostsWrapper loggedInUser={session?.user || null} />
             </Suspense>
           </div>
         </section>

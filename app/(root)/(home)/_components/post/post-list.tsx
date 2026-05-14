@@ -3,17 +3,19 @@
 import PostCard from './post-card';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPostsAction } from '@/lib/actions/post/get-posts-action';
-import { authClient } from '@/lib/auth-client';
 import { Alert } from '@/components/ui/alert';
 import { BiSolidCommentError } from 'react-icons/bi';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import PostSkeletonCard from './post-skeleton-card';
 import { FaInfoCircle } from 'react-icons/fa';
+import { auth } from '@/lib/auth';
 
-const PostList = () => {
-  const { data: session } = authClient.useSession();
-
+const PostList = ({
+  loggedInUser,
+}: {
+  loggedInUser: typeof auth.$Infer.Session.user | null;
+}) => {
   const { data, status, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts'],
     queryFn: async ({ pageParam }) => getPostsAction({ pageParam }),
@@ -54,7 +56,7 @@ const PostList = () => {
     <div className='space-y-6'>
       {data?.pages.map((page) =>
         page.posts.map((post) => (
-          <PostCard key={post.id} post={post} loggedUser={session?.user} />
+          <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
         )),
       )}
       <div ref={ref}>{isFetchingNextPage && <PostSkeletonCard />}</div>

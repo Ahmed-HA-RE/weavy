@@ -24,6 +24,11 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
           blockerId: userId,
         },
       },
+      blocker: {
+        none: {
+          blockedId: userId,
+        },
+      },
     },
     select: {
       id: true,
@@ -54,7 +59,7 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
             <div className='flex flex-row lg:flex-col xl:flex-row xl:items-center justify-between gap-4'>
               {/* Left Side */}
               <Link
-                href={`/${suggestedUser.name}`}
+                href={`/profile/${suggestedUser.name}`}
                 className='flex gap-2 group'
               >
                 <Avatar className='size-12'>

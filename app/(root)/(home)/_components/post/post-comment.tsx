@@ -25,7 +25,7 @@ type CommentProps = {
       };
     };
   }>;
-  loggedUser?: typeof auth.$Infer.Session.user;
+  loggedUser?: typeof auth.$Infer.Session.user | null;
   postId: string;
 };
 
