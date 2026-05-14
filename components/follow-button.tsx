@@ -45,7 +45,7 @@ const FollowButton = ({
     >
       {isToggle ? (
         optimisticFollow ? (
-          'UnFollow'
+          'Unfollow'
         ) : (
           'Follow'
         )

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { useOptimistic, useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
-import { FaHeart } from 'react-icons/fa6';
+import { FaHeart, FaRegBookmark } from 'react-icons/fa6';
 import { FiMessageCircle } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,6 +22,8 @@ import PostActions from './post-actions';
 import { PostWithRelations } from '@/types/post';
 import PostForm from './post-form';
 import ReportPostDialog from './report-post-dialog';
+import { useQueryClient } from '@tanstack/react-query';
+import BookmarkPostButton from './bookmark-post-button';
 
 type PostCardProps = {
   post: PostWithRelations;
@@ -44,6 +46,7 @@ const likeReducer = (
 };
 
 const PostCard = ({ post, loggedUser }: PostCardProps) => {
+  const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
   const [optimisticLikes, setOptimisticLikes] = useOptimistic(
     {
@@ -66,19 +69,23 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
       };
     },
   );
-
   const [isCommenting, setIsCommenting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   const isOwner = loggedUser?.id === post.user.id;
   const isFollowing = post.user.followers.length > 0;
   const isPostReported = post.reports.length > 0;
+  const isUserBookmarked = post.bookmarks.some(
+    (bookmark) =>
+      bookmark.userId === loggedUser?.id && bookmark.postId === post.id,
+  );
 
   const handleLike = () => {
     const newLikeState = !optimisticLikes.isLiked;
     startTransition(async () => {
       setOptimisticLikes(newLikeState);
       await togglePostLikeAction(post.id);
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
     });
   };
 
@@ -144,10 +151,20 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                       )}
                     </Link>
                   </Button>
+                  <Button asChild variant='ghost' size='sm'>
+                    <Link href='/sign-in'>
+                      <FaRegBookmark />
+                    </Link>
+                  </Button>
                 </>
               ) : (
                 <>
-                  <Button variant='ghost' size='sm' onClick={handleLike}>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={handleLike}
+                    disabled={isPending}
+                  >
                     {optimisticLikes.isLiked ? (
                       <>
                         <FaHeart className='fill-destructive' />
@@ -175,6 +192,12 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                       <span>{optimisticComments.commentsCount}</span>
                     )}
                   </Button>
+                  {!isOwner && loggedUser && (
+                    <BookmarkPostButton
+                      postId={post.id}
+                      isUserBookmarked={isUserBookmarked}
+                    />
+                  )}
                   {!isOwner &&
                     !isPostReported && ( // Only show report button if the logged in user is not the owner of the post
                       <ReportPostDialog

@@ -64,11 +64,12 @@ model User {
   website       String?
 
   // Relations
-  sessions Session[]
-  accounts Account[]
-  posts    Post[]
-  comments Comment[]
-  likes    Like[]
+  sessions  Session[]
+  accounts  Account[]
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
 
   followers Follow[] @relation("followers") // A user who follows this user
   following Follow[] @relation("following") // A user who is followed by this user
@@ -148,6 +149,7 @@ model Post {
   likes         Like[]
   notifications Notification[]
   reports       ReportPost[]
+  bookmarks     Bookmark[]
 
   @@index([userId, createdAt])
 }
@@ -279,4 +281,16 @@ model Block {
   updatedAt DateTime @updatedAt
 
   @@unique([blockerId, blockedId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, postId])
 }

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Suspense, TransitionStartFunction, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { addComment } from '@/lib/actions/post/add-comment';
+import { addComment } from '@/lib/actions/post/add-comment-action';
 import { auth } from '@/lib/auth';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { useQueryClient } from '@tanstack/react-query';

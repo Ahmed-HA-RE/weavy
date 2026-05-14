@@ -51,6 +51,7 @@ export const getPostsAction = async ({
           },
         },
       },
+
       comments: {
         ...(loggedUser && {
           where: {
@@ -112,10 +113,22 @@ export const getPostsAction = async ({
         where: {
           reporterId: loggedUser?.id || Prisma.skip,
         },
+
         select: {
           postId: true,
           reporterId: true,
         },
+      },
+      bookmarks: {
+        ...(loggedUser && {
+          where: {
+            userId: loggedUser.id,
+          },
+          select: {
+            postId: true,
+            userId: true,
+          },
+        }),
       },
     },
     skip: (pageParam - 1) * limit,
