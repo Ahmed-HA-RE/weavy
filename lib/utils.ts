@@ -42,3 +42,10 @@ export const formatUploadThingError = (errorMessage: string) => {
     return 'File size does not match the expected size.';
   }
 };
+
+export const formatLargeNumber = (count: number) => {
+  return Intl.NumberFormat('en-SA', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(count);
+};

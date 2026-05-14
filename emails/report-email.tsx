@@ -22,11 +22,17 @@ const baseUrl = process.env.NEXT_PROD_SERVER_URL
   ? process.env.NEXT_PROD_SERVER_URL
   : '';
 
-interface ReportPostEmailProps {
+interface ReportEmailProps {
   reporterName: string;
+  reportedName?: string;
+  type: 'POST' | 'USER';
 }
 
-export const ReportPostEmail = ({ reporterName }: ReportPostEmailProps) => (
+export const ReportEmail = ({
+  reporterName,
+  reportedName,
+  type,
+}: ReportEmailProps) => (
   <Tailwind config={{ presets: [pixelBasedPreset] }}>
     <Html>
       <Head>
@@ -66,9 +72,10 @@ export const ReportPostEmail = ({ reporterName }: ReportPostEmailProps) => (
                 <Text className='mx-auto mt-0 mb-8 max-w-[380px] text-center '>
                   Hi {reporterName},
                   <br />
-                  We received your report about a post. Our moderation team will
-                  review it against our community guidelines and take
-                  appropriate action.
+                  We received your report about a{' '}
+                  {type === 'POST' ? 'post' : `user ${reportedName}`}. Our
+                  moderation team will review it against our community
+                  guidelines and take appropriate action.
                 </Text>
                 <Text className='text-[14px] text-gray-400 italic'>
                   Thank you for helping us keep the community safe.
@@ -130,8 +137,10 @@ export const ReportPostEmail = ({ reporterName }: ReportPostEmailProps) => (
   </Tailwind>
 );
 
-ReportPostEmail.PreviewProps = {
+ReportEmail.PreviewProps = {
   reporterName: 'John Doe',
-} satisfies ReportPostEmailProps;
+  reportedName: 'Jane Doe',
+  type: 'USER',
+} satisfies ReportEmailProps;
 
-export default ReportPostEmail;
+export default ReportEmail;
