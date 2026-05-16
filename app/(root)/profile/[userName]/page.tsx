@@ -1,9 +1,11 @@
 import db from '@/lib/db';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import ProfileHeaderSection from './_components/header/profille-header-section';
+import ProfileHeader from './_components/header/profile-header';
+import ProfileHeaderSkeleton from './_components/header/profile-header-skeleton';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { Suspense } from 'react';
 
 type Props = {
   params: Promise<{ userName: string }>;
@@ -45,41 +47,10 @@ export const generateMetadata = async ({
 const ProfilePage = async ({ params }: Props) => {
   const { userName } = await params;
 
-  if (!userName) {
-    return redirect('/');
-  }
-
   const loggedUser = await auth.api.getSession({
     headers: await headers(),
   });
-
-  const user = await db.user.findUnique({
-    where: {
-      name: userName,
-      ...(loggedUser && {
-        blocked: { none: { blockedId: loggedUser?.user?.id } },
-        blocker: { none: { blockerId: loggedUser?.user?.id } },
-      }),
-    },
-    include: {
-      comments: true,
-      posts: true,
-      followers: true,
-      following: true,
-      likes: {
-        include: {
-          post: true,
-        },
-      },
-      reported: {
-        where: {
-          reporterId: loggedUser?.user?.id,
-        },
-        select: { id: true },
-      },
-    },
-  });
-  if (!user) {
+  if (!userName) {
     return redirect('/');
   }
 
@@ -87,12 +58,18 @@ const ProfilePage = async ({ params }: Props) => {
     <>
       {/* Header Section */}
       <section className='spacing-top'>
-        <div className='container !max-w-3xl'>
-          <ProfileHeaderSection
-            user={user}
-            loggedUser={loggedUser?.user || null}
-          />
+        <div className='profile-container'>
+          <Suspense fallback={<ProfileHeaderSkeleton />}>
+            <ProfileHeader
+              userName={userName}
+              loggedUser={loggedUser?.user || null}
+            />
+          </Suspense>
         </div>
+      </section>
+      {/* Tabs Section */}
+      <section className='py-12'>
+        <div className='profile-container'>{/* <ProfileTabs /> */}</div>
       </section>
     </>
   );

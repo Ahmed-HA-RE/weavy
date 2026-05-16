@@ -1,9 +1,7 @@
 import FollowButton from '@/components/follow-button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { auth } from '@/lib/auth';
 import { USER_ROLE } from '@/lib/generated/prisma/enums';
-import { ProfileType } from '@/types/profile';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -11,19 +9,54 @@ import { HiBadgeCheck } from 'react-icons/hi';
 import { RiShieldUserFill } from 'react-icons/ri';
 import ProfileHeaderDropdown from './profile-header-dropdown';
 import { formatLargeNumber } from '@/lib/utils';
+import db from '@/lib/db';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-const ProfileHeaderSection = ({
-  user,
+const ProfileHeader = async ({
+  userName,
   loggedUser,
 }: {
-  user: ProfileType;
+  userName: string;
   loggedUser: typeof auth.$Infer.Session.user | null;
 }) => {
+  const user = await db.user.findUnique({
+    where: {
+      name: userName,
+      ...(loggedUser && {
+        blocked: { none: { blockedId: loggedUser?.id } },
+        blocker: { none: { blockerId: loggedUser?.id } },
+      }),
+    },
+    include: {
+      _count: {
+        select: {
+          posts: true,
+          followers: true,
+          following: true,
+        },
+      },
+      followers: {
+        where: {
+          followerId: loggedUser?.id,
+        },
+      },
+      reported: {
+        where: {
+          reporterId: loggedUser?.id,
+        },
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!user) {
+    return redirect('/');
+  }
+
   const displayName = user.displayName || user.name;
   const isOwner = loggedUser?.id === user.id;
-  const isFollowing = user.followers.some(
-    (follower) => follower.followerId === loggedUser?.id,
-  );
+  const isFollowing = user.followers.length > 0;
   const isUserLoggedIn = !!loggedUser;
   const isReportedByLoggedUser = user.reported.length > 0;
 
@@ -41,15 +74,15 @@ const ProfileHeaderSection = ({
   const userMetrics = [
     {
       label: 'posts',
-      count: user.posts.length,
+      count: user._count.posts,
     },
     {
       label: 'followers',
-      count: user.followers.length,
+      count: user._count.followers,
     },
     {
       label: 'following',
-      count: user.following.length,
+      count: user._count.following,
     },
   ];
 
@@ -126,4 +159,4 @@ const ProfileHeaderSection = ({
   );
 };
 
-export default ProfileHeaderSection;
+export default ProfileHeader;
