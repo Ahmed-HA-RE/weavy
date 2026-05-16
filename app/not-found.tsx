@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const NotFoundPage = () => {
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center gap-12 px-8 py-8 sm:py-16 lg:justify-between lg:py-24'>
+    <div className='flex min-h-screen flex-col items-center justify-center gap-12 px-8 py-8 sm:py-16 lg:py-24'>
       <Image
         src='/error-illustration.svg'
         alt='Error Illustration'

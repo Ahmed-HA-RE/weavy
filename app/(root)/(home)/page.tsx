@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { Suspense } from 'react';
 import SuggestedUsers from './_components/suggested-users';
 import SuggestedUsersSkeleton from './_components/suggested-users-skeleton';
-import PostSkeletonCard from './_components/post/post-skeleton-card';
+import PostCardSkeleton from './_components/post/post-card-skeleton';
 import FetchPostsWrapper from './_components/post/fetch-posts-wrapper';
 import PostForm from './_components/post/post-form';
 import SideBar from '@/components/side-bar';
@@ -35,7 +35,7 @@ const HomePage = async () => {
               fallback={
                 <div className='space-y-6'>
                   {Array.from({ length: 10 }).map((_, index) => (
-                    <PostSkeletonCard key={index} />
+                    <PostCardSkeleton key={index} />
                   ))}
                 </div>
               }

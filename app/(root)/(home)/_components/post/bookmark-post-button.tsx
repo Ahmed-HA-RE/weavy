@@ -29,7 +29,14 @@ const BookmarkPostButton = ({
         toast.success(res.message);
       }
     });
-    queryClient.invalidateQueries({ queryKey: ['posts'] });
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: ['posts'],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ['user-posts'],
+      }),
+    ]);
   };
   return (
     <Button

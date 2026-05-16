@@ -24,10 +24,17 @@ import PostForm from './post-form';
 import ReportPostDialog from './report-post-dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import BookmarkPostButton from './bookmark-post-button';
+import { cn } from '@/lib/utils';
+
+type PostCardPost = Omit<PostWithRelations, 'comments'> & {
+  comments?: PostWithRelations['comments'];
+};
 
 type PostCardProps = {
-  post: PostWithRelations;
+  post: PostCardPost;
   loggedUser: typeof auth.$Infer.Session.user | null;
+  profilePage?: boolean;
+  className?: string;
 };
 
 const likeReducer = (
@@ -45,8 +52,14 @@ const likeReducer = (
   }
 };
 
-const PostCard = ({ post, loggedUser }: PostCardProps) => {
+const PostCard = ({
+  post,
+  loggedUser,
+  profilePage = false,
+  className,
+}: PostCardProps) => {
   const queryClient = useQueryClient();
+  const comments = post.comments ?? [];
   const [isPending, startTransition] = useTransition();
   const [optimisticLikes, setOptimisticLikes] = useOptimistic(
     {
@@ -59,7 +72,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
   );
   const [optimisticComments, addOptimisticComment] = useOptimistic(
     {
-      comments: post.comments,
+      comments,
       commentsCount: post._count.comments,
     },
     (state, newState: PostWithRelations['comments'][number]) => {
@@ -85,12 +98,19 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
     startTransition(async () => {
       setOptimisticLikes(newLikeState);
       await togglePostLikeAction(post.id);
-      await queryClient.invalidateQueries({ queryKey: ['posts'] });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['posts'],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['user-posts', post.user.name],
+        }),
+      ]);
     });
   };
 
   return (
-    <Card className='gap-6 pt-6'>
+    <Card className={cn('gap-6 pt-6', className)}>
       <CardHeader className='flex items-center justify-between gap-3'>
         <UserInfo createdAt={post.createdAt} user={post.user} />
         {loggedUser && (
@@ -182,16 +202,28 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
                     )}
                   </Button>
 
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={() => setIsCommenting((prev) => !prev)}
-                  >
-                    <FiMessageCircle />
-                    {optimisticComments.commentsCount > 0 && (
-                      <span>{optimisticComments.commentsCount}</span>
-                    )}
-                  </Button>
+                  {profilePage ? (
+                    <Button variant='ghost' size='sm' asChild>
+                      <Link href={`/post/${post.id}`}>
+                        <FiMessageCircle />
+                        {optimisticComments.commentsCount > 0 && (
+                          <span>{optimisticComments.commentsCount}</span>
+                        )}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={() => setIsCommenting((prev) => !prev)}
+                    >
+                      <FiMessageCircle />
+                      {optimisticComments.commentsCount > 0 && (
+                        <span>{optimisticComments.commentsCount}</span>
+                      )}
+                    </Button>
+                  )}
+
                   {!isOwner && loggedUser && (
                     <BookmarkPostButton
                       postId={post.id}
@@ -212,7 +244,7 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
         )}
       </CardContent>
       {/* All Comments*/}
-      {optimisticComments.commentsCount > 0 && (
+      {optimisticComments.commentsCount > 0 && !profilePage && (
         <div className='border-t px-4 pt-4 space-y-6'>
           {optimisticComments.comments.map((comment) => (
             <PostComment
@@ -227,12 +259,10 @@ const PostCard = ({ post, loggedUser }: PostCardProps) => {
 
       {/* Add Comment */}
       <AnimatePresence>
-        {isCommenting && loggedUser && (
+        {isCommenting && loggedUser && !profilePage && (
           <AddComment
             postId={post.id}
             user={loggedUser}
-            isPending={isPending}
-            startTransition={startTransition}
             setIsCommenting={setIsCommenting}
             addOptimisticComment={addOptimisticComment}
           />

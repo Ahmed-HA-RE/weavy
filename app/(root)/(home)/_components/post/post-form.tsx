@@ -60,7 +60,10 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
       setIsUploadImage(false);
       if (setIsEdit) setIsEdit(false);
       toast.success(result.message);
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['posts'] }),
+        queryClient.invalidateQueries({ queryKey: ['user-posts'] }),
+      ]);
     } else {
       toast.error(result.message);
     }
@@ -114,10 +117,10 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
                   control={control}
                   render={({ field }) =>
                     field.value ? (
-                      <div className='relative w-full aspect-video rounded-md'>
+                      <div className='relative w-full aspect-video h-[300px] rounded-md'>
                         <Image
                           src={field.value}
-                          alt='Uploaded'
+                          alt='Uploaded post image'
                           className='rounded-md'
                           fill
                         />
@@ -173,7 +176,7 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
               ) : (
                 <>
                   <HiOutlinePhotograph className='size-4.5' />
-                  {isEdit ? 'Replace' : 'Photo'}
+                  {isEdit && post?.image ? 'Replace' : 'Photo'}
                 </>
               )}
             </Button>

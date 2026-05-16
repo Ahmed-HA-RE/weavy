@@ -98,6 +98,7 @@ const ProfileHeader = async ({
             alt={`${user.name}'s profile picture`}
             width={150}
             height={150}
+            loading='eager'
             className='object-cover rounded-full'
           />
         </Suspense>

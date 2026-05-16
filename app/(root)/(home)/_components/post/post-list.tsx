@@ -7,9 +7,9 @@ import { Alert } from '@/components/ui/alert';
 import { BiSolidCommentError } from 'react-icons/bi';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
-import PostSkeletonCard from './post-skeleton-card';
 import { FaInfoCircle } from 'react-icons/fa';
 import { auth } from '@/lib/auth';
+import PostCardSkeleton from './post-card-skeleton';
 
 const PostList = ({
   loggedInUser,
@@ -59,7 +59,7 @@ const PostList = ({
           <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
         )),
       )}
-      <div ref={ref}>{isFetchingNextPage && <PostSkeletonCard />}</div>
+      <div ref={ref}>{isFetchingNextPage && <PostCardSkeleton />}</div>
     </div>
   );
 };

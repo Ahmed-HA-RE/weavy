@@ -64,7 +64,10 @@ const ReportPostDialog = ({
       form.reset();
       setOpenDialog(false);
       toast.success(res.message);
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['posts'] }),
+        queryClient.invalidateQueries({ queryKey: ['user-posts'] }),
+      ]);
     } else {
       toast.error(res.message);
       return;

@@ -36,6 +36,7 @@ export type PostWithRelations = Prisma.PostGetPayload<{
           };
         };
       };
+      take: 5;
     };
     likes: {
       select: {

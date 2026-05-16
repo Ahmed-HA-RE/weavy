@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'motion/react';
 import Image from 'next/image';
-import { Suspense, TransitionStartFunction, useState } from 'react';
+import { Suspense, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { addComment } from '@/lib/actions/post/add-comment-action';
@@ -15,8 +15,6 @@ import { useQueryClient } from '@tanstack/react-query';
 type AddCommentProps = {
   postId: string;
   user: typeof auth.$Infer.Session.user;
-  startTransition: TransitionStartFunction;
-  isPending: boolean;
   setIsCommenting: (value: boolean) => void;
   addOptimisticComment: (
     action: Prisma.CommentGetPayload<{
@@ -41,12 +39,12 @@ type AddCommentProps = {
 const AddComment = ({
   user,
   postId,
-  startTransition,
   setIsCommenting,
   addOptimisticComment,
 }: AddCommentProps) => {
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
+  const [, startTransition] = useTransition();
 
   const handleAddComment = () => {
     setIsCommenting(false);

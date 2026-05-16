@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const PostSkeletonCard = () => {
+const PostCardSkeleton = () => {
   return (
     <Card className='gap-6 pt-6'>
       <CardHeader className='flex items-center justify-between gap-3'>
@@ -60,4 +60,4 @@ const PostSkeletonCard = () => {
   );
 };
 
-export default PostSkeletonCard;
+export default PostCardSkeleton;

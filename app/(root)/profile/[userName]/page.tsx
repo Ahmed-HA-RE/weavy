@@ -6,6 +6,7 @@ import ProfileHeaderSkeleton from './_components/header/profile-header-skeleton'
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { Suspense } from 'react';
+import ProfileTabs from './_components/tabs/profile-tabs';
 
 type Props = {
   params: Promise<{ userName: string }>;
@@ -68,8 +69,13 @@ const ProfilePage = async ({ params }: Props) => {
         </div>
       </section>
       {/* Tabs Section */}
-      <section className='py-12'>
-        <div className='profile-container'>{/* <ProfileTabs /> */}</div>
+      <section className='pt-12.5'>
+        <div className='container'>
+          <ProfileTabs
+            userName={userName}
+            loggedUser={loggedUser?.user || null}
+          />
+        </div>
       </section>
     </>
   );
