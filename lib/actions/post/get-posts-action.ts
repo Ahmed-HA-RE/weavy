@@ -20,18 +20,20 @@ export const getPostsAction = async ({
 
   const posts = await db.post.findMany({
     where: {
-      user: {
-        blocked: {
-          none: {
-            blockedId: loggedUser?.id || Prisma.skip,
+      ...(loggedUser && {
+        user: {
+          blocked: {
+            none: {
+              blockedId: loggedUser?.id || Prisma.skip,
+            },
+          },
+          blocker: {
+            none: {
+              blockerId: loggedUser?.id || Prisma.skip,
+            },
           },
         },
-        blocker: {
-          none: {
-            blockerId: loggedUser?.id || Prisma.skip,
-          },
-        },
-      },
+      }),
     },
     orderBy: {
       createdAt: 'desc',

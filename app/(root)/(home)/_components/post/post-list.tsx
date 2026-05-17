@@ -32,9 +32,9 @@ const PostList = ({
     }
   }, [fetchNextPage, inView]);
 
-  const isEmpty = data?.pages.some((page) => page.posts.length === 0);
+  const feedPosts = data?.pages.flatMap((page) => page.posts) || [];
 
-  if (isEmpty) {
+  if (feedPosts.length === 0) {
     return (
       <Alert variant='info'>
         <FaInfoCircle />
@@ -54,11 +54,9 @@ const PostList = ({
 
   return (
     <div className='space-y-6'>
-      {data?.pages.map((page) =>
-        page.posts.map((post) => (
-          <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
-        )),
-      )}
+      {feedPosts.map((post) => (
+        <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
+      ))}
       <div ref={ref}>{isFetchingNextPage && <PostCardSkeleton />}</div>
     </div>
   );

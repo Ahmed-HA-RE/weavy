@@ -5,7 +5,7 @@ import db from '@/lib/db';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { headers } from 'next/headers';
 
-export const getUserLikesAction = async ({
+export const getUserBookmarksAction = async ({
   pageParam,
   limit = 10,
   userName,
@@ -24,7 +24,7 @@ export const getUserLikesAction = async ({
     if (!session || session.user.name !== userName)
       throw new Error('Unauthorized');
 
-    const likes = await db.like.findMany({
+    const bookmarks = await db.bookmark.findMany({
       where: {
         user: {
           name: userName,
@@ -79,7 +79,7 @@ export const getUserLikesAction = async ({
       },
     });
 
-    const totalLikes = await db.like.count({
+    const totalBookmarks = await db.bookmark.count({
       where: {
         user: {
           name: userName,
@@ -87,16 +87,21 @@ export const getUserLikesAction = async ({
       },
     });
 
-    const totalPages = Math.ceil(totalLikes / limit);
+    const totalPages = Math.ceil(totalBookmarks / limit);
     const nextPage = pageParam < totalPages ? pageParam + 1 : null;
 
-    return { success: true, likes, nextPage };
+    return { success: true, bookmarks, nextPage };
   } catch (error) {
     const errorMessage =
       error instanceof Error
         ? error.message
-        : 'An unknown error occurred while fetching user likes.';
+        : 'An unknown error occurred while fetching user bookmarks.';
     console.error('Error: ', errorMessage);
-    return { success: false, error: errorMessage, likes: [], nextPage: null };
+    return {
+      success: false,
+      error: errorMessage,
+      bookmarks: [],
+      nextPage: null,
+    };
   }
 };

@@ -13,7 +13,7 @@ export const navigationData: Navigation[] = [
   {
     title: 'Profile',
     href: '/profile/:username',
-    roles: [USER_ROLE.USER],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
     device: 'mobile',
     icon: 'profile',
   },
@@ -38,7 +38,7 @@ export const profileMenuNavigationData = [
     title: 'Profile',
     href: '/profile/:username',
     icon: 'profile',
-    roles: [USER_ROLE.USER],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
   {
     title: 'Settings',

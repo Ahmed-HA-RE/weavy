@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { ALLOWED_PROFILE_TABS } from '@/lib/constants/app';
 import ProfileLikesTab from './profile-likes-tab';
+import ProfileBookmarksTab from './profile-bookmarks-tab';
 
 const tabsTriggerItems = (isOwnProfile: boolean) => {
   const baseTabs = [{ value: 'posts', label: 'POSTS', icon: BsFilePost }];
@@ -94,7 +95,14 @@ const ProfileTabs = ({
               loggedUser={loggedUser}
             />
           </TabsContent>
-          <TabsContent value='bookmarks'></TabsContent>
+          <TabsContent value='bookmarks'>
+            <ProfileBookmarksTab
+              userName={userName}
+              currentTab={activeTab}
+              isOwnProfile={isOwnProfile}
+              loggedUser={loggedUser}
+            />
+          </TabsContent>
         </>
       )}
     </Tabs>

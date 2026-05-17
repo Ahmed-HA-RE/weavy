@@ -12,6 +12,7 @@ import { formatLargeNumber } from '@/lib/utils';
 import db from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { Prisma } from '@/lib/generated/prisma/client';
 
 const ProfileHeader = async ({
   userName,
@@ -38,12 +39,12 @@ const ProfileHeader = async ({
       },
       followers: {
         where: {
-          followerId: loggedUser?.id,
+          followerId: loggedUser?.id || Prisma.skip,
         },
       },
       reported: {
         where: {
-          reporterId: loggedUser?.id,
+          reporterId: loggedUser?.id || Prisma.skip,
         },
         select: { id: true },
       },
@@ -129,7 +130,15 @@ const ProfileHeader = async ({
               />
             ) : (
               <Button asChild variant='outline'>
-                <Link href='/settings?tab=account'>Edit Profile</Link>
+                <Link
+                  href={
+                    loggedUser.role === 'ADMIN'
+                      ? '/admin/dashboard/settings'
+                      : '/settings?tab=account'
+                  }
+                >
+                  Edit Profile
+                </Link>
               </Button>
             )}
             <ProfileHeaderDropdown

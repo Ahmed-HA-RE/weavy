@@ -36,6 +36,12 @@ const BookmarkPostButton = ({
       queryClient.invalidateQueries({
         queryKey: ['user-posts'],
       }),
+      queryClient.invalidateQueries({
+        queryKey: ['user-likes'],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ['user-bookmarks'],
+      }),
     ]);
   };
   return (
