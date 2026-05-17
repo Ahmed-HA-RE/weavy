@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const PostCardSkeleton = () => {
+const PostCardSkeleton = ({ type = 'feed' }: { type?: 'profile' | 'feed' }) => {
   return (
     <Card className='gap-6 pt-6'>
       <CardHeader className='flex items-center justify-between gap-3'>
@@ -38,24 +38,25 @@ const PostCardSkeleton = () => {
           <Skeleton className='h-8 w-20 rounded-md' />
         </div>
       </CardContent>
-
-      <div className='border-t px-4 pt-4 space-y-6'>
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className='flex flex-col gap-4'>
-            <div className='flex items-center gap-3'>
-              <Skeleton className='size-8 rounded-full shrink-0' />
-              <div className='flex flex-col gap-2'>
-                <Skeleton className='h-3.5 w-24' />
-                <Skeleton className='h-3 w-16' />
+      {type === 'feed' && (
+        <div className='border-t px-4 pt-4 space-y-6'>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className='flex flex-col gap-4'>
+              <div className='flex items-center gap-3'>
+                <Skeleton className='size-8 rounded-full shrink-0' />
+                <div className='flex flex-col gap-2'>
+                  <Skeleton className='h-3.5 w-24' />
+                  <Skeleton className='h-3 w-16' />
+                </div>
+              </div>
+              <div className='space-y-2'>
+                <Skeleton className='h-3.5 w-[85%]' />
+                <Skeleton className='h-3.5 w-[60%]' />
               </div>
             </div>
-            <div className='space-y-2'>
-              <Skeleton className='h-3.5 w-[85%]' />
-              <Skeleton className='h-3.5 w-[60%]' />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 };

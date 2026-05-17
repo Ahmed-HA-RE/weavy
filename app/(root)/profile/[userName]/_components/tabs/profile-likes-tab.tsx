@@ -5,13 +5,13 @@ import PostCardSkeleton from '@/app/(root)/(home)/_components/post/post-card-ske
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { getUserPostsAction } from '@/lib/actions/user/get-user-posts-action';
+import { getUserLikesAction } from '@/lib/actions/user/get-user-likes-action';
 import { auth } from '@/lib/auth';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { MdError } from 'react-icons/md';
 
-const ProfilePostsTab = ({
+const ProfileLikesTab = ({
   userName,
   currentTab,
   isOwnProfile,
@@ -24,18 +24,18 @@ const ProfilePostsTab = ({
 }) => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
-      queryKey: ['user-posts', userName],
+      queryKey: ['user-likes', userName],
       queryFn: ({ pageParam = 1 }) =>
-        getUserPostsAction({
+        getUserLikesAction({
           pageParam,
           userName,
           loggedUserId: loggedUser?.id,
         }),
-      enabled: currentTab === 'posts',
+      enabled: currentTab === 'likes',
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.nextPage,
     });
-  const posts = data?.pages.flatMap((page) => page.posts) || [];
+  const likes = data?.pages.flatMap((page) => page.likes) || [];
 
   if (status === 'pending') {
     return Array.from({ length: 10 }).map((_, index) => (
@@ -45,20 +45,20 @@ const ProfilePostsTab = ({
     ));
   }
 
-  if (posts.length === 0) {
+  if (likes.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center gap-10'>
         <div className='relative aspect-3/2 w-full max-w-lg'>
-          <Image src='/svg/no-posts-user-profile.svg' alt='No posts' fill />
+          <Image src='/svg/profile-likes-tab.svg' alt='No likes' fill />
         </div>
         <div className='space-y-2.5 text-center'>
           <h2 className='font-semibold text-2xl md:text-4xl capitalize'>
-            no posts yet
+            no likes yet
           </h2>
           <p className='text-center text-muted-foreground text-base md:text-lg max-w-md'>
             {isOwnProfile
-              ? 'You have not created any posts yet. Start sharing your thoughts and ideas with the world!'
-              : "Looks like this user hasn't posted anything yet."}
+              ? 'You have not liked any posts yet. Start exploring and engaging with content you enjoy!'
+              : "Looks like this user hasn't liked any posts yet."}
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ const ProfilePostsTab = ({
       <div className='flex flex-col items-center justify-center max-w-md mx-auto'>
         <Alert variant='error'>
           <MdError />
-          <AlertTitle>Something went wrong while getting posts.</AlertTitle>
+          <AlertTitle>Something went wrong while getting likes.</AlertTitle>
         </Alert>
       </div>
     );
@@ -79,13 +79,13 @@ const ProfilePostsTab = ({
   return (
     <>
       <div className='grid grid-cols-1 lg:grid-cols-2 items-start gap-6'>
-        {posts.map((post) => (
+        {likes.map((like) => (
           <PostCard
-            key={post?.id}
-            post={post}
+            key={like.post.id}
+            post={like.post}
             loggedUser={loggedUser}
             profilePage={true}
-            className={`${post.image ? 'lg:col-span-2' : ''}`}
+            className={`${like.post.image ? 'lg:col-span-2' : ''}`}
           />
         ))}
       </div>
@@ -104,4 +104,4 @@ const ProfilePostsTab = ({
   );
 };
 
-export default ProfilePostsTab;
+export default ProfileLikesTab;

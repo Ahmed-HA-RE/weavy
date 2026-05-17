@@ -7,7 +7,9 @@ import { BsFilePost, BsPostcardHeart } from 'react-icons/bs';
 import { FaRegBookmark } from 'react-icons/fa';
 import ProfilePostsTab from './profile-posts-tab';
 import { cn } from '@/lib/utils';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { ALLOWED_PROFILE_TABS } from '@/lib/constants/app';
+import ProfileLikesTab from './profile-likes-tab';
 
 const tabsTriggerItems = (isOwnProfile: boolean) => {
   const baseTabs = [{ value: 'posts', label: 'POSTS', icon: BsFilePost }];
@@ -31,10 +33,13 @@ const ProfileTabs = ({
 }) => {
   const [tab, setTab] = useQueryState(
     'tab',
-    parseAsString.withDefault('posts').withOptions({ clearOnDefault: false }),
+    parseAsStringLiteral(ALLOWED_PROFILE_TABS)
+      .withDefault('posts')
+      .withOptions({ clearOnDefault: false }),
   );
+
   const [activeTab, setActiveTab] = useState(tab);
-  const handleTabChange = (value: string) => {
+  const handleTabChange = (value: (typeof ALLOWED_PROFILE_TABS)[number]) => {
     setActiveTab(value);
     setTab(value);
   };
@@ -45,13 +50,13 @@ const ProfileTabs = ({
   return (
     <Tabs
       value={activeTab}
-      onValueChange={handleTabChange}
+      onValueChange={handleTabChange as (value: string) => void}
       className='gap-12.5'
     >
       <TabsList
         variant='line'
         className={cn(
-          'w-full group-data-horizontal/tabs:h-10 border-t',
+          'w-full group-data-horizontal/tabs:h-10 border-t gap-16',
           (!isLoggedIn || !isOwnProfile) && 'mx-auto',
         )}
       >
@@ -62,7 +67,7 @@ const ProfileTabs = ({
               key={tabTrigger.value}
               value={tabTrigger.value}
               className={cn(
-                'gap-[7px] font-semibold group-data-horizontal/tabs:after:top-[-5px] flex-none mx-[60px]',
+                'gap-[7px] font-semibold group-data-horizontal/tabs:after:top-[-5px] flex-none',
               )}
             >
               <Icon />
@@ -81,7 +86,14 @@ const ProfileTabs = ({
       </TabsContent>
       {isOwnProfile && (
         <>
-          <TabsContent value='likes'></TabsContent>
+          <TabsContent value='likes'>
+            <ProfileLikesTab
+              userName={userName}
+              currentTab={activeTab}
+              isOwnProfile={isOwnProfile}
+              loggedUser={loggedUser}
+            />
+          </TabsContent>
           <TabsContent value='bookmarks'></TabsContent>
         </>
       )}

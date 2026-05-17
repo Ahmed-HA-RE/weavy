@@ -105,6 +105,9 @@ const PostCard = ({
         queryClient.invalidateQueries({
           queryKey: ['user-posts', post.user.name],
         }),
+        queryClient.invalidateQueries({
+          queryKey: ['user-likes', post.user.name],
+        }),
       ]);
     });
   };
