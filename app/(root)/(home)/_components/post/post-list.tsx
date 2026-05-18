@@ -53,12 +53,16 @@ const PostList = ({
   }
 
   return (
-    <div className='space-y-6'>
-      {feedPosts.map((post) => (
-        <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
-      ))}
-      <div ref={ref}>{isFetchingNextPage && <PostCardSkeleton />}</div>
-    </div>
+    <>
+      <div className='space-y-6'>
+        {feedPosts.map((post) => (
+          <PostCard key={post.id} post={post} loggedUser={loggedInUser} />
+        ))}
+      </div>
+      <div className='mt-6' ref={ref}>
+        {isFetchingNextPage && <PostCardSkeleton />}
+      </div>
+    </>
   );
 };
 

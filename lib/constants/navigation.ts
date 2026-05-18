@@ -53,3 +53,12 @@ export const profileMenuNavigationData = [
     roles: [USER_ROLE.ADMIN],
   },
 ];
+
+export const footerNavigationData = [
+  { title: 'Home', href: '/' },
+  { title: 'Notifications', href: '/notifications' },
+  { title: 'About', href: '/about' },
+  { title: 'Support', href: '/support' },
+  { title: 'Privacy Policy', href: '/privacy-policy' },
+  { title: 'Terms of Use', href: '/terms-of-use' },
+];

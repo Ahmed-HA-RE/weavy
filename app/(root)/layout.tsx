@@ -1,3 +1,4 @@
+import Footer from '@/components/footer';
 import Header from '@/components/header/header';
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -7,6 +8,8 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
       <Header />
       {/* Main content */}
       <main className='flex-grow'>{children}</main>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
