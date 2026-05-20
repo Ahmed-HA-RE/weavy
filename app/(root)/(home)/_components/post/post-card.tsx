@@ -87,7 +87,6 @@ const PostCard = ({
 
   const isOwner = loggedUser?.id === post.user.id;
   const isFollowing = post.user.followers.length > 0;
-  const isPostReported = post.reports.length > 0;
   const isUserBookmarked = post.bookmarks.some(
     (bookmark) =>
       bookmark.userId === loggedUser?.id && bookmark.postId === post.id,
@@ -141,20 +140,25 @@ const PostCard = ({
           />
         ) : (
           <>
-            <p>{post.content}</p>
+            <Link
+              href={`/post/${post.id}`}
+              className='w-full space-y-4 hover:opacity-90 transition-opacity'
+            >
+              <p>{post.content}</p>
 
-            {post.image && (
-              <div className='relative aspect-video w-full rounded-md'>
-                <Image
-                  src={post.image}
-                  alt={`Post image by ${post.user.name}`}
-                  fill
-                  loading='eager'
-                  sizes='auto'
-                  className='rounded-md object-cover'
-                />
-              </div>
-            )}
+              {post.image && (
+                <div className='relative aspect-video w-full rounded-md'>
+                  <Image
+                    src={post.image}
+                    alt={`Post image by ${post.user.name}`}
+                    fill
+                    loading='eager'
+                    sizes='auto'
+                    className='rounded-md object-cover'
+                  />
+                </div>
+              )}
+            </Link>
             <div className='flex items-center gap-1'>
               {!loggedUser ? (
                 <>
@@ -233,13 +237,12 @@ const PostCard = ({
                       isUserBookmarked={isUserBookmarked}
                     />
                   )}
-                  {!isOwner &&
-                    !isPostReported && ( // Only show report button if the logged in user is not the owner of the post
-                      <ReportPostDialog
-                        reporterId={loggedUser.id}
-                        postId={post.id}
-                      />
-                    )}
+                  {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
+                    <ReportPostDialog
+                      reporterId={loggedUser.id}
+                      postId={post.id}
+                    />
+                  )}
                 </>
               )}
             </div>

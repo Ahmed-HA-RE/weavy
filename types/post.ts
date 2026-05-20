@@ -44,12 +44,6 @@ export type PostWithRelations = Prisma.PostGetPayload<{
         postId: true;
       };
     };
-    reports: {
-      select: {
-        postId: true;
-        reporterId: true;
-      };
-    };
     bookmarks: {
       select: {
         userId: true;

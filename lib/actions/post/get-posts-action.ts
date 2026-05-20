@@ -33,6 +33,12 @@ export const getPostsAction = async ({
             },
           },
         },
+
+        reports: {
+          none: {
+            reporterId: loggedUser?.id || Prisma.skip,
+          },
+        },
       }),
     },
     orderBy: {
@@ -116,16 +122,7 @@ export const getPostsAction = async ({
           userId: true,
         },
       },
-      reports: {
-        where: {
-          reporterId: loggedUser?.id || Prisma.skip,
-        },
 
-        select: {
-          postId: true,
-          reporterId: true,
-        },
-      },
       bookmarks: {
         ...(loggedUser && {
           where: {

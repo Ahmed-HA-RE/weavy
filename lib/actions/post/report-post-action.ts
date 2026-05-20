@@ -41,7 +41,6 @@ export const reportPostAction = async (data: ReportPostFormData) => {
     if (existingReport) throw new Error('You have already reported this post.');
 
     // Create the report in the database and check if the user wanted to block the post author
-
     await db.$transaction(async (tx) => {
       const newReport = await tx.reportPost.create({
         data: {
