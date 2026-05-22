@@ -140,25 +140,20 @@ const PostCard = ({
           />
         ) : (
           <>
-            <Link
-              href={`/post/${post.id}`}
-              className='w-full space-y-4 hover:opacity-90 transition-opacity'
-            >
-              <p>{post.content}</p>
+            <p>{post.content}</p>
 
-              {post.image && (
-                <div className='relative aspect-video w-full rounded-md'>
-                  <Image
-                    src={post.image}
-                    alt={`Post image by ${post.user.name}`}
-                    fill
-                    loading='eager'
-                    sizes='auto'
-                    className='rounded-md object-cover'
-                  />
-                </div>
-              )}
-            </Link>
+            {post.image && (
+              <div className='relative aspect-video w-full rounded-md'>
+                <Image
+                  src={post.image}
+                  alt={`Post image by ${post.user.name}`}
+                  fill
+                  loading='eager'
+                  sizes='auto'
+                  className='rounded-md object-cover'
+                />
+              </div>
+            )}
             <div className='flex items-center gap-1'>
               {!loggedUser ? (
                 <>
