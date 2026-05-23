@@ -14,7 +14,7 @@ import { FaEllipsis } from 'react-icons/fa6';
 import FollowButton from '../../../../../components/follow-button';
 import { cn } from '@/lib/utils';
 
-type PostActionsProps = {
+type PostOptionsProps = {
   setIsEdit: (value: boolean) => void;
   post: {
     id: string;
@@ -24,12 +24,12 @@ type PostActionsProps = {
   isFollowing: boolean;
 };
 
-const PostActions = ({
+const PostOptions = ({
   setIsEdit,
   post,
   isOwner,
   isFollowing,
-}: PostActionsProps) => {
+}: PostOptionsProps) => {
   const dropdownClass = 'w-full justify-start h-8 bg-transparent px-2';
 
   return (
@@ -81,4 +81,4 @@ const PostActions = ({
   );
 };
 
-export default PostActions;
+export default PostOptions;

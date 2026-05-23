@@ -18,13 +18,13 @@ import UserInfo from '@/components/user-info';
 import AddComment from './add-comment';
 import { AnimatePresence } from 'motion/react';
 import { auth } from '@/lib/auth';
-import PostActions from './post-actions';
 import { PostWithRelations } from '@/types/post';
 import PostForm from './post-form';
 import ReportPostDialog from './report-post-dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import BookmarkPostButton from './bookmark-post-button';
 import { cn } from '@/lib/utils';
+import PostOptions from './post-options';
 
 type PostCardPost = Omit<PostWithRelations, 'comments'> & {
   comments?: PostWithRelations['comments'];
@@ -117,7 +117,7 @@ const PostCard = ({
         <UserInfo createdAt={post.createdAt} user={post.user} />
         {loggedUser && (
           <CardAction>
-            <PostActions
+            <PostOptions
               setIsEdit={setIsEdit}
               isOwner={isOwner}
               post={{ id: post.id, userId: post.user.id }}

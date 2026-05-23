@@ -134,7 +134,7 @@ const ProfileHeader = async ({
                   href={
                     loggedUser.role === 'ADMIN'
                       ? '/admin/dashboard/settings'
-                      : '/settings?tab=account'
+                      : '/settings?tab=details'
                   }
                 >
                   Edit Profile

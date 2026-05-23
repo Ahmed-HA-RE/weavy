@@ -17,7 +17,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { Suspense } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { RiShieldUserLine } from 'react-icons/ri';
 import { profileMenuNavigationData } from '@/lib/constants/navigation';
 import { cn } from '@/lib/utils';
@@ -63,7 +63,28 @@ const ProfileDropdown = ({
     dashboard: RiShieldUserLine,
   };
 
+  const pathname = usePathname();
   const router = useRouter();
+
+  const normalizePath = (path: string) => {
+    const [cleanPath] = path.split('?');
+
+    if (cleanPath === '/') {
+      return cleanPath;
+    }
+
+    return cleanPath.replace(/\/+$/, '');
+  };
+
+  const resolveItemHref = (href: string) =>
+    href.includes('/:username') ? `/profile/${user.name}` : href;
+
+  const isActiveItem = (href: string) => {
+    const currentPath = normalizePath(pathname);
+    const itemPath = normalizePath(resolveItemHref(href));
+
+    return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`);
+  };
 
   const handleLogout = async () => {
     try {
@@ -109,14 +130,9 @@ const ProfileDropdown = ({
             const Icon = Icons[item.icon as keyof typeof Icons];
             return (
               <DropdownMenuItem
+                className={isActiveItem(item.href) ? 'bg-accent' : ''}
                 key={index}
-                onClick={() =>
-                  router.push(
-                    item.href.includes('/:username')
-                      ? `/profile/${user.name}`
-                      : item.href,
-                  )
-                }
+                onClick={() => router.push(resolveItemHref(item.href))}
               >
                 <Icon />
                 {item.title}

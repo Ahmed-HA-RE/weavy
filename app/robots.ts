@@ -4,7 +4,12 @@ const robots = (): MetadataRoute.Robots => {
   return {
     rules: {
       userAgent: '*',
-      disallow: ['/verify-email', '/reset-password', '/notifications'],
+      disallow: [
+        '/verify-email',
+        '/reset-password',
+        '/notifications',
+        '/settings',
+      ],
     },
     sitemap: 'https://weavy.ahmedrehandev.net/sitemap.xml',
   };

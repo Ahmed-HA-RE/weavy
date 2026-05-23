@@ -42,7 +42,7 @@ export const profileMenuNavigationData = [
   },
   {
     title: 'Settings',
-    href: '/settings',
+    href: '/settings?tab=details',
     icon: 'settings',
     roles: [USER_ROLE.USER],
   },
