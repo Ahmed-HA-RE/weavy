@@ -1,1 +1,1 @@
-export type Endpoints = 'postImage'
+export type Endpoints = 'postImage' | 'avatar';

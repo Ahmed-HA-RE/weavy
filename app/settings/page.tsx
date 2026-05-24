@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import HeaderTabs from './_components/header-tabs';
-import { Separator } from '@/components/ui/separator';
 import ProfileInfo from './_components/profile-info';
 import { Suspense } from 'react';
 import { auth } from '@/lib/auth';

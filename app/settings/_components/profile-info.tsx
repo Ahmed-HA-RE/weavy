@@ -1,10 +1,10 @@
 import db from '@/lib/db';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { Avatar } from '@/components/ui/avatar';
 import { FaLocationArrow } from 'react-icons/fa6';
 import { IoIosLink } from 'react-icons/io';
+import UploadAvatarButton from '@/components/upload-avatar-button';
 
 type ProfileInfoProps = {
   loggedUserId: string;
@@ -48,7 +48,9 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
           <Image
             src={user.image ?? '/default-avatar.png'}
             alt={user.name ?? 'User'}
-            fill
+            width={150}
+            height={150}
+            loading='eager'
             className='object-cover rounded-full'
           />
         </Avatar>
@@ -77,10 +79,12 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         ))}
       </div>
 
-      {/* Upload Button */}
-      <Button variant='default' className='w-full max-w-[294px] mb-6'>
-        Upload new avatar
-      </Button>
+      {/* Upload Button form */}
+      <UploadAvatarButton
+        endpoint='avatar'
+        className='w-full max-w-[294px] ut-allowed-content:hidden ut-button:bg-primary mb-6 ut-button:h-10 ut-button:text-sm ut-button:font-medium ut-button:w-full'
+      />
+
       {/* Location and Website */}
       <div className='space-y-2'>
         <span className='text-sm text-muted-foreground flex items-center gap-2'>
