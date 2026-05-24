@@ -5,7 +5,7 @@ import { cn, formatUploadThingError } from '@/lib/utils';
 import { Endpoints } from '@/types/endpoints';
 import { toast } from 'sonner';
 import { Spinner } from './ui/spinner';
-import { updateAvatarAction } from '@/lib/actions/user/profile/update-avatar-action';
+import { updateAvatarAction } from '@/lib/actions/settings/update-avatar-action';
 import { useRouter } from 'next/navigation';
 
 type UploadAvatarButtonProps = {

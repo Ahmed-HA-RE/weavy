@@ -6,10 +6,29 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import ProfileInfoSkeleton from './_components/profile-info-skeleton';
+import DetailsSettings from './_components/tabs/details/details-settings';
+import { Separator } from '@/components/ui/separator';
 
 export const metadata: Metadata = {
   title: 'Settings',
   description: 'Manage your account settings and preferences.',
+};
+
+const dynamicComponents = (tab: string, loggedUserId: string) => {
+  switch (tab) {
+    case 'details':
+      return <DetailsSettings loggedUserId={loggedUserId} />;
+    case 'account':
+      return <div>hi</div>;
+    case 'security':
+      return <div>hi</div>;
+    case 'notifications':
+      return <div>hi</div>;
+    case 'apperance':
+      return <div>hi</div>;
+    case 'danger-zone':
+      return <div>hi</div>;
+  }
 };
 
 const SettingsPage = async ({
@@ -40,9 +59,11 @@ const SettingsPage = async ({
         <Suspense fallback={<ProfileInfoSkeleton />}>
           <ProfileInfo loggedUserId={loggedUser.id} />
         </Suspense>
-
+        <Separator orientation='vertical' className='hidden lg:block' />
         {/* Dynamic Content Based on Active Tab */}
-        <div className='lg:col-span-8'></div>
+        <div className='lg:col-span-7'>
+          {dynamicComponents(tab, loggedUser.id)}
+        </div>
       </div>
     </>
   );
