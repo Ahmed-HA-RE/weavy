@@ -1,5 +1,12 @@
 import { Metadata } from 'next';
 import HeaderTabs from './_components/header-tabs';
+import { Separator } from '@/components/ui/separator';
+import ProfileInfo from './_components/profile-info';
+import { Suspense } from 'react';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import ProfileInfoSkeleton from './_components/profile-info-skeleton';
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -12,6 +19,13 @@ const SettingsPage = async ({
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
   const tab = (await searchParams).tab || 'details';
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user) return redirect('/login');
+
+  const loggedUser = session.user;
 
   return (
     <>
@@ -22,6 +36,15 @@ const SettingsPage = async ({
           <HeaderTabs />
         </div>
       </section>
+      <div className='container grid grid-cols-1 lg:grid-cols-12 gap-8 py-8 md:py-16 lg:py-24'>
+        {/* Profile Info */}
+        <Suspense fallback={<ProfileInfoSkeleton />}>
+          <ProfileInfo loggedUserId={loggedUser.id} />
+        </Suspense>
+
+        {/* Dynamic Content Based on Active Tab */}
+        <div className='lg:col-span-8'></div>
+      </div>
     </>
   );
 };
