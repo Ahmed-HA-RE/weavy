@@ -1,43 +1,29 @@
 'use client';
 
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { User } from '@/lib/generated/prisma/client';
-import {
-  DetailsSettingsFormData,
-  detailsSettingsSchema,
-} from '@/schema/settings';
+import { DetailsSettingsFormData, detailsSettingsSchema } from '@/schema/settings';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from '@/components/ui/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
 import SaveButton from '../../save-button';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
 import { Spinner } from '@/components/ui/spinner';
-import { useQuery } from '@tanstack/react-query';
-import { validateUsername } from '@/lib/actions/settings/validate-username';
 import { useValidateUsername } from '@/hooks/use-validate-username';
+import { useRouter } from 'next/navigation';
+import { updateUserDetails } from '@/lib/actions/settings/update-user-details';
+import { toast } from 'sonner';
 
 type DetailsSettingsFormProps = {
-  user: Pick<
-    User,
-    'name' | 'displayName' | 'email' | 'bio' | 'website' | 'location'
-  >;
+  user: Pick<User, 'name' | 'displayName' | 'email' | 'bio' | 'website' | 'location'>;
 };
 
 const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
+  const router = useRouter();
   const form = useForm<DetailsSettingsFormData>({
     resolver: zodResolver(detailsSettingsSchema),
     defaultValues: {
@@ -45,15 +31,22 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
       displayName: user.displayName || '',
       email: user.email,
       bio: user.bio || '',
-      website: user.website || '',
+      website: user.website?.replace('https://', '') || '',
       location: user.location || '',
     },
   });
   // eslint-disable-next-line
   const [value] = useDebounce(form.watch('name'), 400);
 
-  const onSubmit = (data: DetailsSettingsFormData) => {
-    console.log(data);
+  const onSubmit = async (data: DetailsSettingsFormData) => {
+    const res = await updateUserDetails(data);
+    if (res.success) {
+      toast.success(res.message);
+      router.refresh();
+    } else {
+      toast.error(res.message);
+      return;
+    }
   };
 
   const { handleSubmit, formState } = form;
@@ -134,12 +127,7 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
                   Change
                 </Button>
               </span>
-              <Input
-                id={field.name}
-                placeholder='Enter your email...'
-                {...field}
-                aria-invalid={fieldState.invalid}
-              />
+              <Input id={field.name} placeholder='Enter your email...' {...field} aria-invalid={fieldState.invalid} />
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
@@ -178,10 +166,11 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
                     <InputGroupText>https://</InputGroupText>
                   </InputGroupAddon>
                   <InputGroupInput
+                    id={field.name}
                     placeholder='yourwebsite.com'
-                    {...field}
                     aria-invalid={fieldState.invalid}
                     className='!pl-0.5'
+                    {...field}
                   />
                 </InputGroup>
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
@@ -194,12 +183,7 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Location</FieldLabel>
-                <Input
-                  id={field.name}
-                  placeholder='Enter your location...'
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                />
+                <Input id={field.name} placeholder='e.g. Dubai, UAE' {...field} aria-invalid={fieldState.invalid} />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}

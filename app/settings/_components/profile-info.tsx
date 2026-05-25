@@ -5,6 +5,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { FaLocationArrow } from 'react-icons/fa6';
 import { IoIosLink } from 'react-icons/io';
 import UploadAvatarButton from '@/components/upload-avatar-button';
+import { cn } from '@/lib/utils';
 
 type ProfileInfoProps = {
   loggedUserId: string;
@@ -60,11 +61,9 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         {/* Display Name */}
         <h2 className='text-[28px] font-bold'>{displayName}</h2>
         {/* Username */}
-        <h3 className='text-lg text-muted-foreground mb-4'>@{user.name}</h3>
+        <h3 className={cn('text-lg text-muted-foreground', user.bio && 'mb-4')}>@{user.name}</h3>
         {/* Bio */}
-        {user.bio && (
-          <p className='text-sm text-muted-foreground max-w-xs'>{user.bio}</p>
-        )}
+        {user.bio && <p className='text-sm text-muted-foreground max-w-xs'>{user.bio}</p>}
       </div>
 
       {/* Stats */}
@@ -72,9 +71,7 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         {userStats.map((stat) => (
           <div key={stat.label} className='flex flex-col items-center gap-2.5'>
             <span className='text-3xl'>{stat.count}</span>
-            <span className='text-base text-muted-foreground'>
-              {stat.label}
-            </span>
+            <span className='text-base text-muted-foreground'>{stat.label}</span>
           </div>
         ))}
       </div>
