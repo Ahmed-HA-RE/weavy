@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import ProfileInfoSkeleton from './_components/profile-info-skeleton';
 import DetailsSettings from './_components/tabs/details/details-settings';
-import { Separator } from '@/components/ui/separator';
+import DetailsSettingsSkeleton from './_components/tabs/details/details-settings-skeleton';
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -17,14 +17,18 @@ export const metadata: Metadata = {
 const dynamicComponents = (tab: string, loggedUserId: string) => {
   switch (tab) {
     case 'details':
-      return <DetailsSettings loggedUserId={loggedUserId} />;
+      return (
+        <Suspense fallback={<DetailsSettingsSkeleton />}>
+          <DetailsSettings loggedUserId={loggedUserId} />
+        </Suspense>
+      );
     case 'account':
       return <div>hi</div>;
     case 'security':
       return <div>hi</div>;
     case 'notifications':
       return <div>hi</div>;
-    case 'apperance':
+    case 'appearance':
       return <div>hi</div>;
     case 'danger-zone':
       return <div>hi</div>;
@@ -54,14 +58,14 @@ const SettingsPage = async ({
           <HeaderTabs />
         </div>
       </section>
-      <div className='container grid grid-cols-1 lg:grid-cols-12 gap-8 py-8 md:py-16 lg:py-24'>
+      <div className='container grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-14 py-8 md:py-16 lg:py-24'>
         {/* Profile Info */}
         <Suspense fallback={<ProfileInfoSkeleton />}>
           <ProfileInfo loggedUserId={loggedUser.id} />
         </Suspense>
-        <Separator orientation='vertical' className='hidden lg:block' />
+
         {/* Dynamic Content Based on Active Tab */}
-        <div className='lg:col-span-7'>
+        <div className='lg:col-span-8 lg:border-l lg:pl-8'>
           {dynamicComponents(tab, loggedUser.id)}
         </div>
       </div>

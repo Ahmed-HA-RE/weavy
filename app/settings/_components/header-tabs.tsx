@@ -33,7 +33,9 @@ const tabs = [
 const HeaderTabs = () => {
   const [tab, setTab] = useQueryState(
     'tab',
-    parseAsString.withOptions({ clearOnDefault: false }).withDefault('details'),
+    parseAsString
+      .withOptions({ clearOnDefault: false, shallow: false })
+      .withDefault('details'),
   );
   return (
     <Tabs value={tab || 'details'} onValueChange={setTab}>
