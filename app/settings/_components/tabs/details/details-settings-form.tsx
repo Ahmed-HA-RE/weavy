@@ -23,6 +23,12 @@ import {
   InputGroupText,
 } from '@/components/ui/input-group';
 import SaveButton from '../../save-button';
+import { useEffect, useState } from 'react';
+import { useDebounce } from 'use-debounce';
+import { Spinner } from '@/components/ui/spinner';
+import { useQuery } from '@tanstack/react-query';
+import { validateUsername } from '@/lib/actions/settings/validate-username';
+import { useValidateUsername } from '@/hooks/use-validate-username';
 
 type DetailsSettingsFormProps = {
   user: Pick<
@@ -43,6 +49,8 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
       location: user.location || '',
     },
   });
+  // eslint-disable-next-line
+  const [value] = useDebounce(form.watch('name'), 400);
 
   const onSubmit = (data: DetailsSettingsFormData) => {
     console.log(data);
@@ -50,6 +58,21 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
 
   const { handleSubmit, formState } = form;
   const { isSubmitting } = formState;
+
+  const { data, isFetching } = useValidateUsername({
+    value,
+    username: user.name,
+  });
+
+  useEffect(() => {
+    if (data && !data.success) {
+      form.setError('name', {
+        message: data.message,
+      });
+    } else {
+      form.clearErrors('name');
+    }
+  }, [data, form]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -64,12 +87,20 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                <Input
-                  id={field.name}
-                  placeholder='Enter your name...'
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                />
+                <InputGroup>
+                  <InputGroupInput
+                    id={field.name}
+                    placeholder='Enter your name...'
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {isFetching && (
+                    <InputGroupAddon align='inline-end'>
+                      <Spinner />
+                    </InputGroupAddon>
+                  )}
+                </InputGroup>
+
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
