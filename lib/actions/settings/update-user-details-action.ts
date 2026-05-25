@@ -5,7 +5,7 @@ import db from '@/lib/db';
 import { DetailsSettingsFormData, detailsSettingsSchema } from '@/schema/settings';
 import { headers } from 'next/headers';
 
-export const updateUserDetails = async (data: DetailsSettingsFormData) => {
+export const updateUserDetailsAction = async (data: DetailsSettingsFormData) => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -21,7 +21,7 @@ export const updateUserDetails = async (data: DetailsSettingsFormData) => {
       throw new Error(errorMessages);
     }
 
-    const { name, displayName, email, bio, website, location } = validatedData.data;
+    const { name, displayName, bio, website, location } = validatedData.data;
 
     // Update user details in the database
     const updatedUser = await db.user.update({
@@ -29,7 +29,6 @@ export const updateUserDetails = async (data: DetailsSettingsFormData) => {
       data: {
         name,
         displayName: displayName || null,
-        email,
         bio: bio || null,
         website: `https://${website}` || null,
         location: location || null,

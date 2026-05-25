@@ -15,7 +15,7 @@ import { useDebounce } from 'use-debounce';
 import { Spinner } from '@/components/ui/spinner';
 import { useValidateUsername } from '@/hooks/use-validate-username';
 import { useRouter } from 'next/navigation';
-import { updateUserDetails } from '@/lib/actions/settings/update-user-details';
+import { updateUserDetailsAction } from '@/lib/actions/settings/update-user-details-action';
 import { toast } from 'sonner';
 
 type DetailsSettingsFormProps = {
@@ -29,7 +29,6 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
     defaultValues: {
       name: user.name,
       displayName: user.displayName || '',
-      email: user.email,
       bio: user.bio || '',
       website: user.website?.replace('https://', '') || '',
       location: user.location || '',
@@ -39,7 +38,7 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
   const [value] = useDebounce(form.watch('name'), 400);
 
   const onSubmit = async (data: DetailsSettingsFormData) => {
-    const res = await updateUserDetails(data);
+    const res = await updateUserDetailsAction(data);
     if (res.success) {
       toast.success(res.message);
       router.refresh();
@@ -116,22 +115,16 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
           />
         </div>
         {/* Email */}
-        <Controller
-          name='email'
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <span className='flex items-center justify-between'>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                <Button size='sm' variant='secondary' type='button'>
-                  Change
-                </Button>
-              </span>
-              <Input id={field.name} placeholder='Enter your email...' {...field} aria-invalid={fieldState.invalid} />
-              {fieldState.error && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        <Field>
+          <span className='flex items-center justify-between'>
+            <FieldLabel>Email</FieldLabel>
+            <Button size='sm' variant='secondary' type='button'>
+              Change
+            </Button>
+          </span>
+          <Input disabled value={user.email} />
+        </Field>
+
         {/* Bio */}
         <Controller
           name='bio'
