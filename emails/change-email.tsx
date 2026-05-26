@@ -21,13 +21,12 @@ import {
 
 const baseUrl = process.env.NEXT_PROD_SERVER_URL ? process.env.NEXT_PROD_SERVER_URL : '';
 
-interface ConfirmEmailProps {
-  url: string;
+interface ChangeEmailProps {
+  callbackUrl: string;
+  newEmail: string;
 }
 
-const sharedTextClasses = 'mx-auto mt-0 mb-8 max-w-[380px] text-center';
-
-export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
+export const ChangeEmail = ({ callbackUrl, newEmail }: ChangeEmailProps) => (
   <Tailwind config={{ presets: [pixelBasedPreset] }}>
     <Html>
       <Head>
@@ -42,8 +41,9 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
           fontStyle='normal'
         />
       </Head>
+
       <Body className='m-0 text-center'>
-        <Preview>Confirm your email address to continue with your {APP_NAME} account.</Preview>
+        <Preview>We received a request to change your email address. Confirm it&apos;s you to continue.</Preview>
         <Container className='mt-0 mx-auto md:mt-8 w-full max-w-[640px]'>
           <Section>
             <Section className='mobile:px-2 px-6 py-4'>
@@ -56,27 +56,28 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
                     className='mx-auto mb-5 block'
                   />
                   <Heading as='h1' className='m-0 text-[28px]'>
-                    Confirm your email address
+                    Change email address
                   </Heading>
                 </Section>
 
-                <Text className={sharedTextClasses}>
-                  Click the button below to confirm your email address and continue with your {APP_NAME} account.
+                <Text className='mx-auto mt-0 mb-8 max-w-[450px] text-center'>
+                  We received a request to change the email address associated with your {APP_NAME} account to{' '}
+                  <strong>{newEmail}</strong>. Click the button below to confirm it&apos;s you before proceeding.
                 </Text>
 
                 <Section className='mb-6 text-center'>
-                  <Button href={url} className='bg-[#6d7ecf] inline-block py-4 px-7 rounded-lg text-white text-base'>
-                    Confirm email
+                  <Button
+                    href={callbackUrl}
+                    className='bg-[#6d7ecf] inlin-block py-4 px-7 rounded-lg text-white text-base'
+                  >
+                    Confirm
                   </Button>
                 </Section>
 
-                <Text className='text-sm mx-auto mt-8 mb-0 max-w-[400px] text-center'>
-                  If you didn&apos;t request this,
+                <Text className='text-sm mx-auto mt-8 mb-0 max-w-[400px] text-center '>
+                  If you didn&apos;t request this change,
                   <br />
                   please ignore this email.
-                </Text>
-                <Text className='text-xs mx-auto mt-8 mb-0 max-w-[400px] text-center font-bold'>
-                  Note that the confirmation link will expire in 2 hours.
                 </Text>
               </Section>
 
@@ -84,9 +85,10 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
               <Section>
                 <Row>
                   <Column className='px-6 py-10 text-center'>
-                    <Text className='mx-auto mt-0 mb-4 max-w-[280px] text-center text-gray-500'>
+                    <Text className='mx-auto mt-0 mb-4 max-w-[280px] text-center text-gray-500 '>
                       @{APP_NAME} {new Date().getFullYear()}. All rights reserved.
                     </Text>
+
                     <Section>
                       <Link href='https://www.instagram.com' className='inline-block px-2 align-middle'>
                         <Img
@@ -124,8 +126,9 @@ export const ConfirmEmail = ({ url }: ConfirmEmailProps) => (
   </Tailwind>
 );
 
-ConfirmEmail.PreviewProps = {
-  url: 'https://example.com/',
-} satisfies ConfirmEmailProps;
+ChangeEmail.PreviewProps = {
+  callbackUrl: 'https://example.com/',
+  newEmail: 'ahmed@example.com',
+} satisfies ChangeEmailProps;
 
-export default ConfirmEmail;
+export default ChangeEmail;

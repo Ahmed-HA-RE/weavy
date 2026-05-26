@@ -6,11 +6,26 @@ import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
 import { lastLoginMethod, customSession, captcha } from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
+import { sendChangeEmail } from '@/mail/send-change-email';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
+
+  user: {
+    changeEmail: {
+      enabled: true,
+
+      sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+        void sendChangeEmail({
+          callbackUrl: url,
+          newEmail,
+          currentEmail: user.email,
+        });
+      },
+    },
+  },
 
   databaseHooks: {
     user: {
@@ -25,8 +40,7 @@ export const auth = betterAuth({
           });
           if (existingUsername) {
             throw new APIError('BAD_REQUEST', {
-              message:
-                'Username already exists. Please choose a different one.',
+              message: 'Username already exists. Please choose a different one.',
             });
           }
         },

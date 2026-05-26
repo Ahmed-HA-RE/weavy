@@ -21,10 +21,6 @@ const tabs = [
     value: 'notifications',
   },
   {
-    label: 'Appearance',
-    value: 'appearance',
-  },
-  {
     label: 'Danger Zone',
     value: 'danger-zone',
   },
@@ -33,9 +29,7 @@ const tabs = [
 const HeaderTabs = () => {
   const [tab, setTab] = useQueryState(
     'tab',
-    parseAsString
-      .withOptions({ clearOnDefault: false, shallow: false })
-      .withDefault('details'),
+    parseAsString.withOptions({ clearOnDefault: false, shallow: false }).withDefault('details'),
   );
   return (
     <Tabs value={tab || 'details'} onValueChange={setTab}>
