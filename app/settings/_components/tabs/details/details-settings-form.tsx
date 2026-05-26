@@ -23,6 +23,8 @@ type DetailsSettingsFormProps = {
   user: Pick<User, 'name' | 'displayName' | 'email' | 'bio' | 'website' | 'location'>;
 };
 
+// @todo tommorow enshaa Allah: add modal to change email, and start with account settings (change password, 2FA,Theme toggle etc..)
+
 const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
   const [openChangeEmailDialog, setOpenChangeEmailDialog] = useState(false);
   const router = useRouter();
