@@ -1,11 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-} from '@/components/ui/card';
+import { Card, CardAction, CardContent, CardHeader } from '@/components/ui/card';
 import { useOptimistic, useState, useTransition } from 'react';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaHeart, FaRegBookmark } from 'react-icons/fa6';
@@ -37,10 +32,7 @@ type PostCardProps = {
   className?: string;
 };
 
-const likeReducer = (
-  state: { isLiked: boolean; count: number },
-  newState: boolean,
-) => {
+const likeReducer = (state: { isLiked: boolean; count: number }, newState: boolean) => {
   const isLiked = newState;
   switch (isLiked) {
     case true:
@@ -52,20 +44,13 @@ const likeReducer = (
   }
 };
 
-const PostCard = ({
-  post,
-  loggedUser,
-  profilePage = false,
-  className,
-}: PostCardProps) => {
+const PostCard = ({ post, loggedUser, profilePage = false, className }: PostCardProps) => {
   const queryClient = useQueryClient();
   const comments = post.comments ?? [];
   const [isPending, startTransition] = useTransition();
   const [optimisticLikes, setOptimisticLikes] = useOptimistic(
     {
-      isLiked: post.likes.some(
-        (like) => like.userId === loggedUser?.id && post.id === like.postId,
-      ),
+      isLiked: post.likes.some((like) => like.userId === loggedUser?.id && post.id === like.postId),
       count: post._count.likes,
     },
     (prev, newState: boolean) => likeReducer(prev, newState),
@@ -88,8 +73,7 @@ const PostCard = ({
   const isOwner = loggedUser?.id === post.user.id;
   const isFollowing = post.user.followers.length > 0;
   const isUserBookmarked = post.bookmarks.some(
-    (bookmark) =>
-      bookmark.userId === loggedUser?.id && bookmark.postId === post.id,
+    (bookmark) => bookmark.userId === loggedUser?.id && bookmark.postId === post.id,
   );
 
   const handleLike = () => {
@@ -110,7 +94,6 @@ const PostCard = ({
       ]);
     });
   };
-
   return (
     <Card className={cn('gap-6 pt-6', className)}>
       <CardHeader className='flex items-center justify-between gap-3'>
@@ -160,17 +143,13 @@ const PostCard = ({
                   <Button asChild variant='ghost' size='sm'>
                     <Link href='/sign-in'>
                       <FaRegHeart />
-                      {optimisticLikes.count > 0 && (
-                        <span>{optimisticLikes.count}</span>
-                      )}
+                      {optimisticLikes.count > 0 && <span>{optimisticLikes.count}</span>}
                     </Link>
                   </Button>
                   <Button variant='ghost' size='sm' asChild>
                     <Link href='/sign-in'>
                       <FiMessageCircle />
-                      {post._count.comments > 0 && (
-                        <span>{post._count.comments}</span>
-                      )}
+                      {post._count.comments > 0 && <span>{post._count.comments}</span>}
                     </Link>
                   </Button>
                   <Button asChild variant='ghost' size='sm'>
@@ -181,25 +160,16 @@ const PostCard = ({
                 </>
               ) : (
                 <>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={handleLike}
-                    disabled={isPending}
-                  >
+                  <Button variant='ghost' size='sm' onClick={handleLike} disabled={isPending}>
                     {optimisticLikes.isLiked ? (
                       <>
                         <FaHeart className='fill-destructive' />
-                        {optimisticLikes.count > 0 && (
-                          <span>{optimisticLikes.count}</span>
-                        )}
+                        {optimisticLikes.count > 0 && <span>{optimisticLikes.count}</span>}
                       </>
                     ) : (
                       <>
                         <FaRegHeart />
-                        {optimisticLikes.count > 0 && (
-                          <span>{optimisticLikes.count}</span>
-                        )}
+                        {optimisticLikes.count > 0 && <span>{optimisticLikes.count}</span>}
                       </>
                     )}
                   </Button>
@@ -208,35 +178,21 @@ const PostCard = ({
                     <Button variant='ghost' size='sm' asChild>
                       <Link href={`/post/${post.id}`}>
                         <FiMessageCircle />
-                        {optimisticComments.commentsCount > 0 && (
-                          <span>{optimisticComments.commentsCount}</span>
-                        )}
+                        {optimisticComments.commentsCount > 0 && <span>{optimisticComments.commentsCount}</span>}
                       </Link>
                     </Button>
                   ) : (
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => setIsCommenting((prev) => !prev)}
-                    >
+                    <Button variant='ghost' size='sm' onClick={() => setIsCommenting((prev) => !prev)}>
                       <FiMessageCircle />
-                      {optimisticComments.commentsCount > 0 && (
-                        <span>{optimisticComments.commentsCount}</span>
-                      )}
+                      {optimisticComments.commentsCount > 0 && <span>{optimisticComments.commentsCount}</span>}
                     </Button>
                   )}
 
                   {!isOwner && loggedUser && (
-                    <BookmarkPostButton
-                      postId={post.id}
-                      isUserBookmarked={isUserBookmarked}
-                    />
+                    <BookmarkPostButton postId={post.id} isUserBookmarked={isUserBookmarked} />
                   )}
                   {!isOwner && ( // Only show report button if the logged in user is not the owner of the post
-                    <ReportPostDialog
-                      reporterId={loggedUser.id}
-                      postId={post.id}
-                    />
+                    <ReportPostDialog reporterId={loggedUser.id} postId={post.id} />
                   )}
                 </>
               )}
@@ -248,12 +204,7 @@ const PostCard = ({
       {optimisticComments.commentsCount > 0 && !profilePage && (
         <div className='border-t px-4 pt-4 space-y-6'>
           {optimisticComments.comments.map((comment) => (
-            <PostComment
-              key={comment.id}
-              comment={comment}
-              loggedUser={loggedUser}
-              postId={post.id}
-            />
+            <PostComment key={comment.id} comment={comment} loggedUser={loggedUser} postId={post.id} />
           ))}
         </div>
       )}

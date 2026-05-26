@@ -1,34 +1,21 @@
 import Link from 'next/link';
-import { Avatar, AvatarFallback } from './ui/avatar';
-import Image from 'next/image';
-import { Suspense } from 'react';
 import { RiShieldUserFill } from 'react-icons/ri';
 import { HiBadgeCheck } from 'react-icons/hi';
 import { formatTimeToDistance } from '@/lib/utils';
 import { User } from '@/lib/generated/prisma/client';
+import PostCardAvatar from './post-card-avatar';
 
 type UserInfoProps = {
-  user: Pick<User, 'name' | 'displayName' | 'image' | 'role'>;
+  user: Pick<User, 'name' | 'displayName' | 'image' | 'role' | 'status'>;
   createdAt: Date;
 };
 
 const UserInfo = ({ user, createdAt }: UserInfoProps) => {
+  console.log(user.status);
   return (
     <div className='flex items-center gap-3'>
       <Link href={`/profile/${user.name}`}>
-        <Avatar size='lg'>
-          <Suspense
-            fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}
-          >
-            <Image
-              src={user.image}
-              alt={user.name}
-              width={40}
-              height={40}
-              className='rounded-full object-cover'
-            />
-          </Suspense>
-        </Avatar>
+        <PostCardAvatar user={user} />
       </Link>
       <div className='flex flex-col leading-tight'>
         <span className='flex items-center gap-1 text-sm'>

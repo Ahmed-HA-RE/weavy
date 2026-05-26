@@ -5,13 +5,7 @@ import db from '@/lib/db';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { headers } from 'next/headers';
 
-export const getPostsAction = async ({
-  pageParam,
-  limit = 5,
-}: {
-  pageParam: number;
-  limit?: number;
-}) => {
+export const getPostsAction = async ({ pageParam, limit = 5 }: { pageParam: number; limit?: number }) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -57,6 +51,7 @@ export const getPostsAction = async ({
           displayName: true,
           image: true,
           role: true,
+          status: true,
           followers: {
             where: {
               followerId: loggedUser?.id || Prisma.skip,
@@ -88,6 +83,7 @@ export const getPostsAction = async ({
               displayName: true,
               image: true,
               role: true,
+              status: true,
             },
           },
         },

@@ -14,6 +14,7 @@ export type PostWithRelations = Prisma.PostGetPayload<{
         displayName: true;
         image: true;
         role: true;
+        status: true;
         followers: {
           where: {
             followerId: string | undefined;
@@ -33,6 +34,7 @@ export type PostWithRelations = Prisma.PostGetPayload<{
             displayName: true;
             image: true;
             role: true;
+            status: true;
           };
         };
       };

@@ -29,6 +29,7 @@ type AddCommentProps = {
             displayName: true;
             image: true;
             role: true;
+            status: true;
           };
         };
       };
@@ -36,12 +37,7 @@ type AddCommentProps = {
   ) => void;
 };
 
-const AddComment = ({
-  user,
-  postId,
-  setIsCommenting,
-  addOptimisticComment,
-}: AddCommentProps) => {
+const AddComment = ({ user, postId, setIsCommenting, addOptimisticComment }: AddCommentProps) => {
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
   const [, startTransition] = useTransition();
@@ -60,6 +56,7 @@ const AddComment = ({
           displayName: user.displayName || user.name,
           image: user.image || '/images/avatar.png',
           role: user.role,
+          status: user.status,
         },
         createdAt: new Date(),
       });
@@ -86,9 +83,7 @@ const AddComment = ({
     >
       <div className='flex gap-4'>
         <Avatar className='size-9'>
-          <Suspense
-            fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}
-          >
+          <Suspense fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}>
             <Image
               src={user.image ?? '/images/avatar.png'}
               alt={user.name}
