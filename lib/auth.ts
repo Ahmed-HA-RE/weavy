@@ -7,6 +7,7 @@ import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
 import { lastLoginMethod, customSession, captcha } from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 import { sendChangeEmail } from '@/mail/send-change-email';
+import { sendDeleteAccountEmail } from '@/mail/send-delete-account-email';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -16,12 +17,24 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-
       sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
         void sendChangeEmail({
           callbackUrl: url,
           newEmail,
           currentEmail: user.email,
+        });
+      },
+    },
+    deleteUser: {
+      enabled: true,
+      deleteTokenExpiresIn: 1, // 1 hr
+      sendDeleteAccountVerification: async ({
+        user, // The user object
+        url, // The auto-generated URL for deletion
+      }) => {
+        void sendDeleteAccountEmail({
+          userEmail: user.email,
+          url,
         });
       },
     },

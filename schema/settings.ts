@@ -10,3 +10,11 @@ export const detailsSettingsSchema = z.object({
 });
 
 export type DetailsSettingsFormData = z.infer<typeof detailsSettingsSchema>;
+
+export const dangerZoneSettingsSchema = z.object({
+  firstConfirmation: z.boolean(),
+  secondConfirmation: z.boolean(),
+  thirdConfirmation: z.boolean(),
+});
+
+export type DangerZoneSettingsFormData = z.input<typeof dangerZoneSettingsSchema>;

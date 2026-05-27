@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import ProfileInfoSkeleton from './_components/profile-info-skeleton';
 import DetailsSettings from './_components/tabs/details/details-settings';
 import DetailsSettingsSkeleton from './_components/tabs/details/details-settings-skeleton';
+import DangerZoneSettings from './_components/tabs/danger-zone/danger-zone-settings';
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -31,15 +32,11 @@ const dynamicComponents = (tab: string, loggedUserId: string) => {
     case 'appearance':
       return <div>hi</div>;
     case 'danger-zone':
-      return <div>hi</div>;
+      return <DangerZoneSettings />;
   }
 };
 
-const SettingsPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | undefined }>;
-}) => {
+const SettingsPage = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) => {
   const tab = (await searchParams).tab || 'details';
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -65,9 +62,7 @@ const SettingsPage = async ({
         </Suspense>
 
         {/* Dynamic Content Based on Active Tab */}
-        <div className='lg:col-span-8 lg:border-l lg:pl-8'>
-          {dynamicComponents(tab, loggedUser.id)}
-        </div>
+        <div className='lg:col-span-8 lg:border-l lg:pl-8'>{dynamicComponents(tab, loggedUser.id)}</div>
       </div>
     </>
   );
