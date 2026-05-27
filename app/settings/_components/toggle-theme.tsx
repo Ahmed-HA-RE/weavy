@@ -3,7 +3,7 @@
 import { useTheme } from '@teispace/next-themes';
 import { LuMoon, LuSun, LuMonitor } from 'react-icons/lu';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
 
 const themeOptions = [
   { value: 'light', label: 'Light', icon: LuSun },

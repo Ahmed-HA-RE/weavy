@@ -21,13 +21,13 @@ import {
 
 const baseUrl = process.env.NEXT_PROD_SERVER_URL ? process.env.NEXT_PROD_SERVER_URL : '';
 
-interface DeleteAccountProps {
+interface DeleteAccountEmailProps {
   url: string;
 }
 
 const sharedTextClasses = 'mx-auto mt-0 mb-8 max-w-[380px] text-center';
 
-export const DeleteAccount = ({ url }: DeleteAccountProps) => (
+export const DeleteAccountEmail = ({ url }: DeleteAccountEmailProps) => (
   <Tailwind config={{ presets: [pixelBasedPreset] }}>
     <Html>
       <Head>
@@ -127,8 +127,8 @@ export const DeleteAccount = ({ url }: DeleteAccountProps) => (
   </Tailwind>
 );
 
-DeleteAccount.PreviewProps = {
+DeleteAccountEmail.PreviewProps = {
   url: 'https://example.com/',
-} satisfies DeleteAccountProps;
+} satisfies DeleteAccountEmailProps;
 
-export default DeleteAccount;
+export default DeleteAccountEmail;

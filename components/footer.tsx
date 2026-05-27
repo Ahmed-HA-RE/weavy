@@ -25,10 +25,7 @@ const Footer = () => {
                 {item.title}
               </Link>
               {footerNavigationData.length - 1 !== index && (
-                <Separator
-                  orientation='vertical'
-                  className='hidden lg:block bg-muted-foreground h-4'
-                />
+                <Separator orientation='vertical' className='hidden lg:block bg-muted-foreground h-4' />
               )}
             </li>
           ))}
@@ -45,6 +42,7 @@ const Footer = () => {
             alt='Company Logo'
             width={150}
             height={50}
+            loading='eager'
             style={logoStyles}
           />
           <span className='text-sm text-muted-foreground'>

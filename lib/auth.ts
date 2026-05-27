@@ -27,7 +27,7 @@ export const auth = betterAuth({
     },
     deleteUser: {
       enabled: true,
-      deleteTokenExpiresIn: 1, // 1 hr
+      deleteTokenExpiresIn: 3600, // 1 hr
       sendDeleteAccountVerification: async ({
         user, // The user object
         url, // The auto-generated URL for deletion

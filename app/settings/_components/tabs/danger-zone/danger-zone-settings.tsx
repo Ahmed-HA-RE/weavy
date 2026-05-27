@@ -7,6 +7,8 @@ import { DangerZoneSettingsFormData, dangerZoneSettingsSchema } from '@/schema/s
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { useForm, Controller } from 'react-hook-form';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const DangerZoneSettings = () => {
   const form = useForm<DangerZoneSettingsFormData>({
@@ -24,11 +26,22 @@ const DangerZoneSettings = () => {
     formState: { isSubmitting, errors },
   } = form;
 
-  const onSubmit = (data: DangerZoneSettingsFormData) => {
+  const onSubmit = async (data: DangerZoneSettingsFormData) => {
     if (!data.firstConfirmation || !data.secondConfirmation || !data.thirdConfirmation) {
       form.setError('root', { message: 'You must check all the boxes to proceed.' });
       return;
     } else {
+      try {
+        const res = await authClient.deleteUser();
+        if (res.error) {
+          throw new Error(res.error.message);
+        } else {
+          toast.success('We sent you a confirmation email. Please check your inbox.');
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -91,7 +104,7 @@ const DangerZoneSettings = () => {
           {errors.root && <p className='text-destructive text-sm mt-2'>{errors.root.message}</p>}
         </FieldGroup>
         <Button type='submit' variant='destructive' disabled={isSubmitting} className='mt-6 w-full'>
-          Delete Account
+          {isSubmitting ? 'Processing...' : 'Delete Account'}
         </Button>
       </form>
     </div>

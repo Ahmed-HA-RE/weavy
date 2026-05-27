@@ -1,4 +1,4 @@
-import DeleteAccount from '@/emails/delete-account';
+import DeleteAccountEmail from '@/emails/delete-account-email';
 import { APP_NAME } from '@/lib/constants/app';
 import { resendDomain, resend } from '@/lib/resend';
 
@@ -8,7 +8,7 @@ export const sendDeleteAccountEmail = async ({ userEmail, url }: { userEmail: st
       from: `${APP_NAME} <no-reply@${resendDomain}>`,
       to: userEmail,
       subject: 'Confirm your account deletion request',
-      react: DeleteAccount({ url }),
+      react: DeleteAccountEmail({ url }),
     });
     if (error) throw new Error(`Failed to send delete account email: ${error.message}`);
   } catch (error) {

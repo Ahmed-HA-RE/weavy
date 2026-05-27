@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 import { Avatar } from '@/components/ui/avatar';
 import { FaLocationArrow } from 'react-icons/fa6';
 import { IoIosLink } from 'react-icons/io';
-import { LuPalette } from 'react-icons/lu';
 import UploadAvatarButton from '@/components/upload-avatar-button';
 import { Separator } from '@/components/ui/separator';
-import ToggleTheme from '@/components/toggle-theme';
+import ToggleTheme from '@/app/settings/_components/toggle-theme';
 import { cn } from '@/lib/utils';
+import ToggleAccountStatus from './toggle-account-status';
 
 type ProfileInfoProps = {
   loggedUserId: string;
@@ -24,6 +24,7 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
       image: true,
       location: true,
       website: true,
+      status: true,
       _count: {
         select: {
           posts: true,
@@ -103,14 +104,11 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         </span>
       </div>
 
-      {/* Appearance */}
+      {/* Appearance + Status */}
       <div className='w-full max-w-[294px] mt-8'>
         <Separator className='mb-6' />
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2 text-sm font-medium'>
-            <LuPalette className='size-4 text-muted-foreground' />
-            <span>Theme</span>
-          </div>
+        <div className='flex items-center gap-4'>
+          <ToggleAccountStatus currentStatus={user.status} />
           <ToggleTheme />
         </div>
       </div>
