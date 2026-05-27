@@ -5,20 +5,13 @@ import db from '@/lib/db';
 import { headers } from 'next/headers';
 import { UTApi } from 'uploadthing/server';
 
-export const updateAvatarAction = async ({
-  url,
-  key,
-}: {
-  url: string;
-  key: string;
-}) => {
+export const updateUserAvatarAction = async ({ url, key }: { url: string; key: string }) => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session || !session.user)
-      throw new Error('Unauthorized to update avatar');
+    if (!session || !session.user) throw new Error('Unauthorized to update avatar');
 
     const user = await db.user.findUnique({
       where: { id: session.user.id },
@@ -46,8 +39,7 @@ export const updateAvatarAction = async ({
 
     return { success: true, message: 'Avatar updated successfully' };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Something went wrong';
+    const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
     console.error('Error updating avatar:', errorMessage);
     return { success: false, message: errorMessage };
   }
