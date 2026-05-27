@@ -9,10 +9,6 @@ const tabs = [
     value: 'details',
   },
   {
-    label: 'Account',
-    value: 'account',
-  },
-  {
     label: 'Security',
     value: 'security',
   },

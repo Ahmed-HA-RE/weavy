@@ -7,7 +7,6 @@ import MobileNavigation from './mobile-navigation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { navigationData } from '@/lib/constants/navigation';
-import ToggleThemeButton from '../toggle-theme-button';
 import ProfileDropdown from '../profile-dropdown';
 
 const Header = async () => {
@@ -36,9 +35,7 @@ const Header = async () => {
       return false;
     })
     .map((navItem) =>
-      navItem.href.includes('/:username')
-        ? { ...navItem, href: `/profile/${session?.user.name}` }
-        : navItem,
+      navItem.href.includes('/:username') ? { ...navItem, href: `/profile/${session?.user.name}` } : navItem,
     );
 
   return (
@@ -56,15 +53,9 @@ const Header = async () => {
           />
         </Link>
         {/*  DesktopNavigation */}
-        <MenuNavigation
-          navigationData={desktopNavigationData}
-          className='max-md:hidden'
-        />
+        <MenuNavigation navigationData={desktopNavigationData} className='max-md:hidden' />
 
         <div className='flex items-center md:gap-2.5'>
-          {/* Add toggle theme button for testing purposes until i implement profile page */}
-          <ToggleThemeButton />
-
           {isLoggedIn ? (
             <ProfileDropdown user={session.user} />
           ) : (
@@ -75,10 +66,7 @@ const Header = async () => {
           )}
 
           {/* Navigation for small screens */}
-          <MobileNavigation
-            navigationData={mobileNavigationData}
-            isLoggedIn={isLoggedIn}
-          />
+          <MobileNavigation navigationData={mobileNavigationData} isLoggedIn={isLoggedIn} />
         </div>
       </div>
     </header>

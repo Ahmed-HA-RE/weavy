@@ -4,7 +4,10 @@ import { redirect } from 'next/navigation';
 import { Avatar } from '@/components/ui/avatar';
 import { FaLocationArrow } from 'react-icons/fa6';
 import { IoIosLink } from 'react-icons/io';
+import { LuPalette } from 'react-icons/lu';
 import UploadAvatarButton from '@/components/upload-avatar-button';
+import { Separator } from '@/components/ui/separator';
+import ToggleTheme from '@/components/toggle-theme';
 import { cn } from '@/lib/utils';
 
 type ProfileInfoProps = {
@@ -98,6 +101,18 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
             </a>
           )}
         </span>
+      </div>
+
+      {/* Appearance */}
+      <div className='w-full max-w-[294px] mt-8'>
+        <Separator className='mb-6' />
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2 text-sm font-medium'>
+            <LuPalette className='size-4 text-muted-foreground' />
+            <span>Theme</span>
+          </div>
+          <ToggleTheme />
+        </div>
       </div>
     </aside>
   );
