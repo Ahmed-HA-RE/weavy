@@ -21,8 +21,7 @@ export const getUserBookmarksAction = async ({
       headers: await headers(),
     });
 
-    if (!session || session.user.name !== userName)
-      throw new Error('Unauthorized');
+    if (!session || session.user.name !== userName) throw new Error('Unauthorized');
 
     const bookmarks = await db.bookmark.findMany({
       where: {
@@ -40,6 +39,7 @@ export const getUserBookmarksAction = async ({
                 displayName: true,
                 image: true,
                 role: true,
+                status: true,
                 followers: {
                   where: {
                     followerId: loggedUserId || Prisma.skip,
@@ -93,9 +93,7 @@ export const getUserBookmarksAction = async ({
     return { success: true, bookmarks, nextPage };
   } catch (error) {
     const errorMessage =
-      error instanceof Error
-        ? error.message
-        : 'An unknown error occurred while fetching user bookmarks.';
+      error instanceof Error ? error.message : 'An unknown error occurred while fetching user bookmarks.';
     console.error('Error: ', errorMessage);
     return {
       success: false,

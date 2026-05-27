@@ -21,8 +21,7 @@ export const getUserLikesAction = async ({
       headers: await headers(),
     });
 
-    if (!session || session.user.name !== userName)
-      throw new Error('Unauthorized');
+    if (!session || session.user.name !== userName) throw new Error('Unauthorized');
 
     const likes = await db.like.findMany({
       where: {
@@ -40,6 +39,7 @@ export const getUserLikesAction = async ({
                 displayName: true,
                 image: true,
                 role: true,
+                status: true,
                 followers: {
                   where: {
                     followerId: loggedUserId || Prisma.skip,
@@ -93,9 +93,7 @@ export const getUserLikesAction = async ({
     return { success: true, likes, nextPage };
   } catch (error) {
     const errorMessage =
-      error instanceof Error
-        ? error.message
-        : 'An unknown error occurred while fetching user likes.';
+      error instanceof Error ? error.message : 'An unknown error occurred while fetching user likes.';
     console.error('Error: ', errorMessage);
     return { success: false, error: errorMessage, likes: [], nextPage: null };
   }

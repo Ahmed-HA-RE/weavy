@@ -21,6 +21,7 @@ type CommentProps = {
           displayName: true;
           image: true;
           role: true;
+          status: true;
         };
       };
     };
@@ -53,9 +54,7 @@ const PostComment = ({ comment, loggedUser, postId }: CommentProps) => {
               <FaTrash className='text-muted-foreground hover:text-destructive' />
             </Button>
           }
-          action={() =>
-            deleteMyCommentAction({ commentId: comment.id, postId })
-          }
+          action={() => deleteMyCommentAction({ commentId: comment.id, postId })}
         />
       )}
     </div>

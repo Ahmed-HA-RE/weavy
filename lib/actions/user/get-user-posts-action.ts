@@ -29,6 +29,7 @@ export const getUserPostsAction = async ({
             displayName: true,
             image: true,
             role: true,
+            status: true,
             followers: {
               where: {
                 followerId: loggedUserId || Prisma.skip,
@@ -78,8 +79,7 @@ export const getUserPostsAction = async ({
 
     return { success: true, posts: userPosts, nextPage };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to get user posts';
+    const errorMessage = error instanceof Error ? error.message : 'Failed to get user posts';
     console.error('Error: ', errorMessage);
     return { success: false, message: errorMessage, posts: [], nextPage: null };
   }
