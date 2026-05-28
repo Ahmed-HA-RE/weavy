@@ -38,10 +38,7 @@ const GoogleAuthButton = ({ callbackURL }: { callbackURL: string }) => {
           router.push(data.url);
         }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'An unexpected error occurred';
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
         toast.error(errorMessage);
       }
     });
@@ -51,6 +48,7 @@ const GoogleAuthButton = ({ callbackURL }: { callbackURL: string }) => {
     <Button
       variant='outline'
       type='button'
+      size='lg'
       className='gap-1 relative'
       onClick={handleGoogleAuth}
       disabled={isPending}
@@ -62,10 +60,7 @@ const GoogleAuthButton = ({ callbackURL }: { callbackURL: string }) => {
           <FcGoogle className='size-5' />
           Google
           {lastMethod === 'google' && pathname === '/sign-in' && (
-            <Badge
-              variant='default'
-              className='absolute -top-2 -right-2 bg-linear-to-r from-[#48c6ef] to-[#6f86d6] '
-            >
+            <Badge variant='default' className='absolute -top-2 -right-2 bg-linear-to-r from-[#48c6ef] to-[#6f86d6] '>
               Last Used
             </Badge>
           )}

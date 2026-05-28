@@ -11,7 +11,7 @@ export const followUserToggleAction = async (userId: string) => {
       headers: await headers(),
     });
 
-    if (!session?.user) {
+    if (!session) {
       throw new Error('Unauthorized');
     }
 
@@ -20,11 +20,24 @@ export const followUserToggleAction = async (userId: string) => {
       throw new Error('You cannot follow yourself');
     }
 
-    // Check if the target users exists and not already followed
+    const targetUser = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        muteFollows: true,
+      },
+    });
+    if (!targetUser) {
+      throw new Error('User not found');
+    }
+
+    // Check if the target user exists and not already followed
     const existingFollow = await db.follow.findUnique({
       where: {
         followerId_followingId: {
-          followerId: session.user.id,
+          followerId: targetUser.id,
           followingId: userId,
         },
       },
@@ -48,6 +61,7 @@ export const followUserToggleAction = async (userId: string) => {
             followingId: userId,
           },
         });
+        if (targetUser.muteFollows) return; // Only send a notification if the target user has not muted follow notifications
         await tx.notification.create({
           data: {
             type: 'FOLLOW',
@@ -60,8 +74,7 @@ export const followUserToggleAction = async (userId: string) => {
       return { success: true, message: 'User followed successfully' };
     }
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     console.error('Error toggling follow status:', errorMessage);
     return { success: false, message: errorMessage };
   }

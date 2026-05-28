@@ -4,13 +4,7 @@ import { auth } from '@/lib/auth';
 import db from '@/lib/db';
 import { headers } from 'next/headers';
 
-export const addComment = async ({
-  postId,
-  content,
-}: {
-  postId: string;
-  content: string;
-}) => {
+export const addComment = async ({ postId, content }: { postId: string; content: string }) => {
   try {
     const [session, existingPost] = await Promise.all([
       auth.api.getSession({
@@ -23,6 +17,11 @@ export const addComment = async ({
         },
         select: {
           userId: true,
+          user: {
+            select: {
+              muteComments: true,
+            },
+          },
         },
       }),
     ]);
@@ -38,8 +37,17 @@ export const addComment = async ({
           postId,
           userId: session.user.id,
         },
+        include: {
+          user: {
+            select: {
+              muteComments: true,
+            },
+          },
+        },
       });
       if (session.user.id === existingPost.userId) return newComment;
+      // Only send a notification if the post owner has not muted comment notifications
+      if (existingPost.user.muteComments) return newComment;
 
       await tx.notification.create({
         data: {
@@ -55,8 +63,7 @@ export const addComment = async ({
 
     return { success: true, message: 'Comment added successfully', comment };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to add comment';
+    const errorMessage = error instanceof Error ? error.message : 'Failed to add comment';
     console.error('Error: ', errorMessage);
     return { success: false, message: errorMessage };
   }

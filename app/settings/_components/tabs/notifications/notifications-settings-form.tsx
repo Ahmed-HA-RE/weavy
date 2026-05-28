@@ -1,11 +1,14 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Field, FieldGroup } from '@/components/ui/field';
 import { Switch } from '@/components/ui/switch';
+import { toggleMuteNotificationsAction } from '@/lib/actions/settings/toggle-mute-notifications-action';
 import { NOTIFICATIONS_MUTE_OPTIONS } from '@/lib/constants/app';
 import { User } from '@/lib/generated/prisma/client';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { RiHeart2Line, RiMessage2Line, RiUserAddLine } from 'react-icons/ri';
+import { toast } from 'sonner';
 
 const SwitchComponent = ({
   checked,
@@ -59,6 +62,7 @@ const NotificationsSettingsForm = ({ user }: { user: Pick<User, 'muteComments' |
   const [toggleMuteFollows, setToggleMuteFollows] = useState(user.muteFollows);
   const [toggleMuteComments, setToggleMuteComments] = useState(user.muteComments);
   const [toggleMuteLikes, setToggleMuteLikes] = useState(user.muteLikes);
+  const [isPending, startTransition] = useTransition();
 
   const notificationOptions: NotificationOption[] = [
     {
@@ -82,7 +86,21 @@ const NotificationsSettingsForm = ({ user }: { user: Pick<User, 'muteComments' |
   ];
 
   const onSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    startTransition(async () => {
+      e.preventDefault();
+      const res = await toggleMuteNotificationsAction({
+        muteFollows: toggleMuteFollows,
+        muteComments: toggleMuteComments,
+        muteLikes: toggleMuteLikes,
+      });
+      if (!res.success) {
+        toast.error(res.message);
+        setToggleMuteFollows(user.muteFollows);
+        setToggleMuteComments(user.muteComments);
+        setToggleMuteLikes(user.muteLikes);
+        return;
+      }
+    });
   };
 
   return (
@@ -91,6 +109,9 @@ const NotificationsSettingsForm = ({ user }: { user: Pick<User, 'muteComments' |
         {notificationOptions.map((option) => (
           <NotificationField key={option.label} {...option} />
         ))}
+        <Button type='submit' className='self-end' disabled={isPending}>
+          {isPending ? 'Saving...' : 'Save Changes'}
+        </Button>
       </FieldGroup>
     </form>
   );

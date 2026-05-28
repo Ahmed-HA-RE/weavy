@@ -15,7 +15,7 @@ export const togglePostLikeAction = async (postId: string) => {
     // Check if the post exists
     const post = await db.post.findUnique({
       where: { id: postId },
-      select: { id: true, userId: true },
+      select: { id: true, userId: true, user: { select: { muteLikes: true } } },
     });
 
     if (!post) throw new Error('Post not found');
@@ -46,6 +46,7 @@ export const togglePostLikeAction = async (postId: string) => {
           },
         });
         if (post.userId === newLike.userId) return; // if the user is liking their own post, don't create a notification
+        if (post.user.muteLikes) return; // Only send a notification if the post owner has not muted like notifications
 
         await tx.notification.create({
           data: {
@@ -59,8 +60,7 @@ export const togglePostLikeAction = async (postId: string) => {
     }
     return { success: true };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     console.error('Error', errorMessage);
     return { success: false };
   }
