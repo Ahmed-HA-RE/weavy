@@ -9,6 +9,7 @@ import ProfileInfoSkeleton from './_components/profile-info-skeleton';
 import DetailsSettings from './_components/tabs/details/details-settings';
 import DetailsSettingsSkeleton from './_components/tabs/details/details-settings-skeleton';
 import DangerZoneSettings from './_components/tabs/danger-zone/danger-zone-settings';
+import NotificationsSettings from './_components/tabs/notifications/notifications-settings';
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -23,14 +24,10 @@ const dynamicComponents = (tab: string, loggedUserId: string) => {
           <DetailsSettings loggedUserId={loggedUserId} />
         </Suspense>
       );
-    case 'account':
-      return <div>hi</div>;
     case 'security':
       return <div>hi</div>;
     case 'notifications':
-      return <div>hi</div>;
-    case 'appearance':
-      return <div>hi</div>;
+      return <NotificationsSettings loggedUserId={loggedUserId} />;
     case 'danger-zone':
       return <DangerZoneSettings />;
   }

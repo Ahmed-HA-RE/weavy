@@ -11,7 +11,6 @@ type UserInfoProps = {
 };
 
 const UserInfo = ({ user, createdAt }: UserInfoProps) => {
-  console.log(user.status);
   return (
     <div className='flex items-center gap-3'>
       <Link href={`/profile/${user.name}`}>

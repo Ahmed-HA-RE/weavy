@@ -7,3 +7,18 @@ export const DANGER_ZONE_CONFIRMATION_TEXTS = {
   confirmation2: 'I understand that this action is irreversible.',
   confirmation3: 'I understand that my profile, posts, and followers will be permanently lost.',
 };
+
+export const NOTIFICATIONS_MUTE_OPTIONS = {
+  muteFollows: {
+    label: 'Mute Follows',
+    description: 'Turn off notifications for new followers.',
+  },
+  muteComments: {
+    label: 'Mute Comments',
+    description: 'Turn off notifications for new comments on your posts.',
+  },
+  muteLikes: {
+    label: 'Mute Likes',
+    description: 'Turn off notifications for new likes on your posts.',
+  },
+};

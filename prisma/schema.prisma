@@ -63,6 +63,9 @@ model User {
   bio           String?
   location      String?
   website       String?
+  muteFollows   Boolean     @default(false) // To mute follows notifications for this user 
+  muteComments  Boolean     @default(false) // To mute comments notifications for this user
+  muteLikes     Boolean     @default(false) // To mute likes notifications for this user
 
   // Relations
   sessions  Session[]
