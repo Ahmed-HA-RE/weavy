@@ -10,6 +10,7 @@ import DetailsSettings from './_components/tabs/details/details-settings';
 import DetailsSettingsSkeleton from './_components/tabs/details/details-settings-skeleton';
 import DangerZoneSettings from './_components/tabs/danger-zone/danger-zone-settings';
 import NotificationsSettings from './_components/tabs/notifications/notifications-settings';
+import SecuritySettings from './_components/tabs/security/security-settings';
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -25,7 +26,7 @@ const dynamicComponents = (tab: string, loggedUserId: string) => {
         </Suspense>
       );
     case 'security':
-      return <div>hi</div>;
+      return <SecuritySettings loggedUserId={loggedUserId} />;
     case 'notifications':
       return <NotificationsSettings loggedUserId={loggedUserId} />;
     case 'danger-zone':

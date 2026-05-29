@@ -1,31 +1,22 @@
 import z from 'zod';
 
+const passwordSchema = z
+  .string({ error: 'Password is required' })
+  .min(8, 'Password must be at least 8 characters')
+  .max(100, 'Password must be at most 100 characters')
+  .regex(/^(?=.*[A-Z]).*$/, 'Password must contain at least one uppercase letter')
+  .regex(/^(?=.*[a-z]).*$/, 'Password must contain at least one lowercase letter');
+
 export const authSchema = z.object({
   userName: z
     .string({ error: 'Username is required' })
     .min(5, 'Username must be at least 5 characters')
     .max(20, 'Username must be at most 20 characters')
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      'Username can only contain letters, numbers, and underscores',
-    )
+    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
     .transform((name) => name.trim().toLowerCase()),
   email: z.email({ error: 'Invalid email address' }),
-  password: z
-    .string({ error: 'Password is required' })
-    .min(8, 'Password must be at least 8 characters')
-    .max(100, 'Password must be at most 100 characters')
-    .regex(
-      /^(?=.*[A-Z]).*$/,
-      'Password must contain at least one uppercase letter',
-    )
-    .regex(
-      /^(?=.*[a-z]).*$/,
-      'Password must contain at least one lowercase letter',
-    ),
-  recaptchaToken: z
-    .string({ error: 'Please complete the reCAPTCHA' })
-    .nullable(),
+  password: passwordSchema,
+  recaptchaToken: z.string({ error: 'Please complete the reCAPTCHA' }).nullable(),
 });
 
 export type SignUpFormData = z.infer<typeof authSchema>;
@@ -44,19 +35,8 @@ export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export const resetPasswordSchema = z
   .object({
-    password: authSchema.shape.password,
-    confirmPassword: z
-      .string({ error: 'Please confirm your password' })
-      .min(8, 'Password must be at least 8 characters')
-      .max(100, 'Password must be at most 100 characters')
-      .regex(
-        /^(?=.*[A-Z]).*$/,
-        'Password must contain at least one uppercase letter',
-      )
-      .regex(
-        /^(?=.*[a-z]).*$/,
-        'Password must contain at least one lowercase letter',
-      ),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -64,3 +44,20 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+export const setPasswordSchema = resetPasswordSchema;
+
+export type SetPasswordFormData = z.infer<typeof setPasswordSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: passwordSchema,
+    newPassword: passwordSchema,
+    confirmNewPassword: passwordSchema,
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: 'New passwords do not match',
+    path: ['confirmNewPassword'],
+  });
+
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
