@@ -5,12 +5,15 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 import { Spinner } from '@/components/ui/spinner';
+import { setPasswordAction } from '@/lib/actions/settings/set-password-action';
 import { ChangePasswordFormData, changePasswordSchema, SetPasswordFormData, setPasswordSchema } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Control, Controller, FieldValues, Path, useForm } from 'react-hook-form';
 import { FaRegEye } from 'react-icons/fa6';
 import { RiEyeCloseLine } from 'react-icons/ri';
+import { toast } from 'sonner';
 
 interface SharedPasswordFieldProps<T extends FieldValues> {
   label: string;
@@ -78,6 +81,7 @@ const SharedPasswordField = <T extends FieldValues>({
 };
 
 const SetPasswordForm = () => {
+  const router = useRouter();
   const form = useForm<SetPasswordFormData>({
     resolver: zodResolver(setPasswordSchema),
     defaultValues: {
@@ -92,7 +96,16 @@ const SetPasswordForm = () => {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (data: SetPasswordFormData) => {};
+  const onSubmit = async (data: SetPasswordFormData) => {
+    const res = await setPasswordAction(data);
+    if (!res.success) {
+      toast.error(res.message);
+      return;
+    } else {
+      toast.success(res.message);
+      router.refresh();
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
