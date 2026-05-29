@@ -6,10 +6,11 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 import { Spinner } from '@/components/ui/spinner';
 import { setPasswordAction } from '@/lib/actions/settings/set-password-action';
+import { authClient } from '@/lib/auth-client';
 import { ChangePasswordFormData, changePasswordSchema, SetPasswordFormData, setPasswordSchema } from '@/schema/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Control, Controller, FieldValues, Path, useForm } from 'react-hook-form';
 import { FaRegEye } from 'react-icons/fa6';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -21,6 +22,7 @@ interface SharedPasswordFieldProps<T extends FieldValues> {
   control: Control<T>;
   placeholder?: string;
   isCredentialProvider?: boolean;
+  loggedUserEmail?: string;
 }
 
 const SharedPasswordField = <T extends FieldValues>({
@@ -29,8 +31,27 @@ const SharedPasswordField = <T extends FieldValues>({
   control,
   placeholder,
   isCredentialProvider,
+  loggedUserEmail,
 }: SharedPasswordFieldProps<T>) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleForgotPassword = () => {
+    startTransition(async () => {
+      try {
+        const { error } = await authClient.requestPasswordReset({
+          email: loggedUserEmail!,
+          redirectTo: '/reset-password',
+        });
+        if (error) throw new Error(error.message || 'Failed to send password reset email. Please try again.');
+        toast.success('An email sent! Please check your inbox.');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+        console.error(errorMessage);
+        toast.error(errorMessage);
+      }
+    });
+  };
 
   return (
     <Controller
@@ -49,6 +70,8 @@ const SharedPasswordField = <T extends FieldValues>({
                 size='sm'
                 variant='link'
                 className='text-primary hover:underline self-end no-underline'
+                onClick={handleForgotPassword}
+                disabled={isPending}
               >
                 forgot password?
               </Button>
@@ -82,6 +105,7 @@ const SharedPasswordField = <T extends FieldValues>({
 
 const SetPasswordForm = () => {
   const router = useRouter();
+
   const form = useForm<SetPasswordFormData>({
     resolver: zodResolver(setPasswordSchema),
     defaultValues: {
@@ -125,7 +149,7 @@ const SetPasswordForm = () => {
   );
 };
 
-const ChangePasswordForm = () => {
+const ChangePasswordForm = ({ loggedUserEmail }: { loggedUserEmail: string }) => {
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -141,7 +165,22 @@ const ChangePasswordForm = () => {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (data: ChangePasswordFormData) => {};
+  const onSubmit = async (data: ChangePasswordFormData) => {
+    try {
+      const { newPassword, currentPassword } = data;
+      const { error } = await authClient.changePassword({
+        currentPassword,
+        newPassword,
+        revokeOtherSessions: true,
+      });
+      if (error) throw new Error(error.message || 'Failed to change password. Please try again.');
+      toast.success('Password changed successfully!');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      console.error(errorMessage);
+      toast.error(errorMessage);
+    }
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup className='gap-6'>
@@ -150,6 +189,7 @@ const ChangePasswordForm = () => {
           label='Current Password'
           control={control}
           isCredentialProvider={true}
+          loggedUserEmail={loggedUserEmail}
         />
         <SharedPasswordField name='newPassword' label='New Password' control={control} />
         <SharedPasswordField name='confirmNewPassword' label='Confirm New Password' control={control} />
@@ -163,14 +203,14 @@ const ChangePasswordForm = () => {
 
 interface PasswordSettingsProps {
   isCredentialProvider: boolean;
-  loggedUserId: string;
+  loggedUserEmail: string;
 }
-const PasswordSettings = ({ isCredentialProvider, loggedUserId }: PasswordSettingsProps) => {
+const PasswordSettings = ({ isCredentialProvider, loggedUserEmail }: PasswordSettingsProps) => {
   if (!isCredentialProvider) {
     return <SetPasswordForm />;
   }
 
-  return <ChangePasswordForm />;
+  return <ChangePasswordForm loggedUserEmail={loggedUserEmail} />;
 };
 
 export default PasswordSettings;

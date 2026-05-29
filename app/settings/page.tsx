@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: 'Manage your account settings and preferences.',
 };
 
-const dynamicComponents = (tab: string, loggedUserId: string) => {
+const dynamicComponents = (tab: string, loggedUserId: string, loggedUserEmail: string) => {
   switch (tab) {
     case 'details':
       return (
@@ -26,7 +26,7 @@ const dynamicComponents = (tab: string, loggedUserId: string) => {
         </Suspense>
       );
     case 'security':
-      return <SecuritySettings loggedUserId={loggedUserId} />;
+      return <SecuritySettings loggedUserId={loggedUserId} loggedUserEmail={loggedUserEmail} />;
     case 'notifications':
       return <NotificationsSettings loggedUserId={loggedUserId} />;
     case 'danger-zone':
@@ -40,7 +40,7 @@ const SettingsPage = async ({ searchParams }: { searchParams: Promise<{ [key: st
     headers: await headers(),
   });
 
-  if (!session || !session.user) return redirect('/login');
+  if (!session || !session.user) return redirect('/sign-in');
 
   const loggedUser = session.user;
 
@@ -60,7 +60,9 @@ const SettingsPage = async ({ searchParams }: { searchParams: Promise<{ [key: st
         </Suspense>
 
         {/* Dynamic Content Based on Active Tab */}
-        <div className='lg:col-span-8 lg:border-l lg:pl-8'>{dynamicComponents(tab, loggedUser.id)}</div>
+        <div className='lg:col-span-8 lg:border-l lg:pl-8'>
+          {dynamicComponents(tab, loggedUser.id, loggedUser.email)}
+        </div>
       </div>
     </>
   );

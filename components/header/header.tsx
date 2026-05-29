@@ -60,7 +60,7 @@ const Header = async () => {
             <ProfileDropdown user={session.user} />
           ) : (
             //  Sign-in Button
-            <Button className='max-md:hidden' asChild>
+            <Button className='max-md:hidden h-9 px-4' asChild>
               <Link href='/sign-in'>Sign In</Link>
             </Button>
           )}
