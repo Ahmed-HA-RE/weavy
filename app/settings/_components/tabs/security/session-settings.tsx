@@ -10,9 +10,10 @@ const SessionSettings = async ({ currentSession }: { currentSession: typeof auth
       userId: currentSession.user.id,
     },
     select: {
+      id: true,
       userAgent: true,
       updatedAt: true,
-      id: true,
+      token: true,
     },
   });
 
@@ -38,6 +39,7 @@ const SessionSettings = async ({ currentSession }: { currentSession: typeof auth
             osName={os.name}
             loggedInAt={session.updatedAt}
             browserName={browser.name}
+            sessionToken={session.token}
           />
         );
       })}
