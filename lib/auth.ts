@@ -8,11 +8,21 @@ import { lastLoginMethod, customSession, captcha } from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 import { sendChangeEmail } from '@/mail/send-change-email';
 import { sendDeleteAccountEmail } from '@/mail/send-delete-account-email';
+import { createAuthMiddleware } from 'better-auth/api';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
+
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      const accessDeniedQuery = ctx.query?.error === 'access_denied';
+      if (accessDeniedQuery) {
+        ctx.redirect('/sign-in');
+      }
+    }),
+  },
 
   user: {
     changeEmail: {
