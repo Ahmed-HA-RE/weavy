@@ -1,6 +1,6 @@
 import z from 'zod';
 
-const passwordSchema = z
+export const passwordSchema = z
   .string({ error: 'Password is required' })
   .min(8, 'Password must be at least 8 characters')
   .max(100, 'Password must be at most 100 characters')

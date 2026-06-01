@@ -1,5 +1,5 @@
 import z from 'zod';
-import { authSchema } from './auth';
+import { authSchema, passwordSchema } from './auth';
 
 export const detailsSettingsSchema = z.object({
   name: authSchema.shape.userName,
@@ -18,3 +18,9 @@ export const dangerZoneSettingsSchema = z.object({
 });
 
 export type DangerZoneSettingsFormData = z.input<typeof dangerZoneSettingsSchema>;
+
+export const verifyPasswordSchema = z.object({
+  password: passwordSchema,
+});
+
+export type VerifyPasswordFormData = z.infer<typeof verifyPasswordSchema>;

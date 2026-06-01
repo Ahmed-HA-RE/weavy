@@ -16,9 +16,10 @@ import {
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
+import VerifyStep from './verify-step';
 
 const steps = [
-  { id: 'verify', title: 'Verify', content: <div>verify</div> },
+  { id: 'verify', title: 'Verify' },
   { id: 'setup', title: 'Setup', content: <div>setup</div> },
   { id: 'done', title: 'Done', content: <div>done</div> },
 ];
@@ -26,6 +27,8 @@ const steps = [
 const TwoFactorDialog = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(steps[0].id);
+  const [password, setPassword] = useState('');
+
   const completed = currentStep === 'done';
 
   const handleMoveToNextStep = () => {
@@ -68,7 +71,7 @@ const TwoFactorDialog = () => {
           }}
           steps={steps}
           value={currentStep}
-          className='flex flex-col gap-8'
+          className='flex flex-col gap-12'
         >
           <StepperNav className='w-full'>
             {steps.map((step, index) => (
@@ -91,10 +94,7 @@ const TwoFactorDialog = () => {
           <StepperPanel>
             {steps.map((step) => (
               <StepperContent key={step.id} value={step.id}>
-                {step.content}
-                <div className='flex justify-end mt-4'>
-                  <Button onClick={handleMoveToNextStep}>{completed ? 'Close' : 'Next'}</Button>
-                </div>
+                {step.id === 'verify' && <VerifyStep onNext={handleMoveToNextStep} setPassword={setPassword} />}
               </StepperContent>
             ))}
           </StepperPanel>
