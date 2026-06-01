@@ -17,6 +17,7 @@ const SecuritySettings = async ({ currentSession }: { currentSession: typeof aut
   });
 
   const isCredentialProvider = account.some((acc) => acc.providerId === 'credential');
+  const isTwoFactorEnabled = currentSession.user.twoFactorEnabled;
 
   return (
     <div className='flex flex-col gap-6'>
@@ -46,7 +47,7 @@ const SecuritySettings = async ({ currentSession }: { currentSession: typeof aut
         title='Two-Factor Authentication'
         description='Add an extra layer of security to your account.'
       >
-        <TwoFactorSettings isCredentialProvider={isCredentialProvider} />
+        <TwoFactorSettings isCredentialProvider={isCredentialProvider} isTwoFactorEnabled={isTwoFactorEnabled} />
       </SecuritySettingsWrapper>
     </div>
   );

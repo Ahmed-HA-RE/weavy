@@ -2,9 +2,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RiShieldKeyholeLine, RiLockPasswordLine } from 'react-icons/ri';
 import { MdOutlineSecurity } from 'react-icons/md';
+import TwoFactorDialog from './two-factor-dialog';
 
 interface TwoFactorSettingsProps {
   isCredentialProvider: boolean;
+  isTwoFactorEnabled: boolean;
 }
 
 const NoPasswordWarning = () => (
@@ -60,18 +62,20 @@ const EnableTwoFactor = () => (
         Use an authenticator app like Google Authenticator or Authy to generate one-time codes.
       </p>
     </div>
-    <Button size='sm' className='self-center shrink-0'>
-      Enable
-    </Button>
+    <TwoFactorDialog />
   </div>
 );
 
-const TwoFactorSettings = ({ isCredentialProvider }: TwoFactorSettingsProps) => {
+const TwoFactorSettings = ({ isCredentialProvider, isTwoFactorEnabled }: TwoFactorSettingsProps) => {
   if (!isCredentialProvider) {
     return <NoPasswordWarning />;
   }
 
-  return <EnableTwoFactor />;
+  if (isCredentialProvider && !isTwoFactorEnabled) {
+    return <EnableTwoFactor />;
+  } else {
+    return null; // @todo: add disable functionality
+  }
 };
 
 export default TwoFactorSettings;
