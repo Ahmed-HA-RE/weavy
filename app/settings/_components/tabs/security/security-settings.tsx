@@ -3,6 +3,8 @@ import PasswordSettings from './password-settings';
 import { Separator } from '@/components/ui/separator';
 import SessionSettings from './session-settings';
 import { auth } from '@/lib/auth';
+import SecuritySettingsWrapper from './security-settings-wrapper';
+import TwoFactorSettings from './two-factor/two-factor-settings';
 
 const SecuritySettings = async ({ currentSession }: { currentSession: typeof auth.$Infer.Session }) => {
   const account = await db.account.findMany({
@@ -19,20 +21,33 @@ const SecuritySettings = async ({ currentSession }: { currentSession: typeof aut
   return (
     <div className='flex flex-col gap-6'>
       {/* Password */}
-      <div className='space-y-8'>
-        <h4 className='text-xl font-medium'>{isCredentialProvider ? 'Change Password' : 'Set Password'}</h4>
-        <PasswordSettings isCredentialProvider={isCredentialProvider} loggedUserEmail={currentSession.user.email} />
+      <div id='password-settings'>
+        <SecuritySettingsWrapper
+          title={isCredentialProvider ? 'Change Password' : 'Set Password'}
+          description={isCredentialProvider ? 'Change your account password.' : 'Set a password for your account.'}
+        >
+          <PasswordSettings isCredentialProvider={isCredentialProvider} loggedUserEmail={currentSession.user.email} />
+        </SecuritySettingsWrapper>
       </div>
       <Separator className='my-1' />
 
       {/* Session */}
-      <div className='space-y-8'>
-        <div className='space-y-1'>
-          <h4 className='text-xl font-medium'>Active Sessions</h4>
-          <p className='text-muted-foreground text-sm'>Manage your active sessions and sign out from other devices.</p>
-        </div>
+      <SecuritySettingsWrapper
+        title='Active Sessions'
+        description='Manage your active sessions and sign out from other devices.'
+      >
         <SessionSettings currentSession={currentSession} />
-      </div>
+      </SecuritySettingsWrapper>
+
+      <Separator className='my-1' />
+
+      {/* Two-Factor Authentication */}
+      <SecuritySettingsWrapper
+        title='Two-Factor Authentication'
+        description='Add an extra layer of security to your account.'
+      >
+        <TwoFactorSettings isCredentialProvider={isCredentialProvider} />
+      </SecuritySettingsWrapper>
     </div>
   );
 };

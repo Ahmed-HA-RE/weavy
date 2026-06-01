@@ -4,7 +4,7 @@ import { nextCookies } from 'better-auth/next-js';
 import db from './db';
 import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
-import { lastLoginMethod, customSession, captcha } from 'better-auth/plugins';
+import { lastLoginMethod, customSession, captcha, twoFactor } from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 import { sendChangeEmail } from '@/mail/send-change-email';
 import { sendDeleteAccountEmail } from '@/mail/send-delete-account-email';
@@ -113,6 +113,7 @@ export const auth = betterAuth({
           role: fetchedUser?.role || USER_ROLE.USER,
           status: fetchedUser?.status || USER_STATUS.ONLINE,
           displayName: fetchedUser?.displayName,
+          twoFactorEnabled: fetchedUser?.twoFactorEnabled || false,
         },
         session,
       };
@@ -123,5 +124,7 @@ export const auth = betterAuth({
       secretKey: process.env.GOOGLE_RECAPTCHA_SECRET!,
       endpoints: ['/sign-up/email', '/sign-in/email'],
     }),
+
+    twoFactor(),
   ],
 });
