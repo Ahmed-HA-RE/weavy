@@ -13,14 +13,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import TwoFactorOTPInput from '@/components/two-factor-otp-input';
+import { fetchBackupCodesAction } from '@/lib/actions/settings/fetch-backup-codes-action';
 
 interface QrCodeStepProps {
   onNext: () => void;
   password: string;
   isSetupStep: boolean;
+  setBackupCodes: (codes: string[]) => void;
 }
 
-const QrCodeStep = ({ onNext, password, isSetupStep }: QrCodeStepProps) => {
+const QrCodeStep = ({ onNext, password, isSetupStep, setBackupCodes }: QrCodeStepProps) => {
   const {
     data: qr,
     status,
@@ -36,6 +38,7 @@ const QrCodeStep = ({ onNext, password, isSetupStep }: QrCodeStepProps) => {
       return res;
     },
     enabled: isSetupStep,
+    staleTime: 0, // Cache the QR code until refetch is called
   });
 
   const form = useForm<TwoFactorOTPFormData>({
@@ -54,21 +57,22 @@ const QrCodeStep = ({ onNext, password, isSetupStep }: QrCodeStepProps) => {
 
   const onSubmit = async (data: TwoFactorOTPFormData) => {
     try {
-      const { data: success, error } = await authClient.twoFactor.verifyTotp({
-        code: data.otp,
-      });
-      console.log(success);
+      const { error } = await authClient.twoFactor.verifyTotp({ code: data.otp });
       if (error) {
         reset();
-        refetch(); // Refetch the QR code for a new OTP
-        throw new Error(error.message || 'Failed to verify OTP');
-      } else {
-        onNext();
+        refetch();
+        toast.error(error.message || 'Invalid code. Please rescan the QR code and try again.');
+        return;
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error('Please rescan the QR code and enter the correct OTP');
+      const { success, message, backupCodes } = await fetchBackupCodesAction();
+      if (!success) {
+        toast.error(message || 'Could not load backup codes.');
+        return;
       }
+      setBackupCodes(backupCodes);
+      onNext();
+    } catch {
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
 

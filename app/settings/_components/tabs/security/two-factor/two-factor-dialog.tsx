@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
 import VerifyStep from './verify-step';
 import QrCodeStep from './qr-code-step';
+import DoneStep from './done-step';
 
 const steps = [
   { id: 'verify', title: 'Verify' },
@@ -36,6 +37,7 @@ const TwoFactorDialog = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(steps[0].id);
   const [password, setPassword] = useState('');
+  const [backupCodes, setBackupCodes] = useState<string[] | []>([]);
 
   const completed = currentStep === 'done';
 
@@ -67,7 +69,7 @@ const TwoFactorDialog = () => {
           Enable
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-2xl gap-10'>
+      <DialogContent showCloseButton={currentStep !== 'done'} className='sm:max-w-2xl gap-10'>
         <DialogHeader>
           <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
           <DialogDescription aria-label='Two-Factor Authentication Instructions' className='hidden' />
@@ -105,9 +107,14 @@ const TwoFactorDialog = () => {
               <StepperContent key={step.id} value={step.id}>
                 {step.id === 'verify' && <VerifyStep onNext={handleMoveToNextStep} setPassword={setPassword} />}
                 {step.id === 'setup' && (
-                  <QrCodeStep onNext={handleMoveToNextStep} password={password} isSetupStep={step.id === 'setup'} />
+                  <QrCodeStep
+                    onNext={handleMoveToNextStep}
+                    password={password}
+                    isSetupStep={step.id === 'setup'}
+                    setBackupCodes={setBackupCodes}
+                  />
                 )}
-                {step.id === 'done' && <div>done</div>}
+                {step.id === 'done' && <DoneStep backupCodes={backupCodes} onNext={handleMoveToNextStep} />}
               </StepperContent>
             ))}
           </StepperPanel>
