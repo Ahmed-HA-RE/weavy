@@ -3,6 +3,10 @@ import { Button } from '@/components/ui/button';
 import { RiShieldKeyholeLine, RiLockPasswordLine } from 'react-icons/ri';
 import { MdOutlineSecurity } from 'react-icons/md';
 import TwoFactorDialog from './two-factor-dialog';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { FaCheck } from 'react-icons/fa6';
+import DisableTwoFactorDialog from './disable-two-factorDialog';
 
 interface TwoFactorSettingsProps {
   isCredentialProvider: boolean;
@@ -19,7 +23,8 @@ const NoPasswordWarning = () => (
       <div className='flex flex-1 flex-col gap-1'>
         <p className='text-sm font-medium text-foreground'>Authenticator App</p>
         <p className='text-xs text-muted-foreground'>
-          Use an authenticator app like Google Authenticator or Authy to generate one-time codes.
+          Use an authenticator app like Google Authenticator or Authy to
+          generate one-time codes.
         </p>
       </div>
       <Button
@@ -43,39 +48,74 @@ const NoPasswordWarning = () => (
       <MdOutlineSecurity className='size-5 mt-0.5' />
       <AlertTitle>Password required to enable 2FA</AlertTitle>
       <AlertDescription className='leading-relaxed'>
-        Two-factor authentication adds a second layer of protection to your account. However, it requires a{' '}
-        <strong className='font-semibold text-slate-700 inline-block'>password-based login</strong> to work. Your
-        account currently uses a social login (e.g. Google, GitHub) with no password set.
+        Two-factor authentication adds a second layer of protection to your
+        account. However, it requires a{' '}
+        <strong className='font-semibold text-slate-700 inline-block'>
+          password-based login
+        </strong>{' '}
+        to work. Your account currently uses a social login (e.g. Google,
+        GitHub) with no password set.
       </AlertDescription>
     </Alert>
   </div>
 );
 
-const EnableTwoFactor = () => (
-  <div className='flex items-start gap-4 rounded-lg border bg-card p-4'>
-    <span className='mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10'>
-      <RiShieldKeyholeLine className='size-5 text-primary' />
-    </span>
-    <div className='flex flex-1 flex-col gap-1'>
-      <p className='text-sm font-medium text-foreground'>Authenticator App</p>
-      <p className='text-xs text-muted-foreground'>
-        Use an authenticator app like Google Authenticator or Authy to generate one-time codes.
-      </p>
-    </div>
-    <TwoFactorDialog />
-  </div>
+const ToggleTwoFactor = ({
+  isTwoFactorEnabled,
+}: {
+  isTwoFactorEnabled: boolean;
+}) => (
+  <Card
+    className={cn(isTwoFactorEnabled && 'ring-0 bg-green-50 dark:bg-green-100')}
+  >
+    <CardContent className='flex gap-4'>
+      <span
+        className={cn(
+          'mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full',
+          isTwoFactorEnabled
+            ? 'bg-green-100 dark:bg-green-200'
+            : 'bg-primary/10',
+        )}
+      >
+        {isTwoFactorEnabled ? (
+          <FaCheck className='size-5 text-green-500 dark:text-green-700' />
+        ) : (
+          <RiShieldKeyholeLine className='size-5 text-primary' />
+        )}
+      </span>
+      <div className='flex-1 flex items-center justify-between gap-0.5'>
+        <div className='flex flex-col gap-1'>
+          <p
+            className={cn(
+              'text-sm font-medium',
+              isTwoFactorEnabled
+                ? 'text-green-700 dark:text-green-800'
+                : 'text-foreground',
+            )}
+          >
+            {isTwoFactorEnabled ? '2FA Enabled' : 'Set Up 2FA'}
+          </p>
+          {!isTwoFactorEnabled && (
+            <p className='text-xs text-muted-foreground'>
+              Use an authenticator app to generate one-time codes.
+            </p>
+          )}
+        </div>
+        {isTwoFactorEnabled ? <DisableTwoFactorDialog /> : <TwoFactorDialog />}
+      </div>
+    </CardContent>
+  </Card>
 );
 
-const TwoFactorSettings = ({ isCredentialProvider, isTwoFactorEnabled }: TwoFactorSettingsProps) => {
+const TwoFactorSettings = ({
+  isCredentialProvider,
+  isTwoFactorEnabled,
+}: TwoFactorSettingsProps) => {
   if (!isCredentialProvider) {
     return <NoPasswordWarning />;
   }
 
-  if (isCredentialProvider && !isTwoFactorEnabled) {
-    return <EnableTwoFactor />;
-  } else {
-    return null; // @todo: add disable functionality
-  }
+  return <ToggleTwoFactor isTwoFactorEnabled={isTwoFactorEnabled} />;
 };
 
 export default TwoFactorSettings;
