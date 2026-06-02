@@ -14,6 +14,7 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
+  appName: 'Weavy',
 
   hooks: {
     after: createAuthMiddleware(async (ctx) => {

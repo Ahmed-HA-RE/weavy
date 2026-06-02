@@ -2,11 +2,7 @@
 
 import { useTheme } from '@teispace/next-themes';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
-import {
-  IconInfoCircle,
-  IconAlertTriangle,
-  IconLoader,
-} from '@tabler/icons-react';
+import { IconInfoCircle, IconAlertTriangle, IconLoader } from '@tabler/icons-react';
 import { LuCircleX, LuCircleCheck } from 'react-icons/lu';
 
 const Toaster = ({ ...props }: ToasterProps) => {
@@ -34,7 +30,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: 'cn-toast !gap-0.5',
+          toast: 'cn-toast !gap-0.5 !min-w-[400px]',
           icon: '!translate-y-0.5',
         },
       }}

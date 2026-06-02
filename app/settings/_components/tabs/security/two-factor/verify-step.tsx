@@ -19,7 +19,6 @@ import { FaRegEye } from 'react-icons/fa6';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
-import { APP_NAME } from '@/lib/constants/app';
 
 const VerifyStep = ({ onNext, setPassword }: { onNext: () => void; setPassword: (password: string) => void }) => {
   const [visible, setVisible] = useState(false);
@@ -41,7 +40,6 @@ const VerifyStep = ({ onNext, setPassword }: { onNext: () => void; setPassword: 
     try {
       const { error } = await authClient.twoFactor.enable({
         password: data.password,
-        issuer: APP_NAME,
       });
       if (error) {
         throw new Error(error.message);

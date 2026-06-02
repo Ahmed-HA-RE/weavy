@@ -1,7 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Stepper,
   StepperItem,
@@ -17,11 +24,12 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
 import VerifyStep from './verify-step';
+import QrCodeStep from './qr-code-step';
 
 const steps = [
   { id: 'verify', title: 'Verify' },
-  { id: 'setup', title: 'Setup', content: <div>setup</div> },
-  { id: 'done', title: 'Done', content: <div>done</div> },
+  { id: 'setup', title: 'Setup' },
+  { id: 'done', title: 'Done' },
 ];
 
 const TwoFactorDialog = () => {
@@ -62,6 +70,7 @@ const TwoFactorDialog = () => {
       <DialogContent className='sm:max-w-2xl gap-10'>
         <DialogHeader>
           <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
+          <DialogDescription aria-label='Two-Factor Authentication Instructions' className='hidden' />
         </DialogHeader>
         {/* Steps */}
         <Stepper
@@ -95,6 +104,10 @@ const TwoFactorDialog = () => {
             {steps.map((step) => (
               <StepperContent key={step.id} value={step.id}>
                 {step.id === 'verify' && <VerifyStep onNext={handleMoveToNextStep} setPassword={setPassword} />}
+                {step.id === 'setup' && (
+                  <QrCodeStep onNext={handleMoveToNextStep} password={password} isSetupStep={step.id === 'setup'} />
+                )}
+                {step.id === 'done' && <div>done</div>}
               </StepperContent>
             ))}
           </StepperPanel>
