@@ -14,6 +14,7 @@ import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 import { sendChangeEmail } from '@/mail/send-change-email';
 import { sendDeleteAccountEmail } from '@/mail/send-delete-account-email';
 import { createAuthMiddleware } from 'better-auth/api';
+import { sendTwoFactorOTPEmail } from '@/mail/send-two-factor-otp';
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -136,6 +137,17 @@ export const auth = betterAuth({
       backupCodeOptions: {
         length: 6,
         amount: 8,
+      },
+      otpOptions: {
+        digits: 6,
+        allowedAttempts: 5,
+        sendOTP: async ({ user, otp }) => {
+          void sendTwoFactorOTPEmail({
+            email: user.email,
+            otp,
+          });
+        },
+        period: 15, // 15 minutes
       },
     }),
   ],

@@ -5,6 +5,7 @@ import { HiOutlineDevicePhoneMobile } from 'react-icons/hi2';
 import { MdOutlineEmail } from 'react-icons/md';
 import TwoFactorAuthenticator from './_components/two-factor-authenticator';
 import TwoFactorBackupCodes from './_components/two-factor-backup-codes';
+import TwoFactorEmail from './_components/two-factor-email';
 
 const iconClasses = 'size-5';
 
@@ -32,7 +33,7 @@ const TwoFactorPage = async ({
       name: 'Email OTP',
       value: 'email-otp',
       icon: <MdOutlineEmail className={iconClasses} />,
-      content: null,
+      content: <TwoFactorEmail callbackURL={callbackURL} />,
     },
   ];
 
