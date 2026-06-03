@@ -4,7 +4,12 @@ import { nextCookies } from 'better-auth/next-js';
 import db from './db';
 import { sendConfirmEmail } from '@/mail/send-confirm-email';
 import { sendResetPasswordEmail } from '@/mail/send-reset-password-email';
-import { lastLoginMethod, customSession, captcha, twoFactor } from 'better-auth/plugins';
+import {
+  lastLoginMethod,
+  customSession,
+  captcha,
+  twoFactor,
+} from 'better-auth/plugins';
 import { USER_ROLE, USER_STATUS } from './generated/prisma/enums';
 import { sendChangeEmail } from '@/mail/send-change-email';
 import { sendDeleteAccountEmail } from '@/mail/send-delete-account-email';
@@ -64,7 +69,8 @@ export const auth = betterAuth({
           });
           if (existingUsername) {
             throw new APIError('BAD_REQUEST', {
-              message: 'Username already exists. Please choose a different one.',
+              message:
+                'Username already exists. Please choose a different one.',
             });
           }
         },
@@ -126,6 +132,6 @@ export const auth = betterAuth({
       endpoints: ['/sign-up/email', '/sign-in/email'],
     }),
 
-    twoFactor(),
+    twoFactor({}),
   ],
 });

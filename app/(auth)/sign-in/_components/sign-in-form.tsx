@@ -59,6 +59,16 @@ const SignInForm = () => {
           headers: {
             'x-captcha-response': data.recaptchaToken || '',
           },
+          async onSuccess(context) {
+            if (!context.data.twoFactorRedirect) {
+              toast.success('Signed in successfully! Redirecting...');
+              router.push(callbackURL);
+            } else {
+              router.push(
+                `/two-factor?callbackURL=${encodeURIComponent(callbackURL)}`,
+              );
+            }
+          },
         },
       });
 
@@ -69,9 +79,6 @@ const SignInForm = () => {
         }
 
         throw new Error(error.message);
-      } else {
-        toast.success('Signed in successfully! Redirecting...');
-        router.push(callbackURL);
       }
     } catch (error) {
       const errorMessage =

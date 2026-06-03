@@ -4,19 +4,30 @@ export const passwordSchema = z
   .string({ error: 'Password is required' })
   .min(8, 'Password must be at least 8 characters')
   .max(100, 'Password must be at most 100 characters')
-  .regex(/^(?=.*[A-Z]).*$/, 'Password must contain at least one uppercase letter')
-  .regex(/^(?=.*[a-z]).*$/, 'Password must contain at least one lowercase letter');
+  .regex(
+    /^(?=.*[A-Z]).*$/,
+    'Password must contain at least one uppercase letter',
+  )
+  .regex(
+    /^(?=.*[a-z]).*$/,
+    'Password must contain at least one lowercase letter',
+  );
 
 export const authSchema = z.object({
   userName: z
     .string({ error: 'Username is required' })
     .min(5, 'Username must be at least 5 characters')
     .max(20, 'Username must be at most 20 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      'Username can only contain letters, numbers, and underscores',
+    )
     .transform((name) => name.trim().toLowerCase()),
   email: z.email({ error: 'Invalid email address' }),
   password: passwordSchema,
-  recaptchaToken: z.string({ error: 'Please complete the reCAPTCHA' }).nullable(),
+  recaptchaToken: z
+    .string({ error: 'Please complete the reCAPTCHA' })
+    .nullable(),
 });
 
 export type SignUpFormData = z.infer<typeof authSchema>;
