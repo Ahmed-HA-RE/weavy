@@ -132,6 +132,11 @@ export const auth = betterAuth({
       endpoints: ['/sign-up/email', '/sign-in/email'],
     }),
 
-    twoFactor({}),
+    twoFactor({
+      backupCodeOptions: {
+        length: 6,
+        amount: 8,
+      },
+    }),
   ],
 });

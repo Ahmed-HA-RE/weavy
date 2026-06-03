@@ -40,8 +40,8 @@ export type VerifyPasswordFormData = z.infer<typeof verifyPasswordSchema>;
 export const twoFactorOTPSchema = z.object({
   otp: z
     .string()
-    .min(6, 'Please enter the 6-digit OTP')
-    .max(6, 'OTP must not exceed 6 digits'),
+    .min(6, 'Please enter the 6-digit code')
+    .max(6, 'Please enter the 6-digit code'),
   trustDevice: z.boolean().default(false),
 });
 

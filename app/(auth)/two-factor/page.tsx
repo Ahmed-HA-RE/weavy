@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HiOutlineDevicePhoneMobile } from 'react-icons/hi2';
 import { MdOutlineEmail } from 'react-icons/md';
 import TwoFactorAuthenticator from './_components/two-factor-authenticator';
+import TwoFactorBackupCodes from './_components/two-factor-backup-codes';
 
 const iconClasses = 'size-5';
 
@@ -25,7 +26,7 @@ const TwoFactorPage = async ({
       name: 'Backup Codes',
       value: 'backup-codes',
       icon: <LuKeyRound className={iconClasses} />,
-      content: null,
+      content: <TwoFactorBackupCodes callbackURL={callbackURL} />,
     },
     {
       name: 'Email OTP',

@@ -16,14 +16,13 @@ const TwoFactorAuthenticator = ({ callbackURL }: { callbackURL: string }) => {
         trustDevice: data.trustDevice,
       });
       if (error) {
-        throw new Error(error.message);
+        toast.error(error.message);
+        return;
       }
       toast.success('Verified successfully');
       router.push(callbackURL);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+    } catch {
+      toast.error('An unexpected error occurred.');
     }
   };
 

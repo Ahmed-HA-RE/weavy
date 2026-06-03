@@ -72,3 +72,15 @@ export const changePasswordSchema = z
   });
 
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+
+export const twoFactorBackupCodeSchema = z.object({
+  code: z
+    .string()
+    .min(7, 'Please enter the backup code')
+    .max(7, 'Backup code must be 7 characters'),
+  trustDevice: z.boolean().default(false),
+});
+
+export type TwoFactorBackupCodeFormData = z.input<
+  typeof twoFactorBackupCodeSchema
+>;
