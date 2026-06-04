@@ -73,7 +73,11 @@ const BlockedUsersList = () => {
       ) : (
         <div className='flex flex-col gap-4'>
           {data.blockedUsers?.map((user) => (
-            <UserListItem key={user.blocked.id} user={user.blocked} />
+            <UserListItem
+              key={user.blocked.id}
+              user={user.blocked}
+              isSettingsPage={true}
+            />
           ))}
         </div>
       )}

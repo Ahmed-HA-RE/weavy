@@ -5,6 +5,9 @@ import { User } from '@/lib/generated/prisma/client';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useTransition } from 'react';
+import { unblockUserAction } from '@/lib/actions/settings/unblock-user-action';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type UserProps = Pick<User, 'id' | 'name' | 'displayName' | 'image'>;
 
@@ -15,13 +18,19 @@ const UserListItem = ({
   isSettingsPage?: boolean;
   user: UserProps;
 }) => {
+  const router = useRouter();
   const displayName = user.displayName || user.name;
   const [isPending, startTransition] = useTransition();
 
   const handleAction = () => {
     startTransition(async () => {
-      if (!isSettingsPage) {
+      const res = isSettingsPage ? await unblockUserAction(user.id) : null; // for now we'll just simulate the action
+      if (!res?.success) {
+        toast.error(res?.message);
+        return;
       }
+      toast.success(res.message);
+      router.refresh();
     });
   };
 

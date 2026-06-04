@@ -5,27 +5,39 @@ import db from '@/lib/db';
 import { Prisma } from '@/lib/generated/prisma/client';
 import { headers } from 'next/headers';
 
-export const getPostsAction = async ({ pageParam, limit = 5 }: { pageParam: number; limit?: number }) => {
+export const getPostsAction = async ({
+  pageParam,
+  limit = 5,
+}: {
+  pageParam: number;
+  limit?: number;
+}) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   const loggedUser = session?.user;
 
+  const blockQuery = loggedUser
+    ? {
+        blocked: {
+          none: {
+            blockedId: loggedUser.id,
+          },
+        },
+        blocker: {
+          none: {
+            blockerId: loggedUser.id,
+          },
+        },
+      }
+    : {};
+
   const posts = await db.post.findMany({
     where: {
       ...(loggedUser && {
         user: {
-          blocked: {
-            none: {
-              blockedId: loggedUser?.id || Prisma.skip,
-            },
-          },
-          blocker: {
-            none: {
-              blockerId: loggedUser?.id || Prisma.skip,
-            },
-          },
+          ...blockQuery,
         },
 
         reports: {
@@ -64,11 +76,7 @@ export const getPostsAction = async ({ pageParam, limit = 5 }: { pageParam: numb
         ...(loggedUser && {
           where: {
             user: {
-              blocked: {
-                none: {
-                  blockerId: loggedUser?.id || Prisma.skip,
-                },
-              },
+              ...blockQuery,
             },
           },
         }),
@@ -96,14 +104,14 @@ export const getPostsAction = async ({ pageParam, limit = 5 }: { pageParam: numb
           likes: {
             where: {
               user: {
-                blocked: { none: { blockerId: loggedUser?.id || Prisma.skip } },
+                ...blockQuery,
               },
             },
           },
           comments: {
             where: {
               user: {
-                blocked: { none: { blockerId: loggedUser?.id || Prisma.skip } },
+                ...blockQuery,
               },
             },
           },
