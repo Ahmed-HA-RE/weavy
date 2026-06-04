@@ -3,12 +3,11 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { Avatar } from '@/components/ui/avatar';
 import { FaLocationArrow } from 'react-icons/fa6';
-import { IoIosLink } from 'react-icons/io';
+import { IoIosLink, IoMdColorPalette } from 'react-icons/io';
 import UploadAvatarButton from '@/components/upload-avatar-button';
 import { Separator } from '@/components/ui/separator';
 import ToggleTheme from '@/app/settings/_components/toggle-theme';
 import { cn } from '@/lib/utils';
-import ToggleAccountStatus from './toggle-account-status';
 
 type ProfileInfoProps = {
   loggedUserId: string;
@@ -24,7 +23,6 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
       image: true,
       location: true,
       website: true,
-      status: true,
       _count: {
         select: {
           posts: true,
@@ -65,9 +63,13 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         {/* Display Name */}
         <h2 className='text-[28px] font-bold'>{displayName}</h2>
         {/* Username */}
-        <h3 className={cn('text-lg text-muted-foreground', user.bio && 'mb-4')}>@{user.name}</h3>
+        <h3 className={cn('text-lg text-muted-foreground', user.bio && 'mb-4')}>
+          @{user.name}
+        </h3>
         {/* Bio */}
-        {user.bio && <p className='text-sm text-muted-foreground max-w-xs'>{user.bio}</p>}
+        {user.bio && (
+          <p className='text-sm text-muted-foreground max-w-xs'>{user.bio}</p>
+        )}
       </div>
 
       {/* Stats */}
@@ -75,7 +77,9 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         {userStats.map((stat) => (
           <div key={stat.label} className='flex flex-col items-center gap-2.5'>
             <span className='text-3xl'>{stat.count}</span>
-            <span className='text-base text-muted-foreground'>{stat.label}</span>
+            <span className='text-base text-muted-foreground'>
+              {stat.label}
+            </span>
           </div>
         ))}
       </div>
@@ -104,11 +108,15 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         </span>
       </div>
 
-      {/* Appearance + Status */}
+      {/* Appearance  */}
       <div className='w-full max-w-[294px] mt-8'>
         <Separator className='mb-6' />
-        <div className='flex items-center gap-4'>
-          <ToggleAccountStatus currentStatus={user.status} />
+        <div className='flex items-center justify-between'>
+          <span className='text-sm font-medium inline-flex items-center gap-0.5'>
+            <IoMdColorPalette className='size-4.5' />
+            <span>Appearance</span>
+          </span>
+
           <ToggleTheme />
         </div>
       </div>

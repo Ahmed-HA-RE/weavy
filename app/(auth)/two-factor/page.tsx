@@ -6,6 +6,9 @@ import { MdOutlineEmail } from 'react-icons/md';
 import TwoFactorAuthenticator from './_components/two-factor-authenticator';
 import TwoFactorBackupCodes from './_components/two-factor-backup-codes';
 import TwoFactorEmail from './_components/two-factor-email';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const iconClasses = 'size-5';
 
@@ -14,6 +17,12 @@ const TwoFactorPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session) return redirect('/');
+
   const callbackURL = (await searchParams).callbackURL || '/';
 
   const tabs = [
@@ -57,7 +66,7 @@ const TwoFactorPage = async ({
         </TabsList>
 
         {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value} className=''>
+          <TabsContent key={tab.value} value={tab.value}>
             {tab.content}
           </TabsContent>
         ))}

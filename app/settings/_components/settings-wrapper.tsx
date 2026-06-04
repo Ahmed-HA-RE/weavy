@@ -1,4 +1,4 @@
-const SecuritySettingsWrapper = ({
+const SettingsWrapper = ({
   title,
   description,
   children,
@@ -11,11 +11,13 @@ const SecuritySettingsWrapper = ({
     <div className='space-y-8'>
       <div className='space-y-1'>
         <h4 className='text-xl font-medium'>{title}</h4>
-        {description && <p className='text-muted-foreground text-sm'>{description}</p>}
+        {description && (
+          <p className='text-muted-foreground text-sm'>{description}</p>
+        )}
       </div>
       {children}
     </div>
   );
 };
 
-export default SecuritySettingsWrapper;
+export default SettingsWrapper;

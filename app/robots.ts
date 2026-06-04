@@ -9,6 +9,7 @@ const robots = (): MetadataRoute.Robots => {
         '/reset-password',
         '/notifications',
         '/settings',
+        '/two-factor',
       ],
     },
     sitemap: 'https://weavy.ahmedrehandev.net/sitemap.xml',
