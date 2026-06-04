@@ -91,6 +91,7 @@ model User {
   twofactors       TwoFactor[]
 
   @@unique([email])
+  @@index([name]) // for searching users by name
   @@map("user")
 }
 

@@ -11,13 +11,20 @@ import DetailsSettingsSkeleton from './_components/tabs/details/details-settings
 import DangerZoneSettings from './_components/tabs/danger-zone/danger-zone-settings';
 import NotificationsSettings from './_components/tabs/notifications/notifications-settings';
 import SecuritySettings from './_components/tabs/security/security-settings';
+import SecuritySkeleton from './_components/tabs/security/security-skeleton';
+import PrivacySettings from './_components/tabs/privacy/privacy-settings';
+import PrivacySettingsSkeleton from './_components/tabs/privacy/privacy-settings-skeleton';
 
 export const metadata: Metadata = {
   title: 'Settings',
   description: 'Manage your account settings and preferences.',
 };
 
-const dynamicComponents = (tab: string, loggedUserId: string, currentSession: typeof auth.$Infer.Session) => {
+const dynamicComponents = (
+  tab: string,
+  loggedUserId: string,
+  currentSession: typeof auth.$Infer.Session,
+) => {
   switch (tab) {
     case 'details':
       return (
@@ -26,7 +33,17 @@ const dynamicComponents = (tab: string, loggedUserId: string, currentSession: ty
         </Suspense>
       );
     case 'security':
-      return <SecuritySettings currentSession={currentSession} />;
+      return (
+        <Suspense fallback={<SecuritySkeleton />}>
+          <SecuritySettings currentSession={currentSession} />
+        </Suspense>
+      );
+    case 'privacy':
+      return (
+        <Suspense fallback={<PrivacySettingsSkeleton />}>
+          <PrivacySettings loggedUserId={loggedUserId} />
+        </Suspense>
+      );
     case 'notifications':
       return <NotificationsSettings loggedUserId={loggedUserId} />;
     case 'danger-zone':
@@ -34,7 +51,11 @@ const dynamicComponents = (tab: string, loggedUserId: string, currentSession: ty
   }
 };
 
-const SettingsPage = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) => {
+const SettingsPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) => {
   const tab = (await searchParams).tab || 'details';
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -60,7 +81,9 @@ const SettingsPage = async ({ searchParams }: { searchParams: Promise<{ [key: st
         </Suspense>
 
         {/* Dynamic Content Based on Active Tab */}
-        <div className='lg:col-span-8 lg:border-l lg:pl-8'>{dynamicComponents(tab, loggedUser.id, session)}</div>
+        <div className='lg:col-span-8 lg:border-l lg:pl-8'>
+          {dynamicComponents(tab, loggedUser.id, session)}
+        </div>
       </div>
     </>
   );
