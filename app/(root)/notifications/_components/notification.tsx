@@ -77,7 +77,7 @@ const Notification = ({ notification }: { notification: NotificationType }) => {
           }
         >
           <Image
-            src={notification.sender.image}
+            src={notification.sender.image ?? '/images/avatar.png'}
             alt={notification.sender.name}
             width={48}
             height={48}

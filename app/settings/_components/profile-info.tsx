@@ -49,7 +49,7 @@ const ProfileInfo = async ({ loggedUserId }: ProfileInfoProps) => {
         {/* Avatar */}
         <Avatar className='size-[150px]'>
           <Image
-            src={user.image ?? '/default-avatar.png'}
+            src={user.image ?? '/images/avatar.png'}
             alt={user.name ?? 'User'}
             width={150}
             height={150}

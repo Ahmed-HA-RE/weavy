@@ -95,7 +95,7 @@ const ProfileHeader = async ({
           fallback={<AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>}
         >
           <Image
-            src={user.image}
+            src={user.image ?? '/images/avatar.png'}
             alt={`${user.name}'s profile picture`}
             width={150}
             height={150}
@@ -164,7 +164,7 @@ const ProfileHeader = async ({
           ))}
         </div>
         <div className='text-center lg:text-left space-y-1 text-sm'>
-          <p className='font-semibold'>{user.name}</p>
+          <p className='font-semibold'>@{user.name}</p>
           {user.bio && <p>{user.bio}</p>}
         </div>
       </div>

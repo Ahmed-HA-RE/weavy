@@ -49,7 +49,11 @@ const ProfileBookmarksTab = ({
     return (
       <div className='flex flex-col items-center justify-center gap-10'>
         <div className='relative aspect-3/2 w-full max-w-lg'>
-          <Image src='/svg/profile-bookmarks-tab.svg' alt='No bookmarks' fill />
+          <Image
+            src='/svg/no-bookmarks-user-profile.svg'
+            alt='No bookmarks'
+            fill
+          />
         </div>
         <div className='space-y-2.5 text-center'>
           <h2 className='font-semibold text-2xl md:text-4xl capitalize'>

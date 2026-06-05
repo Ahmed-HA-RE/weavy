@@ -71,10 +71,10 @@ const SuggestedUsers = async ({ userId }: { userId: string }) => {
                     }
                   >
                     <Image
-                      src={suggestedUser.image}
+                      src={suggestedUser.image ?? '/images/avatar.png'}
                       alt={suggestedUser.name}
-                      width={48}
-                      height={48}
+                      width={150}
+                      height={150}
                       className='object-cover rounded-full'
                     />
                   </Suspense>

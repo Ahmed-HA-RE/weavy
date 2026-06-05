@@ -87,8 +87,8 @@ const PostForm = ({ user, post, isEdit, setIsEdit }: PostFormProps) => {
                     <Image
                       src={user.image ?? '/images/avatar.png'}
                       alt={user.name}
-                      width={40}
-                      height={40}
+                      width={150}
+                      height={150}
                       className='rounded-full object-cover'
                     />
                   </Suspense>

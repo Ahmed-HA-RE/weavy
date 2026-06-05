@@ -34,7 +34,7 @@ const UserAvatar = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
       ></Suspense>
       <Image
         alt={`${user.name}'s profile picture`}
-        src={user.image!}
+        src={user.image ?? '/images/avatar.png'}
         width={200}
         height={200}
         className='rounded-full object-cover'
@@ -130,7 +130,11 @@ const ProfileDropdown = ({
             const Icon = Icons[item.icon as keyof typeof Icons];
             return (
               <DropdownMenuItem
-                className={isActiveItem(item.href) ? 'bg-accent' : ''}
+                className={
+                  isActiveItem(item.href)
+                    ? 'bg-accent text-accent-foreground'
+                    : ''
+                }
                 key={index}
                 onClick={() => router.push(resolveItemHref(item.href))}
               >

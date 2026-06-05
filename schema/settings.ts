@@ -7,7 +7,7 @@ export const detailsSettingsSchema = z.object({
     .string()
     .max(50, 'Display Name must be at most 50 characters')
     .optional(),
-  bio: z.string().max(160, 'Bio must be at most 160 characters').optional(),
+  bio: z.string().max(500, 'Bio must be at most 500 characters').optional(),
   website: z
     .string()
     .max(100, 'Website must be at most 100 characters')
