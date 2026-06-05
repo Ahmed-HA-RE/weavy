@@ -35,7 +35,9 @@ const Header = async () => {
       return false;
     })
     .map((navItem) =>
-      navItem.href.includes('/:username') ? { ...navItem, href: `/profile/${session?.user.name}` } : navItem,
+      navItem.href.includes('/:username')
+        ? { ...navItem, href: `/profile/${session?.user.name}` }
+        : navItem,
     );
 
   return (
@@ -52,8 +54,11 @@ const Header = async () => {
             priority
           />
         </Link>
-        {/*  DesktopNavigation */}
-        <MenuNavigation navigationData={desktopNavigationData} className='max-md:hidden' />
+        {/*  Desktop Navigation */}
+        <MenuNavigation
+          navigationData={desktopNavigationData}
+          className='max-md:hidden'
+        />
 
         <div className='flex items-center md:gap-2.5'>
           {isLoggedIn ? (
@@ -66,7 +71,10 @@ const Header = async () => {
           )}
 
           {/* Navigation for small screens */}
-          <MobileNavigation navigationData={mobileNavigationData} isLoggedIn={isLoggedIn} />
+          <MobileNavigation
+            navigationData={mobileNavigationData}
+            isLoggedIn={isLoggedIn}
+          />
         </div>
       </div>
     </header>

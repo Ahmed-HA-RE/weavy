@@ -35,8 +35,8 @@ const UserAvatar = ({ user }: { user: typeof auth.$Infer.Session.user }) => {
       <Image
         alt={`${user.name}'s profile picture`}
         src={user.image!}
-        width={32}
-        height={32}
+        width={200}
+        height={200}
         className='rounded-full object-cover'
       />
       <AvatarBadge

@@ -98,7 +98,7 @@ const MobileNavigation = ({
           {navigationData.map((navItem) => {
             const Icon = Icons[navItem.icon as keyof typeof Icons];
             const isActive = pathname === navItem.href;
-            
+
             return (
               <li
                 key={navItem.title}
@@ -113,7 +113,7 @@ const MobileNavigation = ({
                   router.push(navItem.href);
                 }}
               >
-                <Icon className='size-4.5' />
+                <Icon className='size-4.5 shrink-0' />
                 {navItem.title}
               </li>
             );

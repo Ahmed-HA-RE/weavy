@@ -1,14 +1,27 @@
 'use client';
 
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { User } from '@/lib/generated/prisma/client';
-import { DetailsSettingsFormData, detailsSettingsSchema } from '@/schema/settings';
+import {
+  DetailsSettingsFormData,
+  detailsSettingsSchema,
+} from '@/schema/settings';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from '@/components/ui/input-group';
 import SaveButton from '../../save-button';
 import { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
@@ -20,7 +33,10 @@ import { toast } from 'sonner';
 import ChangeEmailDialog from './change-email-dialog';
 
 type DetailsSettingsFormProps = {
-  user: Pick<User, 'name' | 'displayName' | 'email' | 'bio' | 'website' | 'location'>;
+  user: Pick<
+    User,
+    'name' | 'displayName' | 'email' | 'bio' | 'website' | 'location'
+  >;
 };
 
 // @todo tommorow enshaa Allah: add modal to change email, and start with account settings (change password, 2FA,Theme toggle etc..)
@@ -98,7 +114,9 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
                     )}
                   </InputGroup>
 
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -114,7 +132,9 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
                     {...field}
                     aria-invalid={fieldState.invalid}
                   />
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -123,7 +143,12 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
           <Field>
             <span className='flex items-center justify-between'>
               <FieldLabel>Email</FieldLabel>
-              <Button size='sm' variant='secondary' type='button' onClick={() => setOpenChangeEmailDialog(true)}>
+              <Button
+                size='sm'
+                variant='secondary'
+                type='button'
+                onClick={() => setOpenChangeEmailDialog(true)}
+              >
                 Change
               </Button>
             </span>
@@ -171,7 +196,9 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
                       {...field}
                     />
                   </InputGroup>
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -181,8 +208,15 @@ const DetailsSettingsForm = ({ user }: DetailsSettingsFormProps) => {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Location</FieldLabel>
-                  <Input id={field.name} placeholder='e.g. Dubai, UAE' {...field} aria-invalid={fieldState.invalid} />
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  <Input
+                    id={field.name}
+                    placeholder='e.g. Dubai, UAE'
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />

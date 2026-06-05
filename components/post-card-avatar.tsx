@@ -12,12 +12,18 @@ type UserAvatarProps = {
 const PostCardAvatar = ({ user, className }: UserAvatarProps) => {
   return (
     <Avatar size='lg' className={cn('relative', className)}>
-      <Suspense fallback={<AvatarFallback className='uppercase'>{user.name.slice(0, 2)}</AvatarFallback>}></Suspense>
+      <Suspense
+        fallback={
+          <AvatarFallback className='uppercase'>
+            {user.name.slice(0, 2)}
+          </AvatarFallback>
+        }
+      ></Suspense>
       <Image
         alt={`${user.name}'s profile picture`}
         src={user.image!}
-        width={40}
-        height={40}
+        width={70}
+        height={70}
         className='rounded-full object-cover'
       />
       <AvatarBadge

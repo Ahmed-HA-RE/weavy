@@ -20,28 +20,29 @@ export const followUserToggleAction = async (userId: string) => {
       throw new Error('You cannot follow yourself');
     }
 
-    const targetUser = await db.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        muteFollows: true,
-      },
-    });
+    const [targetUser, existingFollow] = await Promise.all([
+      db.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          muteFollows: true,
+        },
+      }),
+      db.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: session.user.id,
+            followingId: userId,
+          },
+        },
+      }),
+    ]);
+
     if (!targetUser) {
       throw new Error('User not found');
     }
-
-    // Check if the target user exists and not already followed
-    const existingFollow = await db.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: targetUser.id,
-          followingId: userId,
-        },
-      },
-    });
 
     // If user already follows the target user, unfollow them else follow them and send notification
     if (existingFollow) {
@@ -74,7 +75,8 @@ export const followUserToggleAction = async (userId: string) => {
       return { success: true, message: 'User followed successfully' };
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred';
     console.error('Error toggling follow status:', errorMessage);
     return { success: false, message: errorMessage };
   }

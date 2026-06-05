@@ -152,11 +152,14 @@ const ProfileHeader = async ({
         </div>
         <div className='flex items-center justify-center lg:justify-start gap-x-10'>
           {userMetrics.map((metric) => (
-            <span key={metric.label} className='text-muted-foreground text-sm'>
+            <span
+              key={metric.label}
+              className='text-sm flex items-center gap-1.5'
+            >
               <span className='font-semibold text-foreground'>
                 {formatLargeNumber(metric.count)}
-              </span>{' '}
-              {metric.label}
+              </span>
+              <span className='text-muted-foreground'>{metric.label}</span>
             </span>
           ))}
         </div>

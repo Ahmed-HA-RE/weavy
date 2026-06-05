@@ -2,10 +2,15 @@
 
 import { auth } from '@/lib/auth';
 import db from '@/lib/db';
-import { DetailsSettingsFormData, detailsSettingsSchema } from '@/schema/settings';
+import {
+  DetailsSettingsFormData,
+  detailsSettingsSchema,
+} from '@/schema/settings';
 import { headers } from 'next/headers';
 
-export const updateUserDetailsAction = async (data: DetailsSettingsFormData) => {
+export const updateUserDetailsAction = async (
+  data: DetailsSettingsFormData,
+) => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -17,7 +22,9 @@ export const updateUserDetailsAction = async (data: DetailsSettingsFormData) => 
     const validatedData = detailsSettingsSchema.safeParse(data);
 
     if (!validatedData.success) {
-      const errorMessages = validatedData.error.issues.map((err) => err.message).join(', ');
+      const errorMessages = validatedData.error.issues
+        .map((err) => err.message)
+        .join(', ');
       throw new Error(errorMessages);
     }
 
@@ -30,14 +37,15 @@ export const updateUserDetailsAction = async (data: DetailsSettingsFormData) => 
         name,
         displayName: displayName || null,
         bio: bio || null,
-        website: `https://${website}` || null,
+        website: website ? `https://${website}` : null,
         location: location || null,
       },
     });
     if (!updatedUser) throw new Error('Failed to update user details');
     return { success: true, message: 'Updated successfully' };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Something went wrong';
     console.error('Error: ', errorMessage);
     return { success: false, message: errorMessage };
   }
