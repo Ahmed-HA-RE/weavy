@@ -9,7 +9,7 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
 import { auth } from '@/lib/auth';
-import PostCardSkeleton from './post-card-skeleton';
+import { Spinner } from '@/components/ui/spinner';
 
 const PostList = ({
   loggedInUser,
@@ -60,7 +60,7 @@ const PostList = ({
         ))}
       </div>
       <div className='mt-6' ref={ref}>
-        {isFetchingNextPage && <PostCardSkeleton />}
+        {isFetchingNextPage && <Spinner className='mx-auto size-6.5 mt-8' />}
       </div>
     </>
   );
