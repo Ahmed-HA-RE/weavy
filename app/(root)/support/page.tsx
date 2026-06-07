@@ -2,6 +2,7 @@ import { APP_NAME } from '@/lib/constants/app';
 import { Metadata } from 'next';
 import SupportHeader from './_components/support-header';
 import { Suspense } from 'react';
+import SupportFAQ from './_components/support-faq';
 
 export const metadata: Metadata = {
   title: 'Support',
@@ -17,6 +18,12 @@ const SupportPage = () => {
           <Suspense>
             <SupportHeader />
           </Suspense>
+        </div>
+      </section>
+      {/* Support FAQ Section */}
+      <section className='spacing-y'>
+        <div className='container'>
+          <SupportFAQ />
         </div>
       </section>
     </>

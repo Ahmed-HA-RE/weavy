@@ -25,7 +25,7 @@ const SupportHeader = () => {
           team.
         </p>
       </div>
-      <InputGroup className='rounded-full bg-transparent dark:bg-transparent border-white/20 w-full max-w-lg h-12 placeholder:text-white/70 text-white/90 has-[[data-slot=input-group-control]:focus-visible]:border-white/50 has-[[data-slot=input-group-control]:focus-visible]:ring-white/50 gap-1'>
+      <InputGroup className='rounded-full bg-transparent dark:bg-transparent border-white/50 w-full max-w-lg h-12 placeholder:text-white/70 text-white/90 has-[[data-slot=input-group-control]:focus-visible]:border-white/50 has-[[data-slot=input-group-control]:focus-visible]:ring-white/50 gap-1'>
         <InputGroupInput
           placeholder='Search for answers...'
           className='text-base placeholder:text-base placeholder:text-white/70 text-white/90'

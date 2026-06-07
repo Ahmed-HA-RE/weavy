@@ -80,3 +80,46 @@ export const APP_VALUES = [
       'We are a small team obsessed with building something people genuinely love — a place you return to every day because it enriches your life.',
   },
 ];
+
+export const APP_FAQS = [
+  {
+    question: 'How do I create an account?',
+    answer:
+      'Click "Get started" on the homepage, enter your email and a password, and verify your email address. Your account will be ready in under a minute.',
+  },
+  {
+    question: 'How do I reset my password?',
+    answer:
+      'Go to the sign-in page and click "Forgot password". Enter your email and we\'ll send you a reset link within a few minutes. Check your spam folder if you don\'t see it.',
+  },
+  {
+    question: 'How do I enable two-factor authentication?',
+    answer:
+      'Go to Settings → Security → Two-factor authentication and follow the setup steps. You can use an authenticator app, a backup code, or your email to verify.',
+  },
+  {
+    question: 'How do I follow or unfollow someone?',
+    answer:
+      "Visit any user's profile and click the Follow button. To unfollow, click the same button again. You can also manage who you follow from your profile page.",
+  },
+  {
+    question: 'How do I block a user?',
+    answer:
+      'Go to the user\'s profile, click the three-dot menu, and select "Block". Blocked users cannot see your posts or interact with you. You can manage blocked users in Settings → Privacy.',
+  },
+  {
+    question: 'How do I report a post or user?',
+    answer:
+      'Tap the three-dot menu on any post or profile and select "Report". Choose a reason and submit — our team reviews all reports within 24 hours.',
+  },
+  {
+    question: 'Can I delete my account permanently?',
+    answer:
+      'Yes. Go to Settings → Account → Delete account. This is permanent and cannot be undone. All your data will be removed within 30 days.',
+  },
+  {
+    question: 'Why am I not receiving notifications?',
+    answer:
+      'Check your notification settings under Settings → Notifications and make sure they are enabled. Also check that your browser or device allows notifications from Weavy.',
+  },
+];
