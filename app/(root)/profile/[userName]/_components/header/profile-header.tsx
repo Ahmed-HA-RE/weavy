@@ -80,10 +80,12 @@ const ProfileHeader = async ({
     {
       label: 'followers',
       count: user._count.followers,
+      href: `/profile/${user.name}/followers`,
     },
     {
       label: 'following',
       count: user._count.following,
+      href: `/profile/${user.name}/following`,
     },
   ];
 
@@ -151,17 +153,30 @@ const ProfileHeader = async ({
           </div>
         </div>
         <div className='flex items-center justify-center lg:justify-start gap-x-10'>
-          {userMetrics.map((metric) => (
-            <span
-              key={metric.label}
-              className='text-sm flex items-center gap-1.5'
-            >
-              <span className='font-semibold text-foreground'>
-                {formatLargeNumber(metric.count)}
+          {userMetrics.map((metric) =>
+            metric.href ? (
+              <Link
+                href={metric.href}
+                key={metric.label}
+                className='text-sm flex items-center gap-1.5 hover:opacity-80 transition-opacity'
+              >
+                <span className='font-semibold text-foreground'>
+                  {formatLargeNumber(metric.count)}
+                </span>
+                <span className='text-muted-foreground'>{metric.label}</span>
+              </Link>
+            ) : (
+              <span
+                key={metric.label}
+                className='text-sm flex items-center gap-1.5'
+              >
+                <span className='font-semibold text-foreground'>
+                  {formatLargeNumber(metric.count)}
+                </span>
+                <span className='text-muted-foreground'>{metric.label}</span>
               </span>
-              <span className='text-muted-foreground'>{metric.label}</span>
-            </span>
-          ))}
+            ),
+          )}
         </div>
         <div className='text-center lg:text-left space-y-1 text-sm'>
           <p className='font-semibold'>@{user.name}</p>
