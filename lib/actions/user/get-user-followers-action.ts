@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth';
 import db from '@/lib/db';
 import { headers } from 'next/headers';
 
-export const getUserFollowers = async ({
+export const getUserFollowersAction = async ({
   userName,
   page = 1,
   limit = 10,
@@ -21,7 +21,7 @@ export const getUserFollowers = async ({
     const loggedUser = session?.user;
 
     // Fetch the followers of the specified user, excluding those who have blocked or are blocked by the logged-in user and dont include the logged in user
-    const followers = await db.user.findUnique({
+    const data = await db.user.findUnique({
       where: { name: userName },
       select: {
         followers: {
@@ -52,6 +52,7 @@ export const getUserFollowers = async ({
               },
             }),
           },
+
           select: {
             follower: {
               select: {
@@ -59,6 +60,17 @@ export const getUserFollowers = async ({
                 name: true,
                 displayName: true,
                 image: true,
+                ...(loggedUser && {
+                  followers: {
+                    where: {
+                      followerId: loggedUser.id,
+                    },
+                    select: {
+                      followerId: true,
+                    },
+                    take: 1,
+                  },
+                }),
               },
             },
           },
@@ -102,12 +114,12 @@ export const getUserFollowers = async ({
     const totalPages = Math.ceil(totalFollowers / limit);
 
     return {
-      followers,
+      followers: data?.followers.map((f) => f.follower),
       totalPages,
     };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred';
-    return { error: errorMessage };
+    return { error: errorMessage, followers: [], totalPages: 0 };
   }
 };
