@@ -5,6 +5,7 @@ import { User } from '@/lib/generated/prisma/client';
 import { Avatar } from '@/components/ui/avatar';
 import UnblockUserButton from '@/app/settings/_components/tabs/privacy/unblock-user-button';
 import FollowButton from './follow-button';
+import Link from 'next/link';
 
 type UserProps = Pick<User, 'id' | 'name' | 'displayName' | 'image'>;
 
@@ -22,15 +23,17 @@ const UserListItem = ({
   return (
     <div className='flex items-center gap-4'>
       {/* Avatar */}
-      <Avatar className='size-12 shrink-0'>
-        <Image
-          src={user.image ?? '/default-avatar.png'}
-          alt={displayName ?? 'User'}
-          width={150}
-          height={150}
-          className='object-cover rounded-full'
-        />
-      </Avatar>
+      <Link href={`/profile/${user.name}`}>
+        <Avatar className='size-12 shrink-0'>
+          <Image
+            src={user.image ?? '/default-avatar.png'}
+            alt={displayName ?? 'User'}
+            width={150}
+            height={150}
+            className='object-cover rounded-full'
+          />
+        </Avatar>
+      </Link>
 
       {/* Info + Action */}
       <div className='flex items-center justify-between flex-1'>

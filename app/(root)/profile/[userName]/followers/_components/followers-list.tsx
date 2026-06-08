@@ -7,7 +7,7 @@ import UsersListSkeleton from '@/components/users-list-skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { IoMdAlert } from 'react-icons/io';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
-import EmptyUsers from './empty-users';
+import EmptyUsers from '@/components/empty-users';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { auth } from '@/lib/auth';
 import UserListItem from '@/components/user-list-item';
@@ -43,7 +43,9 @@ const FollowersList = ({
   }
 
   if (data.followers?.length === 0) {
-    return <EmptyUsers type='followers' />;
+    return (
+      <EmptyUsers type='followers' isOwner={loggedInUser?.name === userName} />
+    );
   }
 
   const { followers, totalPages } = data;
