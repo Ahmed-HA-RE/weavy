@@ -3,36 +3,21 @@
 import Image from 'next/image';
 import { User } from '@/lib/generated/prisma/client';
 import { Avatar } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { useTransition } from 'react';
-import { unblockUserAction } from '@/lib/actions/settings/unblock-user-action';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import UnblockUserButton from '@/app/settings/_components/tabs/privacy/unblock-user-button';
+import FollowButton from './follow-button';
 
 type UserProps = Pick<User, 'id' | 'name' | 'displayName' | 'image'>;
 
 const UserListItem = ({
   isSettingsPage,
   user,
+  isFollowing,
 }: {
   isSettingsPage?: boolean;
   user: UserProps;
+  isFollowing?: boolean;
 }) => {
-  const router = useRouter();
   const displayName = user.displayName || user.name;
-  const [isPending, startTransition] = useTransition();
-
-  const handleAction = () => {
-    startTransition(async () => {
-      const res = isSettingsPage ? await unblockUserAction(user.id) : null; // for now we'll just simulate the action
-      if (!res?.success) {
-        toast.error(res?.message);
-        return;
-      }
-      toast.success(res.message);
-      router.refresh();
-    });
-  };
 
   return (
     <div className='flex items-center gap-4'>
@@ -41,8 +26,8 @@ const UserListItem = ({
         <Image
           src={user.image ?? '/default-avatar.png'}
           alt={displayName ?? 'User'}
-          width={48}
-          height={48}
+          width={150}
+          height={150}
           className='object-cover rounded-full'
         />
       </Avatar>
@@ -55,11 +40,15 @@ const UserListItem = ({
           </span>
           <span className='text-sm text-muted-foreground'>@{user.name}</span>
         </div>
-
-        {/* Placeholder — wire up action later */}
-        <Button variant='secondary' onClick={handleAction} disabled={isPending}>
-          {isSettingsPage ? 'Unfollow' : 'Unblock'}
-        </Button>
+        {isSettingsPage ? (
+          <UnblockUserButton userId={user.id} />
+        ) : (
+          <FollowButton
+            isToggle={true}
+            userId={user.id}
+            isFollowing={isFollowing}
+          />
+        )}
       </div>
     </div>
   );

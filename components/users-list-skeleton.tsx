@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const UsersListSkeleton = () => {
   return (
     <div className='flex flex-col gap-4'>
-      {Array.from({ length: 5 }).map((_, i) => (
+      {Array.from({ length: 10 }).map((_, i) => (
         <div key={i} className='flex items-center gap-4'>
           {/* Left /Side */}
           <Skeleton className='size-12 rounded-full' />
